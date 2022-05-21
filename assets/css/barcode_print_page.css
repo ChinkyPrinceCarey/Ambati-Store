@@ -1,0 +1,82 @@
+@page{
+	size: 100mm 15mm;
+	margin: 0;
+}
+
+html, body{
+	width: 100mm;
+	margin: 0;
+	height: auto;
+	background: brown;
+}
+
+/*
+.barcode_list{
+	display: grid;
+	width: 100mm;
+	grid-template-columns: 1fr 1fr;
+	grid-auto-rows: 15mm;
+	place-items: center;
+	place-content: center;
+}
+
+.barcode_list .barcode{
+	height: 100%;
+	width: 100%;
+	background: yellow;
+	overflow: hidden;
+}
+*/
+
+@media print{
+	/*
+	.barcode{
+		box-sizing: border-box !important;
+		display: block !important;
+		float: left !important;
+		width: 50mm !important;
+		height: 15mm !important;
+		background: yellow;
+		overflow: auto !important;
+	}
+	
+	.barcode svg{
+		box-sizing: border-box !important;
+		width: 90% !important;
+		height: 90% !important;
+	}
+	*/
+}
+
+
+
+/*
+.barcode_list, .row{
+	width: 100%;
+	text-align: center;
+}
+
+
+.row .column{
+	display: inline-block;
+	width: 49%;
+}
+*/
+
+.barcode_list{
+	text-align: center;
+}
+
+.barcode{
+	width: 50%;
+}
+
+.barcode:nth-of-type(1n){
+	float: left;
+}
+
+.barcode:nth-of-type(2n){
+	float: right;
+}
+
+@media print{}

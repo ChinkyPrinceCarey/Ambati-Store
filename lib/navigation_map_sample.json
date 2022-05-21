@@ -1,0 +1,93 @@
+[
+	{
+		"icon": "icon home",
+		"title": "home",
+		"link": "index.html",
+		"access": ["admin", "seller", "operator"]
+	},
+	{
+		"icon": "icon home",
+		"title": "sellers",
+		"link": null,
+		"access": ["admin", "operator"],
+		"dropdown": [
+			{
+				"icon": "icon home",
+				"title": "create",
+				"link": "",
+				"access": ["admin", "seller"]
+			},
+			{
+				"icon": "icon home",
+				"title": "read",
+				"link": null,
+				"access": ["admin", "seller", "operator"],
+				"dropdown": [
+					{
+						"icon": "icon home",
+						"title": "delete",
+						"link": "",
+						"access": ["admin", "seller"]
+					},
+					{
+						"icon": "icon home",
+						"title": "trash",
+						"link": "",
+						"access": ["admin", "operator"]
+					}
+				]
+			},
+			{
+				"icon": "icon home",
+				"title": "modify",
+				"link": "",
+				"access": ["admin", "operator"]
+			}
+		]
+	},
+	{
+		"header": "item",
+		"access": ["admin", "seller"],
+		"link": null,
+		"items":[
+			{
+				"icon": "icon home",
+				"title": "simple",
+				"link": null,
+				"access": ["seller"],
+				"dropdown": [
+					{
+						"icon": "icon home",
+						"title": "create item",
+						"link": "create_item.html",
+						"access": ["operator"]
+					},
+					{
+						"icon": "icon home",
+						"title": "slist",
+						"link": "item_list.html",
+						"access": ["admin", "seller", "operator"]
+					}
+				]
+			},
+			{
+				"icon": "icon home",
+				"title": "create item",
+				"link": "create_item.html",
+				"access": ["admin", "operator"]
+			},
+			{
+				"icon": "icon home",
+				"title": "item list",
+				"link": "item_list.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon home",
+				"title": "unit",
+				"link": "unit.html",
+				"access": ["admin", "seller", "operator"]
+			}
+		]
+	}
+]

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmbatiSMS - Login</title>
+
+    <link rel="stylesheet" type="text/css" href="assets/font/montserrat/font.css">
+    <link rel="stylesheet" type="text/css" href="assets/library/semantic/2.4.2/semantic_mod.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/login.css">
+</head>
+<body>
+
+    <div class="card">
+        <div class="brand">
+            <img src="assets/images/brand_logo.svg" alt="Brand Logo">
+        </div>
+        <div class="wrapper">
+            <div class="title">Ambati - SMS</div>
+            <div class="subtitle">Login</div>
+            <form class="ui form" id="loginForm" action="lib/login.php">
+                <div class="field">
+                  <label>Username</label>
+                  <input type="text" name="username" placeholder="username" >
+                </div>
+                <div class="field">
+                  <label>Password</label>
+                  <input type="password" name="password" placeholder="password">
+                </div>
+                <div class="field">
+                  <div class="ui checkbox">
+                    <input type="checkbox" id="chkbox" tabindex="0" class="hidden">
+                    <label for="chkbox">Remember me</label>
+                  </div>
+                </div>
+                <button class="ui violet button" type="submit">Login</button>
+                <a href="#" class="" id="forget_password">Forgot password?</a>
+                <div class="ui error message"></div>
+            </form>
+            <div class="ui negative message hidden" id="login-state">
+              <div class="header" id="title">Login Error:</div>
+              <p id="content">Invalid Credentials</p>
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="assets/library/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/library/semantic/2.4.2/semantic.min.js"></script>
+    <script type="text/javascript" src="assets/library/js-cookie/js.cookie.min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <script type="text/javascript" src="assets/js/login.js"></script>
+</body>
+</html>

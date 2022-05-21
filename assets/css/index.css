@@ -1,0 +1,63 @@
+.stat-items{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 26px;
+}
+
+.stat-items .stat{
+    color: white;
+    padding: 20px;
+    border-radius: 17px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-items .stat::before{
+    --bubble-size: 120px;
+    content: '';
+    position: absolute;
+    width: var(--bubble-size);
+    height: var(--bubble-size);
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 100%;
+    right: -19px;
+    top: -17px;
+}
+
+.stat-items .stat .title::before{
+    --bubble-size: 120px;
+    content: '';
+    position: absolute;
+    width: var(--bubble-size);
+    height: var(--bubble-size);
+    background: rgba(255, 255, 0, 0.2);
+    border-radius: 100%;
+    right: -43px;
+    bottom: -6px;
+}
+
+.stat-items .stat .number.currency::before{
+    content: '₹';
+}
+
+.stat-items .stat *{
+    line-height: normal;
+    margin: 0;
+}
+
+.stat-items .stat .icon{
+    font-size: 22px;
+}
+
+.stat-items .stat .title{
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.stat-items .stat .number{
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 32px;
+    margin-bottom: 8px;
+}
+

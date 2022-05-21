@@ -1,0 +1,154 @@
+[
+	{
+		"icon": "icon home",
+		"title": "home",
+		"link": "index.html",
+		"access": ["admin", "seller", "operator"]
+	},
+	{
+		"header": "item",
+		"access": ["admin", "seller"],
+		"link": null,
+		"items":[
+			{
+				"icon": "icon clipboard list",
+				"title": "items",
+				"link": "items.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon uniregistry",
+				"title": "units",
+				"link": "units.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon typo3",
+				"title": "types",
+				"link": "types.html",
+				"access": ["admin", "seller", "operator"]
+			}
+		]
+	},
+	{
+		"header": "inventory",
+		"access": ["admin", "seller"],
+		"link": null,
+		"items":[
+			{
+				"icon": "icon warehouse",
+				"title": "warehouse",
+				"link": null,
+				"access": ["admin", "seller"],
+				"dropdown": [
+					{
+						"icon": "table icon",
+						"title": "stock entry",
+						"link": "warehouse_stock_entry.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "icon list ol",
+						"title": "stock reports",
+						"link": "warehouse_stock_reports.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "trash icon",
+						"title": "stock deleted",
+						"link": "warehouse_stock_deleted.html",
+						"access": ["admin", "seller", "operator"]
+					}
+				]
+			},
+			{
+				"icon": "icon truck",
+				"title": "vehicle",
+				"link": null,
+				"access": ["admin", "seller"],
+				"dropdown": [
+					{
+						"icon": "icon truck",
+						"title": "vehicles",
+						"link": "vehicles.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "icon shipping fast",
+						"title": "stock shift",
+						"link": "vehicle_stock_shift.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "icon shipping fast",
+						"title": "vehicle stock",
+						"link": "store_stock.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "trash icon",
+						"title": "stock deleted",
+						"link": "stock_deleted.html",
+						"access": ["admins", "seller", "operator"]
+					}
+				]
+			}
+		]
+	},
+	{
+		"header": "sales",
+		"access": ["admin", "seller"],
+		"link": null,
+		"items":[
+			{
+				"icon": "icon cart arrow down",
+				"title": "sale stock",
+				"link": "sale_stock.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "step backward icon",
+				"title": "sale cancel",
+				"link": "sale_cancel.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon list ol",
+				"title": "sale reports",
+				"link": "sale_reports.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon list ol",
+				"title": "cancel sale reports",
+				"link": "cancel_sale_reports.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon users",
+				"title": "sellers",
+				"link": "sellers.html",
+				"access": ["admin", "seller", "operator"]
+			}
+		]
+	},
+	{
+		"header": "print",
+		"access": ["admin", "seller"],
+		"link": null,
+		"items":[
+			{
+				"icon": "icon barcode",
+				"title": "barcode",
+				"link": "print_barcode.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon wpforms",
+				"title": "invoice",
+				"link": "print_invoice.html",
+				"access": ["admin", "seller", "operator"]
+			}
+		]
+	}
+]

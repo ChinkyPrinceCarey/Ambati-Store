@@ -1,0 +1,20 @@
+main{
+    /*overflow: unset;*/
+}
+
+#barcodes-list{
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	justify-content: center;
+	justify-items: center;
+}
+
+@media only screen and (max-width: 1020px) {
+  #barcodes-list{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.date{
+    text-align: right;
+}

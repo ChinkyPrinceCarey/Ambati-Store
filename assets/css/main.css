@@ -1,0 +1,377 @@
+body{
+    background-color: #f9f9f9;
+}
+
+#preloader{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+header{
+    position: fixed;
+    background: white;
+    width: 100%;
+    padding: 10px;
+    padding-right: 25px;
+    padding-left: 260px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.12),0 1px 5px 0 rgba(0,0,0,.2);
+}
+
+header,
+aside.sidenav .brand{
+	height: 50px;
+}
+
+header .breadcrumb-container{
+    display: inline;
+}
+
+header .breadcrumb-container li{
+    list-style: none;
+    display: inline-block;
+    font-size: 15px;
+    text-transform: capitalize;
+}
+
+header .breadcrumb-container li::after{
+    display: inline-block;
+    opacity: 1;
+    margin: 0em 0.25rem 0em 0em;
+    width: 1.18em;
+    height: 1em;
+    font-family: 'Icons';
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    text-align: center;
+    font-size: 1em;
+    content: "\f105";
+    margin-left: 5px;
+    margin-right: 2px;
+}
+
+header .breadcrumb-container li:last-child::after{
+    content: '';
+}
+header .breadcrumb-container li:last-child{
+    font-weight: 600;
+    font-style: italic;
+    color: #6200ea;
+}
+
+header .profile{
+    float: right;
+	display: grid;
+	place-content: center;
+	grid-auto-flow: column;
+	grid-gap: 7px;	
+	margin-right: 8%;
+}
+
+header .profile .avatar{
+    --avatar-size: 22px;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    border-radius: 100px;
+    text-align: center;
+    background-color: white;
+    border-color: #1976d2;
+    border-width: 2px;
+    border-style: inset;
+    margin-bottom: 3px;
+    cursor: pointer;
+    color: #6200ea;
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+header .profile .avatar:hover{
+    background-color: #6200ea;
+    border-color: #6200ea;
+    color: white;
+}
+
+header .profile .avatar span{
+    font-weight: bolder;
+    font-size: 14px;
+}
+
+.window-controls{
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: #6200ea1c;
+	padding: 4px;
+	border-bottom-left-radius: 10px;
+}
+
+.window-controls .icon{
+    color: #6200ea;
+    cursor: pointer;
+}
+
+.window-controls .icon:hover{
+	color: #1976d2;
+	border-radius: 3px;	
+}
+
+aside{
+    float: left;
+    padding-bottom: 20px;
+    width: 250px;
+    height: 100vh;
+    color: #fafafa;
+    overflow: hidden;
+    position: relative;
+    z-index: 999;
+}
+
+aside.sidenav .brand{
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    box-shadow: 0 1px 5px 1px rgba(0,0,0,.1);
+}
+
+aside.sidenav .brand img{
+    height: 100%;
+    margin-right: 10px;
+}
+
+aside.sidenav .brand .text{
+    font-size: x-large;
+    font-weight: 400;
+}
+
+.sidenav nav{
+    position: relative;
+    height: 88vh;
+    overflow-y: scroll;
+    padding-right: 20px;
+}
+
+.sidenav nav .ps__rail-y:hover{
+    background: 0 0;
+}
+
+.sidenav nav li{
+    list-style: none;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    text-transform: capitalize;
+}
+
+.sidenav nav li:not(.active):not(.navigation-header):hover{
+    background-color: rgba(0,0,0,.1) !important;
+}
+
+.sidenav nav li.active{
+    background-color: #fafafa;
+}
+
+.sidenav nav li.navigation-header{
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 18px;
+    padding-bottom: 5px;
+}
+
+.sidenav nav li a,
+.sidenav nav li label{
+    display: block;
+    padding: 18px;
+    color: #fafafa;
+    font-size: 16px;   
+}
+
+.sidenav nav li.active a,
+.sidenav nav li.active label{
+    color: #333;
+}
+
+.sidenav nav li label{
+    user-select: none;
+    cursor: pointer;
+}
+
+.sidenav nav li a .icon,
+.sidenav nav li .icon{
+    margin-right: 15px;
+}
+
+.sidenav nav li.has-sub-menu input{
+    display: none;
+}
+
+.sidenav nav li.has-sub-menu input+label+.sub-menu{
+    display: none;
+}
+
+.sidenav nav li.has-sub-menu input:checked+label+.sub-menu{
+    display: block;
+}
+
+.sidenav nav li.has-sub-menu input+label::after{
+    float: right;
+    opacity: 1;
+    margin: 0em 0.25rem 0em 0em;
+    width: 1.18em;
+    height: 1em;
+    font-family: 'Icons';
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    text-align: center;
+    font-size: 1em;
+    content: "\f105";
+}
+
+.sidenav nav li.has-sub-menu input:checked+label::after{
+    float: right;
+    opacity: 1;
+    margin: 0em 0.25rem 0em 0em;
+    width: 1.18em;
+    height: 1em;
+    font-family: 'Icons';
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    text-align: center;
+    font-size: 1em;
+    content: "\f107";
+}
+
+.sidenav nav li.has-sub-menu .sub-menu{
+    padding-left: 10px;
+    margin: 0;
+}
+
+.sidenav nav li.has-sub-menu .sub-menu li a{
+    padding: 15px;
+}
+
+.sidenav nav li.has-sub-menu.active .sub-menu li.active{
+    background-color: rgba(0,0,0,.2);
+}
+
+.sidenav nav li.has-sub-menu.active .sub-menu li.active .sub-menu li.active{
+    background-color: #fafafa;
+}
+
+main{
+    float: left;
+    padding: 20px 20px 00px 20px;
+    width: calc(100% - 250px);
+	height: calc(100% - 103px);
+    overflow-y: auto;
+    max-height: 802px;
+    margin-top: 51px;
+}
+
+main .card{
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.12),0 1px 5px 0 rgba(0,0,0,.2);
+    margin-bottom: 13px;
+}
+
+footer{
+    position: absolute;
+    bottom: 0;
+    padding-left: 265px;
+    padding-right: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 100%;
+    border-top: 1px solid #6200ea;
+    background-color: white;
+}
+
+footer .copyright{
+    display: inline;
+}
+
+footer div strong{
+    color: #6200ea;
+}
+
+footer .credits{
+    float: right;
+}
+
+.center{
+    text-align: center;
+}
+
+.field.opacity-1,
+.field.opacity-1 label,
+.field.opacity-1 input{
+    opacity: 1 !important;
+}
+
+/*for datatable*/
+.select-info{
+    display: block;
+}
+
+.dt-center i{
+    cursor: pointer;
+}
+
+table.dataTable.disable{
+    width: 100%;
+    filter: contrast(80%);
+    pointer-events: none;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield !important;
+}
+
+.d-none{
+	display: none;
+}
+
+.w-150px{
+    width: 150px;
+}
+
+header, aside, footer{
+	user-select: none;
+}
+
+.modal .content p table {
+	text-align: right;
+}
+
+.modal .content p table tbody tr td{
+	padding-right: 7px;
+}
+
+/*.modal .content .message{padding-bottom: 1.5rem;}*/
+
+.table_container table tbody tr{
+    font-weight: bold;
+    font-size: medium;
+}
+
+.opacity-0{
+    opacity: 0;
+}
+
+.opacity-1{
+    opacity: 1;
+}
