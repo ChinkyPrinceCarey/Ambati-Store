@@ -91,7 +91,12 @@ $(function(){
                 );
 
             }else{
-                add_item();
+                if(barcode_input.val().length < 25){
+					add_item();
+				}else{
+					//bulk items are inputed
+					scan_items_bulk();
+				}
             }
         }
     });
@@ -691,4 +696,15 @@ function removeSale(sale_item_){
             }
         );
     }
+}
+
+function scan_items_bulk(){
+	setTimeout(function(){
+		let barcodes_arr = barcode_input.val().split(" ");
+		barcode_input.val('');
+		$.each(barcodes_arr, function(){
+			barcode_input.val(this);
+			scanner_btn.click();
+		})
+	}, 1000);
 }
