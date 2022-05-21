@@ -272,7 +272,7 @@ function offer_dialogue(callback){
             <tr><td colspan="2"></td></tr>
         </table>
         </br>
-        <div class="ui form">
+        <div class="ui form" id="offer_form">
             <div class="inline fields">
                 <div class="three wide field">
                     <div class="ui left labeled input">
