@@ -95,7 +95,12 @@ $(function(){
                     }
                 );
             }else{
-                remove_item();
+                if(input_barcode.val().length < 25){
+					remove_item();
+				}else{
+					//bulk items are inputed
+					scan_items_bulk();
+				}
             }
         }
     });
@@ -469,4 +474,15 @@ function updateBilling(sale_item_, billing_obj_, summary_table_billing_foot_, li
     list_table_billing_foot_.children("tr").children("#sub_total").text(billing_obj_.sub_total)
     list_table_billing_foot_.children("tr").children("#tax").text(billing_obj_.tax)
     list_table_billing_foot_.children("tr").children("#total").text(billing_obj_.total)
+}
+
+function scan_items_bulk(){
+	setTimeout(function(){
+		let barcodes_arr = input_barcode.val().split(" ");
+		input_barcode.val('');
+		$.each(barcodes_arr, function(){
+			input_barcode.val(this);
+			scanner_btn.click();
+		})
+	}, 1000);
 }
