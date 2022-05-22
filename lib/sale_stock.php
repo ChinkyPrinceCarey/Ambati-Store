@@ -61,15 +61,16 @@ if($max_input_var_limit > $no_of_input_var){
 						if(count($items_data)){
 
 							//------------------------------------------------------//
-							$delete_query_type = "delete_or_clause";
-							$delete_table = "stock";
-							$delete_columns = array("id");
-							$delete_where = array();
+							$update_query_type = "update2";
+							$update_table = "stock";
+							$update_set = array("is_sold=1");
+							$update_where = array();
 							foreach($items_data['list'] as $item){
-								$delete_where[] = "barcode=" . $item['barcode'];
+								$update_where[] = "barcode=" . $item['barcode'];
 							}
-							$delete_query = get_query($delete_query_type, $delete_table, $delete_columns, $delete_where);
-							$return['delete_query'] = $delete_query;
+							$update_query = get_query($update_query_type, $update_table, $update_set, $update_where);
+							$update_query['query'] .= " AND `is_sold`=0";
+							$return['update_query'] = $update_query;
 							//------------------------------------------------------//
 
 							//$last_record = $last_record['data'][0];
@@ -144,7 +145,7 @@ if($max_input_var_limit > $no_of_input_var){
 
 							$queries_to_execute = 	array(
 														array("insert" =>$insert_query),
-														array("delete" =>$delete_query)
+														array("update" =>$update_query)
 													);
 							
 							$trasaction_result = execute_transactions($queries_to_execute);
