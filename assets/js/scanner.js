@@ -28,7 +28,7 @@ document.addEventListener('keypress', e => {
         scanner_form.submit(); //which will trigger and shows modal and plays error
     }else if(!(
             barcode_input.is(":focus")
-        ||  $("#details input, #offer_form input").is(":focus")
+        ||  $("#details input, #details button, #offer_form input").is(":focus")
     )
     ){
         play_error_notification();
@@ -57,4 +57,15 @@ function calculateNoOfVars(){
             +   (sale_data.length * 17)
             +   (6) //for billing
             +   (11); //for other vars
+}
+
+function scan_items_bulk(){
+	setTimeout(function(){
+		let barcodes_arr = barcode_input.val().split(" ");
+		barcode_input.val('');
+		$.each(barcodes_arr, function(){
+			barcode_input.val(this);
+			scanner_btn.click();
+		})
+	}, 1000);
 }

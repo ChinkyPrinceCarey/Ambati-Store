@@ -475,14 +475,3 @@ function updateBilling(sale_item_, billing_obj_, summary_table_billing_foot_, li
     list_table_billing_foot_.children("tr").children("#tax").text(billing_obj_.tax)
     list_table_billing_foot_.children("tr").children("#total").text(billing_obj_.total)
 }
-
-function scan_items_bulk(){
-	setTimeout(function(){
-		let barcodes_arr = barcode_input.val().split(" ");
-		barcode_input.val('');
-		$.each(barcodes_arr, function(){
-			barcode_input.val(this);
-			scanner_btn.click();
-		})
-	}, 1000);
-}
