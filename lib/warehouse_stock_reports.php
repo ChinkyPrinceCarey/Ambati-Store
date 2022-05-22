@@ -20,6 +20,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
     if(isset($_POST['action']) && !empty($_POST['action'])){
         $action = $_POST['action'];
         $query_table = "stock";
+        $is_sold_clause_str = " AND `is_sold`=0 ";
 
         if($action == "remove"){
 
@@ -42,20 +43,22 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $insert_into_type = "custom";
             $insert_into_table = "stock_deleted";
             $insert_into = "INSERT INTO stock_deleted SELECT * FROM stock WHERE " . join(" || ", $query_where);
+            $insert_into .= $is_sold_clause_str;
 
             $insert_into_query = get_query($insert_into_type, $insert_into_table, $insert_into);
             
             
-            $delete_type = "delete_or_clause";
-            $delete_table = $query_table;
-            $delete_column = array("id"); //just not to keep empty 
-            $delete_where = $query_where;
+            $update_type = "update2";
+            $update_table = $query_table;
+            $update_set = array("is_sold=1");
+            $update_where = $query_where;
 
-            $delete_query = get_query($delete_type, $delete_table, $delete_column, $delete_where);
+            $update_query = get_query($update_type, $update_table, $update_set, $update_where);
+            $update_query['query'] .= $is_sold_clause_str;
 
             $transaction_arr =  array(
                                     array("insert" => $insert_into_query),
-                                    array("delete" => $delete_query)
+                                    array("update" => $update_query)
                                 );
             
             $trasaction_result = execute_transactions($transaction_arr);
@@ -79,9 +82,10 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $return['start'] = $start;
             $return['end'] = $end;
 
-            $where_clause = array("1");
+            $where_clause = array("is_sold=0");
             if($start && $end){
                 $where_clause = "date BETWEEN '$start' AND '$end'";
+                $where_clause .= $is_sold_clause_str;
             }
 
             $extra_column = null;
@@ -96,8 +100,10 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                 $group_by = "GROUP BY `shortcode`";
                 if(is_array($where_clause)){
-                    $where_clause = $group_by;
+                    $where_clause = "`is_sold`=0 ";
+                    $where_clause .= $group_by;
                 }else{
+                    $where_clause .= $is_sold_clause_str;
                     $where_clause .= $group_by;
                 }
             }
