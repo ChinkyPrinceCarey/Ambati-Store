@@ -1,5 +1,5 @@
 let scanner_form;
-let input_barcode;
+let barcode_input;
 let scanner_btn;
 
 let table_current_sale_summary;
@@ -58,7 +58,7 @@ function updateScannerFormUI(){
 
 $(function(){
     scanner_form = $("#scanner_form");
-    input_barcode = $("#barcode_input");
+    barcode_input = $("#barcode_input");
     scanner_btn = $("#scanner_btn");
 
     scanner_state.isEnabled = false; //just to trigger the updateScannerFormUI()
@@ -89,13 +89,13 @@ $(function(){
                     {
                         closable: false,
                         onApprove: function(){
-                            input_barcode.val('');
+                            barcode_input.val('');
                             return true;
                         }
                     }
                 );
             }else{
-                if(input_barcode.val().length < 25){
+                if(barcode_input.val().length < 25){
 					remove_item();
 				}else{
 					//bulk items are inputed
@@ -108,10 +108,10 @@ $(function(){
 
 function remove_item(){
     if(scanner_state.isEnabled){
-        if(input_barcode.val()){
-            let sale_item = current_sale_data.find(item => item.barcode == input_barcode.val());
+        if(barcode_input.val()){
+            let sale_item = current_sale_data.find(item => item.barcode == barcode_input.val());
             if(sale_item){
-                let removed_data = current_sale_data.filter(item => item.barcode != input_barcode.val());
+                let removed_data = current_sale_data.filter(item => item.barcode != barcode_input.val());
                 if(current_sale_data.length == (removed_data.length + 1)){
                     
                     removed_sale_data.push(sale_item);
@@ -135,7 +135,7 @@ function remove_item(){
                     removeSale(sale_item, current_sale_summary, current_sale_billing, table_current_sale_summary.children("tbody"), table_current_sale_list.children("tbody"));
                     addSale(sale_item, removed_sale_summary, removed_sale_billing, table_cancelled_sale_summary.children("tbody"), table_cancelled_sale_list.children("tbody"));
 
-                    input_barcode.val('');
+                    barcode_input.val('');
 
                     play_success_notification();
                 }else{
@@ -157,7 +157,7 @@ function remove_item(){
                         {
                             closable: false,
                             onApprove: function(){
-                                input_barcode.val('');
+                                barcode_input.val('');
                                 return true;
                             }
                         }
@@ -168,7 +168,7 @@ function remove_item(){
 
                 smallModal(
                     "Item not exist!", 
-                    `The barcode: <b>${input_barcode.val()}</b> is not exist in the sale list </br> Check if it has been removed already or not exist at all!`, 
+                    `The barcode: <b>${barcode_input.val()}</b> is not exist in the sale list </br> Check if it has been removed already or not exist at all!`, 
                     [
                         {
                             "class": "ui violet button",
@@ -184,8 +184,8 @@ function remove_item(){
                     {
                         closable: false,
                         onApprove: function(){
-                            input_barcode.val('');
-                            input_barcode.focus();
+                            barcode_input.val('');
+                            barcode_input.focus();
                             $(".ui.modal .content .message").remove();
                             return true;
                         }
@@ -209,7 +209,7 @@ function remove_item(){
             {
                 closable: false,
                 onApprove: function(){
-                    input_barcode.val('');
+                    barcode_input.val('');
                     return true;
                 }
             }
@@ -223,7 +223,7 @@ $('.actions').on('click', '#checkItemExistBtn', function(){
     let message_content = "Item you're trying to remove is not exist in the Sale Invoice";
     let message_class = "negative";
     
-    if(removed_sale_data.find(item => item.barcode == input_barcode.val())){
+    if(removed_sale_data.find(item => item.barcode == barcode_input.val())){
         message_title = "Item Exist in Cancelled Invoice";
         message_content = "Item you're trying to remove is already removed from the Sale Invoice";
         message_class = "success";
@@ -478,10 +478,10 @@ function updateBilling(sale_item_, billing_obj_, summary_table_billing_foot_, li
 
 function scan_items_bulk(){
 	setTimeout(function(){
-		let barcodes_arr = input_barcode.val().split(" ");
-		input_barcode.val('');
+		let barcodes_arr = barcode_input.val().split(" ");
+		barcode_input.val('');
 		$.each(barcodes_arr, function(){
-			input_barcode.val(this);
+			barcode_input.val(this);
 			scanner_btn.click();
 		})
 	}, 1000);
