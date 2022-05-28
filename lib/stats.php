@@ -43,9 +43,9 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         sales_3.total_profit
     FROM
 
-    (SELECT COUNT(`id`) AS `today_stock_items` FROM `stock`  WHERE `date` BETWEEN '$today_date' AND '$today_date') AS `stock_1`,
-    (SELECT COUNT(`id`) AS `this_month_stock_items` FROM `stock`  WHERE `date` BETWEEN '$this_month_date' AND '$today_date') AS `stock_2`,
-    (SELECT COUNT(`id`) AS `total_stock_items` FROM `stock`  WHERE `date` BETWEEN '$this_year_date' AND '$today_date') AS `stock_3`,
+    (SELECT COUNT(`id`) AS `today_stock_items` FROM `stock`  WHERE `is_sold`=0 AND `date` BETWEEN '$today_date' AND '$today_date') AS `stock_1`,
+    (SELECT COUNT(`id`) AS `this_month_stock_items` FROM `stock`  WHERE `is_sold`=0 AND `date` BETWEEN '$this_month_date' AND '$today_date') AS `stock_2`,
+    (SELECT COUNT(`id`) AS `total_stock_items` FROM `stock`  WHERE `is_sold`=0 AND `date` BETWEEN '$this_year_date' AND '$today_date') AS `stock_3`,
     
     (SELECT SUM(`no_of_units`) AS `today_sales`, 
             SUM(`total_price`) AS `today_revenue`,
