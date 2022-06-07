@@ -183,7 +183,31 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['info'] .= $select_result['info'];
                 //$return['additional_info'] .= $select_result['additional_info'];
             }
-        }elseif($action == "fetch_item_data"){
+        }elseif($action == "fetch_vehicle_invoice"){
+
+            $vehicle_id = $_POST['vehicle_id'];
+            $vehicle_name = $_POST['vehicle_name'];
+
+            $query_type = "select";
+            $query_table = "sales";
+            $query_columns = array("id", "date", "invoice_id", "no_of_items", "no_of_units", "items_details");
+            $query_where = array("vehicle_id=$vehicle_id", "vehicle_name=$vehicle_name", "is_finished=0", "is_updated=0");
+            
+            $select_query = get_query($query_type, $query_table, $query_columns, $query_where);
+            $return['query'] = $select_query['query'];
+
+            $select_result = select_query($select_query);
+
+            if($select_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "fetched all records ";
+                $return['data'] = $select_result['additional_data'];
+            }else{
+                $return['result'] = false;
+                $return['data'] = array();
+                $return['info'] .= $select_result['info'];
+                $return['additional_info'] .= $select_result['additional_info'];
+            }
         }else{
             $return['info'] .= "action: $action does not exist";
         }

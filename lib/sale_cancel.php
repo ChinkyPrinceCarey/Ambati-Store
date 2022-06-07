@@ -23,6 +23,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
         if($action == "sale_cancel"){
 
+			$id = $_POST['data']['id'];
 			$invoice_id = $_POST['data']['invoice_id'];
 			$seller_id = $_POST['data']['seller_id'];
 			$seller_name = $_POST['data']['seller_name'];
@@ -48,7 +49,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 			$update_table = $query_table;
 			$update_set = array("is_updated=1");
 			//$update_where = array("invoice_id=$invoice_id");
-			$update_where = "`invoice_id` LIKE '$invoice_id' AND `is_updated`=0";
+			$update_where = "`id`='$id' AND `invoice_id` LIKE '$invoice_id' AND `is_updated`=0";
 			$update_query = get_query($update_type, $update_table, $update_set, $update_where);
 			$return['update_query'] = $update_query;
 			$queries_to_execute[] = array("update" => $update_query);

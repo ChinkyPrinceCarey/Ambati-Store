@@ -14,21 +14,22 @@ let input_customer_name;
 let input_customer_village;
 let input_customer_details;
 
-let table_earlier_sale_summary;
-let table_earlier_sale_list;
+let invoice_details;;
 
-let invoice_details = {};
+var earlier_sale;
+let earlier_sale_summary_table;
+let earlier_sale_list_table;
+let earlier_sale_billing_table;
 
-let earlier_sale_data = [];
-let earlier_sale_summary = [];
-let earlier_sale_billing = {
-    making_cost: 0,
-    sub_total: 0,
-    tax: 0,
-    total: 0,
-    offer_percentage: 0,
-    offer_amount: 0
-};
+let cancelled_sale;
+let cancelled_sale_summary_table;
+let cancelled_sale_list_table;
+let cancelled_sale_billing_table;
+
+let current_sale;
+let current_sale_summary_table;
+let current_sale_list_table;
+let current_sale_billing_table;
 
 $(function(){
     $("span#date").text(getCurrentDate("dmy"));
@@ -52,8 +53,22 @@ $(function(){
     input_customer_name = $("#customer_name");
     input_customer_details = $("#customer_details");
     
-    table_earlier_sale_summary = $("#earlier_invoice .card .wrapper div table#sale-summary");
-    table_earlier_sale_list = $("#earlier_invoice .card .wrapper div table#sale-list");
+    earlier_sale_summary_table = $("#earlier_invoice .card .wrapper div table#sale-summary");
+    earlier_sale_list_table = $("#earlier_invoice .card .wrapper div table#sale-list");
+    earlier_sale_billing_table =    earlier_sale_summary_table.children('tfoot')
+                                        .add(earlier_sale_list_table.children('tfoot'));
+
+    cancelled_sale_summary_table = $("#cancelled_invoice .card .wrapper div table#sale-summary");
+    cancelled_sale_list_table = $("#cancelled_invoice .card .wrapper div table#sale-list");
+    cancelled_sale_billing_table =  cancelled_sale_summary_table.children('tfoot')
+                                        .add(cancelled_sale_list_table.children('tfoot'));
+
+    current_sale_summary_table = $("#current_invoice .card .wrapper div table#sale-summary");
+    current_sale_list_table = $("#current_invoice .card .wrapper div table#sale-list");
+    current_sale_billing_table = current_sale_summary_table.children('tfoot')
+                                    .add(current_sale_list_table.children('tfoot'));
+
+    resetData();
 
     search_invoice_btn.on('click', function(){
         search_form.addClass("loading");
@@ -65,14 +80,8 @@ $(function(){
         edit_details_btn.hide();
         sale_cancel_btn.hide();
 
-        input_seller_id.val('');
-        input_seller_name.val('');
-        input_sale_type.val('');
-        input_customer_village.val('');
-        input_customer_name.val('');
-        input_customer_details.val('');
-
         let invoice_id = input_invoice_id.val();
+        resetData();
         if(invoice_id){
             data_param = {
                 action: "fetch_invoice",
@@ -106,6 +115,7 @@ $(function(){
                     }else{
                         let invoice_data = response.data[0];
 
+                        invoice_details.id = invoice_data.id;
                         invoice_details.invoice_id = invoice_data.invoice_id;
                         invoice_details.seller_id = invoice_data.seller_id;
                         invoice_details.seller_name = invoice_data.seller_name;
@@ -122,6 +132,7 @@ $(function(){
                         let seller_name = invoice_data.seller_name;
                         if(invoice_data.custom_name) seller_name += `(${invoice_data.custom_name})`;
                         
+                        input_invoice_id.val(invoice_details.invoice_id);
                         input_seller_id.val(seller_id);
                         input_seller_name.val(seller_name);
                         input_sale_type.val(invoice_data.sale_type);
@@ -137,19 +148,19 @@ $(function(){
                         edit_details_btn.show();
                         sale_cancel_btn.show();
 
-                        current_sale_data = invoice_data.items_details.list;
-                        current_sale_summary = invoice_data.items_details.summary;
-                        current_sale_billing = invoice_data.items_details.billing;
+                        current_sale.data = invoice_data.items_details.list;
+                        current_sale.summary = invoice_data.items_details.summary;
+                        current_sale.billing = invoice_data.items_details.billing;
 
-                        earlier_sale_data = current_sale_data;
-                        earlier_sale_summary = current_sale_summary;
-                        earlier_sale_billing = current_sale_billing;
-                        
+                        earlier_sale.data = JSON.parse(JSON.stringify(current_sale.data));
+                        earlier_sale.summary = JSON.parse(JSON.stringify(current_sale.summary));
+                        earlier_sale.billing = JSON.parse(JSON.stringify(current_sale.billing));
+
                         initInvoices();
 
                         //removing the offer for current sale
-                        current_sale_billing.offer_percentage = 0;
-                        current_sale_billing.offer_amount = 0;
+                        current_sale.billing.offer_percentage = 0;
+                        current_sale.billing.offer_amount = 0;
                     }
                 }else{
                     modal_body = response.info;
@@ -245,7 +256,7 @@ $(function(){
     })
 
     sale_cancel_btn.on('click', function(){
-        if(!removed_sale_data.length){
+        if(!cancelled_sale.data.length){
             smallModal(
                 "No items to cancel",
                 "No items are added to cancel from the sale, kindly add items to cancel...",
@@ -263,27 +274,27 @@ $(function(){
                     }
                 }
             );
-        }else if((current_sale_data.length + removed_sale_data.length) == (earlier_sale_data.length)){
+        }else if((current_sale.data.length + cancelled_sale.data.length) == (earlier_sale.data.length)){
             smallModal(
                 "Are you sure want to cancel?",
                 `
                 <p>Invoice Id#: <b>${input_invoice_id.val()}</b></p>
-                <p><b>${current_sale_summary.length == 0 ? "YOU ARE CANCELLING ALL THE ITEMS IN THIS SALE" : ""}<b></p>
+                <p><b>${current_sale.summary.length == 0 ? "YOU ARE CANCELLING ALL THE ITEMS IN THIS SALE" : ""}<b></p>
                 <p>Verify the data before clicking on Confirm</p>
                 </br>
                 <p>Cancel Items Overview</b></p>
                 <table border="1">
                     <tr>
                         <td>Total No.of. Items</td>
-                        <td><b>${removed_sale_summary.length}</b></td>
+                        <td><b>${cancelled_sale.summary.length}</b></td>
                     </tr>
                     <tr>
                         <td>Total No.of. Units</td>
-                        <td><b>${removed_sale_data.length}</b></td>
+                        <td><b>${cancelled_sale.data.length}</b></td>
                     </tr>
                     <tr>
                         <td>Total Cost</td>
-                        <td><b>${removed_sale_billing.total}</b></td>
+                        <td><b>${cancelled_sale.billing.total}</b></td>
                     </tr>
                 </table>
                 `,
@@ -335,13 +346,66 @@ $(function(){
     })
 });
 
+function initValues(){
+
+    invoice_details = {};
+
+    current_sale = {
+        data: [],
+        data_table: true,
+        summary: true,
+        summary_table: true,
+        billing: true,
+        sale_obj: true
+    };
+
+    cancelled_sale = {
+        data: [],
+        data_table: true,
+        summary: true,
+        summary_table: true,
+        billing: true,
+        stock_obj: true
+    };
+
+    earlier_sale = {
+        data: [],
+        data_table: false,
+        summary: false,
+        summary_table: false,
+        billing: false,
+        sale_obj: false
+    };
+
+    current_sale = {...current_sale, ...stock_obj_methods};
+    current_sale.data_table = current_sale_list_table;
+    current_sale.summary_table = current_sale_summary_table;
+
+    cancelled_sale = {...cancelled_sale, ...sale_obj_methods};
+    cancelled_sale.data_table = cancelled_sale_list_table;
+    cancelled_sale.summary_table = cancelled_sale_summary_table;
+
+    current_sale.sale_obj = cancelled_sale;
+    cancelled_sale.stock_obj = current_sale;
+
+
+    scanner_data = {
+        method(action, barcode){
+            current_sale.update_data(action, barcode);
+        },
+        checkItem(barcode){
+           cancelled_sale.isItemExist(barcode);
+        }
+    }
+}
+
 
 function sale_cancel(){
     let data_param = {
         action: "sale_cancel",
         data: invoice_details,
-        current_invoice: {summary: current_sale_summary, list: current_sale_data, billing: current_sale_billing},
-        cancelled_invoice: {summary: removed_sale_summary, list: removed_sale_data, billing: removed_sale_billing}
+        current_invoice: {summary: current_sale.summary, list: current_sale.data, billing: current_sale.billing},
+        cancelled_invoice: {summary: cancelled_sale.summary, list: cancelled_sale.data, billing: cancelled_sale.billing}
     }
 
     ajaxPostCall('lib/sale_cancel.php', data_param, function(response){
@@ -410,22 +474,22 @@ function sale_cancel(){
                             });
                         }else if(buttonId == "currentInvoiceSummaryBtn"){
                             $("#currentInvoiceSummaryBtn").addClass("loading")
-                            printInvoice(table_current_sale_summary.parent(), "summary", response, function(isCompleted){
+                            printInvoice(current_sale_summary_table.parent(), "summary", response, function(isCompleted){
                                 $("#currentInvoiceSummaryBtn").removeClass("loading")
                             });
                         }else if(buttonId == "currentInvoiceListBtn"){
                             $("#currentInvoiceListBtn").addClass("loading")
-                            printInvoice(table_current_sale_list.parent(), "list", response, function(isCompleted){
+                            printInvoice(current_sale_list_table.parent(), "list", response, function(isCompleted){
                                 $("#currentInvoiceListBtn").removeClass("loading")
                             });
                         }else if(buttonId == "earlierInvoiceSummaryBtn"){
                             $("#earlierInvoiceSummaryBtn").addClass("loading")
-                            printInvoice(table_earlier_sale_summary.parent(), "earlier summary", response, function(isCompleted){
+                            printInvoice(earlier_sale_summary_table.parent(), "earlier summary", response, function(isCompleted){
                                 $("#earlierInvoiceSummaryBtn").removeClass("loading")
                             });
                         }else if(buttonId == "earlierInvoiceListBtn"){
                             $("#earlierInvoiceListBtn").addClass("loading")
-                            printInvoice(table_earlier_sale_list.parent(), "earlier list", response, function(isCompleted){
+                            printInvoice(earlier_sale_list_table.parent(), "earlier list", response, function(isCompleted){
                                 $("#earlierInvoiceListBtn").removeClass("loading")
                             });
                         }else{}
@@ -465,40 +529,8 @@ function sale_cancel(){
 }
 
 function resetData(){
-    invoice_details = {};
-    
-    current_sale_data = [];
-    current_sale_summary = [];
-    current_sale_billing = {
-        making_cost: 0,
-        sub_total: 0,
-        tax: 0,
-        total: 0,
-        offer_percentage: 0,
-        offer_amount: 0
-    };
 
-    removed_sale_data = [];
-    removed_sale_summary = [];
-    removed_sale_billing = {
-        making_cost: 0,
-        sub_total: 0,
-        tax: 0,
-        total: 0,
-        offer_percentage: 0,
-        offer_amount: 0
-    };
-
-    earlier_sale_data = [];
-    earlier_sale_summary = [];
-    earlier_sale_billing = {
-        making_cost: 0,
-        sub_total: 0,
-        tax: 0,
-        total: 0,
-        offer_percentage: 0,
-        offer_amount: 0
-    };
+    initValues();
 
     $('input').val('');
 
@@ -516,13 +548,13 @@ function initInvoices(){
     $("#earlier_invoice").addClass("loading");
 
     /* -------------------- Summary -------------------- */
-    table_current_sale_summary.children("tbody").empty();
-    table_current_sale_summary.children('tfoot').children("tr").children("#sub_total").text('')
-    table_current_sale_summary.children('tfoot').children("tr").children("#tax").text('')
-    table_current_sale_summary.children('tfoot').children("tr").children("#total").text('')
+    current_sale_summary_table.children("tbody").empty();
+    current_sale_summary_table.children('tfoot').children("tr").children("#sub_total").text('')
+    current_sale_summary_table.children('tfoot').children("tr").children("#tax").text('')
+    current_sale_summary_table.children('tfoot').children("tr").children("#total").text('')
 
-    for(let item of earlier_sale_summary){
-        table_current_sale_summary
+    for(let item of earlier_sale.summary){
+        current_sale_summary_table
         .children("tbody")
         .append(`
             <tr data-item="${item.shortcode}_${item.unit_price}">
@@ -535,19 +567,19 @@ function initInvoices(){
         `)
     }
 
-    table_current_sale_summary.children('tfoot').children("tr").children("#sub_total").text(current_sale_billing.sub_total)
-    table_current_sale_summary.children('tfoot').children("tr").children("#tax").text(current_sale_billing.tax)
-    table_current_sale_summary.children('tfoot').children("tr").children("#total").text(current_sale_billing.total)
+    current_sale_summary_table.children('tfoot').children("tr").children("#sub_total").text(current_sale.billing.sub_total)
+    current_sale_summary_table.children('tfoot').children("tr").children("#tax").text(current_sale.billing.tax)
+    current_sale_summary_table.children('tfoot').children("tr").children("#total").text(current_sale.billing.total)
 
 
     /* -------------------- List -------------------- */
-    table_current_sale_list.children("tbody").empty();
-    table_current_sale_list.children('tfoot').children("tr").children("#sub_total").text('')
-    table_current_sale_list.children('tfoot').children("tr").children("#tax").text('')
-    table_current_sale_list.children('tfoot').children("tr").children("#total").text('')
+    current_sale_list_table.children("tbody").empty();
+    current_sale_list_table.children('tfoot').children("tr").children("#sub_total").text('')
+    current_sale_list_table.children('tfoot').children("tr").children("#tax").text('')
+    current_sale_list_table.children('tfoot').children("tr").children("#total").text('')
 
-    for(let item of earlier_sale_data){
-        table_current_sale_list
+    for(let item of earlier_sale.data){
+        current_sale_list_table
         .children("tbody")
         .append(`
             <tr data-barcode="${item.barcode}">
@@ -562,33 +594,41 @@ function initInvoices(){
         `)
     }
 
-    table_current_sale_list.children('tfoot').children("tr").children("#sub_total").text(current_sale_billing.sub_total)
-    table_current_sale_list.children('tfoot').children("tr").children("#tax").text(current_sale_billing.tax)
-    table_current_sale_list.children('tfoot').children("tr").children("#total").text(current_sale_billing.total)
+    current_sale_list_table.children('tfoot').children("tr").children("#sub_total").text(current_sale.billing.sub_total)
+    current_sale_list_table.children('tfoot').children("tr").children("#tax").text(current_sale.billing.tax)
+    current_sale_list_table.children('tfoot').children("tr").children("#total").text(current_sale.billing.total)
 
     /* -------------------- Copy the Current Sale to Earlier Sale -------------------- */
 
-    table_earlier_sale_summary.html(table_current_sale_summary.html())
-    table_earlier_sale_list.html(table_current_sale_list.html())
+    earlier_sale_summary_table.html(current_sale_summary_table.html())
+    earlier_sale_list_table.html(current_sale_list_table.html())
 
     //because current invoice will not have the offer row
     //now have to add offer row to the earlier invoice
-    table_earlier_sale_summary.children('tfoot').append(`
+    earlier_sale_summary_table.children('tfoot').append(`
         <tr id="offer_row">
             <th></th>
-            <th id="offer_percentage" class="right aligned" colspan="3">Offer(${current_sale_billing.offer_percentage}%)</th>
-            <th id="offer_amount" class="right aligned">${current_sale_billing.offer_amount}</th>
+            <th id="offer_percentage" class="right aligned" colspan="3">Offer(${current_sale.billing.offer_percentage}%)</th>
+            <th id="offer_amount" class="right aligned">${current_sale.billing.offer_amount}</th>
         </tr>
     `);
     
-    table_earlier_sale_list.children('tfoot').append(`
+    earlier_sale_list_table.children('tfoot').append(`
         <tr id="offer_row">
             <th></th>
-            <th id="offer_percentage" class="right aligned" colspan="2">Offer(${current_sale_billing.offer_percentage}%)</th>
-            <th id="offer_amount" class="right aligned">${current_sale_billing.offer_amount}</th>
+            <th id="offer_percentage" class="right aligned" colspan="2">Offer(${current_sale.billing.offer_percentage}%)</th>
+            <th id="offer_amount" class="right aligned">${current_sale.billing.offer_amount}</th>
             <th></th>
         </tr>
     `);
+
+    current_sale_list_table
+    .add(earlier_sale_list_table)
+    .css("counter-reset", `DescendingSerial ${earlier_sale.data.length+1}`);
+
+    /* -------------------- begin: ReInitialise Variable Values -------------------- */
+    /* -------------------- end: ReInitialise Variable Values -------------------- */
+
 
     $("#current_invoice").removeClass("loading");
     $("#earlier_invoice").removeClass("loading");

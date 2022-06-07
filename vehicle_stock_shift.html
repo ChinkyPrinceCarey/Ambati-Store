@@ -101,6 +101,14 @@
                             <label>Invoice Id</label>
                             <input type="text" id="invoice_id" placeholder="invoice_id" value="" tabindex="-1" disabled>
                         </div>
+                        <div class="field disabled opacity-1">
+                            <label>Invoice Date</label>
+                            <input type="text" id="invoice_date" placeholder="invoice_date" value="" tabindex="-1" disabled>
+                        </div>
+                        <div class="field disabled opacity-1">
+                            <label>Total No#of Units</label>
+                            <input type="text" id="total_units" placeholder="total_units" value="" tabindex="-1" disabled>
+                        </div>
                     </div>
                     <button class="ui violet labeled icon button" id="save_details_btn">
                         <i class="save icon large"></i>
@@ -129,7 +137,7 @@
                     <input type="checkbox" name="current_sale_summary_toggle" id="current_sale_summary_toggle">
                     <label for="current_sale_summary_toggle"></label>
                     <div class="table_container">
-                        <table id="sale-summary" class="ui celled striped pink table">
+                        <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
                             <thead>
                             <tr>
                                 <th>Slno</th>
@@ -173,7 +181,7 @@
                     <input type="checkbox" name="current_sale_list_toggle" id="current_sale_list_toggle" checked>
                     <label for="current_sale_list_toggle"></label>
                     <div class="table_container">
-                        <table id="sale-list" class="ui celled striped violet table">
+                        <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
                             <thead>
                             <tr>
                                 <th>Slno</th>
@@ -231,7 +239,7 @@
                     <input type="checkbox" name="earlier_sale_summary_toggle" id="earlier_sale_summary_toggle">
                     <label for="earlier_sale_summary_toggle"></label>
                     <div class="table_container">
-                        <table id="sale-summary" class="ui celled striped pink table">
+                        <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
                             <thead>
                             <tr>
                                 <th>Slno</th>
@@ -275,7 +283,7 @@
                     <input type="checkbox" name="earlier_sale_list_toggle" id="earlier_sale_list_toggle" checked>
                     <label for="earlier_sale_list_toggle"></label>
                     <div class="table_container">
-                        <table id="sale-list" class="ui celled striped violet table">
+                        <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
                             <thead>
                             <tr>
                                 <th>Slno</th>
@@ -333,7 +341,7 @@
                     <input type="checkbox" name="final_sale_summary_toggle" id="final_sale_summary_toggle">
                     <label for="final_sale_summary_toggle"></label>
                     <div class="table_container">
-                        <table id="sale-summary" class="ui celled striped pink table">
+                        <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
                             <thead>
                             <tr>
                                 <th>Slno</th>
@@ -375,9 +383,9 @@
                 <div class="wrapper">
                     <h4 class="ui dividing header center pink">Final Sale List</h4>
                     <input type="checkbox" name="final_sale_list_toggle" id="final_sale_list_toggle" checked>
-                    <label for="sale_list_toggle"></label>
+                    <label for="final_sale_list_toggle"></label>
                     <div class="table_container">
-                        <table id="sale-list" class="ui celled striped violet table">
+                        <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
                             <thead>
                             <tr>
                                 <th>Slno</th>
@@ -468,7 +476,6 @@
 
     <script type="text/javascript" src="assets/js/main.js"></script>
     <script type="text/javascript" src="assets/js/scanner.js"></script>
-    <script type="text/javascript" src="assets/js/scanner_add.js"></script>
     <script type="text/javascript" src="assets/js/vehicle_stock_shift.js"></script>
 </body>
 </html>

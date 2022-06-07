@@ -375,3 +375,26 @@ header, aside, footer{
 .opacity-1{
     opacity: 1;
 }
+
+
+/* begin: Ascending Serial Counter */
+table.asc-serial-counter{
+    counter-reset: AscendingSerial;
+}
+
+table.asc-serial-counter tbody tr td:first-child:before{
+    counter-increment: AscendingSerial;
+    content: counter(AscendingSerial);
+}
+/* end: Ascending Serial Counter */
+
+/* begin: Descending Serial Counter */
+table.dsc-serial-counter{
+    counter-reset: DescendingSerial 0;
+}
+
+table.dsc-serial-counter tbody tr td:first-child:before{
+    content: counter(DescendingSerial);
+    counter-increment: DescendingSerial -1;
+}
+/* end: Descending Serial Counter */
