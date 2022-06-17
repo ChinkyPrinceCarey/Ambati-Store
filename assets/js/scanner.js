@@ -789,28 +789,28 @@ function offer_dialogue(callback, _sale_data, _show_offer = true, is_return = fa
         <table border="1" id="sale_items_overview">
             <tr>
                 <td>Total No.of. Items</td>
-                <td><b>${_sale_data.summary.length ?? "0"}</b></td>
+                <td><b>${_sale_data.summary.length ? _sale_data.summary.length : "0"}</b></td>
             </tr>
             <tr>
                 <td>Total No.of. Units</td>
-                <td><b>${_sale_data.data.length ?? "0"}</b></td>
+                <td><b>${_sale_data.data.length ? _sale_data.data.length : "0"}</b></td>
             </tr>
             <tr><td colspan="2"></td></tr>
             <tr>
                 <td>Total Making Cost <i class="toggle-visibility eye icon"></i></td>
-                <td><b class="opacity-0">${_sale_data.billing.making_cost ?? "0"}</b></td>
+                <td><b class="opacity-0">${_sale_data.billing.making_cost ? _sale_data.billing.making_cost : "0"}</b></td>
             </tr>
             <tr>
                 <td>Sub Total</td>
-                <td><b>${_sale_data.billing.sub_total ?? "0"}</b></td>
+                <td><b>${_sale_data.billing.sub_total ? _sale_data.billing.sub_total : "0"}</b></td>
             </tr>
             <tr>
                 <td>Tax</td>
-                <td><b>${_sale_data.billing.tax ?? "0"}</b></td>
+                <td><b>${_sale_data.billing.tax ? _sale_data.billing.tax : "0"}</b></td>
             </tr>
             <tr>
                 <td>Total</td>
-                <td><b>${_sale_data.billing.total ?? "0"}</b></td>
+                <td><b>${_sale_data.billing.total ? _sale_data.billing.total : "0"}</b></td>
             </tr>
             <tr>
                 <td>Profit <i class="toggle-visibility eye icon"></i></td>

@@ -506,7 +506,7 @@ function return_items(){
                 modal_title,
                 `
                 <p>Invoice Id#: <b>${response.invoice_id}</b></p>
-                <p>Total No.# of items are returned <b>${return_invoice.data.length ?? "0"}</b></p>
+                <p>Total No.# of items are returned <b>${return_invoice.data.length ? return_invoice.data.length : "0"}</b></p>
                 <table>
                     <tr>
                         <td>Total Price of</td>
