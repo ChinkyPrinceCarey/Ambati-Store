@@ -172,19 +172,27 @@ $(function(){
             { data: "sale_type" },
             { data: "seller_id", 
               render: function(data, type, row){
-                  return row.custom_id ? `${row.seller_id}(${row.custom_id})` : row.seller_id;
+                return row.custom_id ? `${row.seller_id}(${row.custom_id})` : row.seller_id;
               }  
             },
             { data: "seller_name", 
               render: function(data, type, row){
-                  return row.custom_name ? `${row.seller_name}(${row.custom_name})` : row.seller_name;
+                if(row.sale_type == "vehicle")
+                return `${row.vehicle_id}(${row.vehicle_name})`;
+
+                return row.custom_name ? `${row.seller_name}(${row.custom_name})` : row.seller_name;
               }  
             },
             { data: "no_of_items" },
             { data: "no_of_units" },
             { data: "making_cost" },
             { data: "total_price" },
-            { data: "profit" },
+            { data: "profit",
+            render: function(data, type, row){
+              return `${row.profit} 
+              ${calculateProfit(row.profit, row.total_price)}`;
+            }
+           },
             { data: "offer_percentage" },
             { data: "offer_amount" },
             {
@@ -248,7 +256,12 @@ $(function(){
             { data: "quantity" },
             { data: "making_cost" },
             { data: "total_price" },
-            { data: "profit" },
+            { data: "profit",
+            render: function(data, type, row){
+              return `${row.profit} 
+              ${calculateProfit(row.profit, row.total_price)}`;
+            }
+           },
             {
                 data: "is_finished",
                 render: function(data, type, row){
@@ -296,7 +309,12 @@ $(function(){
             { data: "barcode" },
             { data: "unit_price" },
             { data: "making_cost" },
-            { data: "profit" }
+            { data: "profit",
+            render: function(data, type, row){
+              return `${row.profit} 
+              ${calculateProfit(row.profit, row.unit_price)}`;
+            }
+           }
         ],
         footerCallback: function( tfoot, data, start, end, display ) {
             var api = this.api();
@@ -375,6 +393,10 @@ function updateProfitPercentage(profit_index, total_price_index){
             footer_profit_selector.html(footer_profit_selector_text);
         }
     }, 2000);
+}
+
+function calculateProfit(_profit, _total_price){
+    return `(${((_profit/_total_price) * 100).toFixed(2)}%)`;
 }
 
 function updateSumOnFooter(api, column_index, prefix = "₹"){

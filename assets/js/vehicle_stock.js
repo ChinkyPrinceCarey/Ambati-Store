@@ -105,7 +105,7 @@ $(function(){
             "data": function(d){
                 d.action = "fetch_all";
                 d.type = dropdown_reports_type.dropdown('get value');
-                d.sale_type = "store";
+                d.sale_type = "vehicle";
                 d.data = {start: rangestart_input.val(), end: rangeend_input.val()};
             },
             "dataType": 'json',
@@ -169,16 +169,21 @@ $(function(){
               }  
             },
             {
-                data: null
+                data: "vehicle_id"
             },
             {
-                data: null
+                data: "vehicle_name"
             },
             { data: "no_of_items" },
             { data: "no_of_units" },
             { data: "making_cost" },
             { data: "total_price" },
-            { data: "profit" },
+            { data: "profit",
+              render: function(data, type, row){
+                return `${row.profit} 
+                ${calculateProfit(row.profit, row.total_price)}`;
+              }
+            },
             { data: "offer_percentage" },
             { data: "offer_amount" },
             {
@@ -201,15 +206,15 @@ $(function(){
         footerCallback: function( tfoot, data, start, end, display ) {
             var api = this.api();
 
-            updateSumOnFooter(api, 6, ""); //no of items
-            updateSumOnFooter(api, 7, ""); //no of units
-            updateSumOnFooter(api, 8); //making_cost
-            updateSumOnFooter(api, 9); //total_price
-            updateSumOnFooter(api, 10); //profit
+            updateSumOnFooter(api, 7, ""); //no of items
+            updateSumOnFooter(api, 8, ""); //no of units
+            updateSumOnFooter(api, 9); //making_cost
+            updateSumOnFooter(api, 10); //total_price
+            updateSumOnFooter(api, 11); //profit
 
         },
         "drawCallback": function(settings){
-            updateProfitPercentage(10, 9)
+            updateProfitPercentage(11, 10)
         },
         createdRow: function (row, data, dataIndex) {
             $(row).attr('data-id', data.Id);
@@ -229,10 +234,10 @@ $(function(){
               }  
             },
             {
-                data: null
+                data: "vehicle_id"
             },
             {
-                data: null
+                data: "vehicle_name"
             },
             {   data: "item",
                 render: function ( data, type, row ) {
@@ -243,7 +248,12 @@ $(function(){
             { data: "quantity" },
             { data: "making_cost" },
             { data: "total_price" },
-            { data: "profit" },
+            { data: "profit",
+                render: function(data, type, row){
+                return `${row.profit} 
+                ${calculateProfit(row.profit, row.total_price)}`;
+                }
+            },
             {
                 data: "is_sold",
                 render: function(data, type, row){
@@ -256,14 +266,14 @@ $(function(){
         footerCallback: function( tfoot, data, start, end, display ) {
             var api = this.api();
 
-            updateSumOnFooter(api, 7); //unit price
             updateSumOnFooter(api, 8, ""); //quantity
-            updateSumOnFooter(api, 9); //making_cost
+            updateSumOnFooter(api, 9, ""); //making_cost
             updateSumOnFooter(api, 10); //total_price
             updateSumOnFooter(api, 11); //profit
+            updateSumOnFooter(api, 12); //profit
         },
         "drawCallback": function(settings){
-            updateProfitPercentage(11, 10)
+            updateProfitPercentage(12, 11)
         }
     };
 
@@ -279,10 +289,10 @@ $(function(){
               }  
             },
             {
-                data: null
+                data: "vehicle_id"
             },
             {
-                data: null
+                data: "vehicle_name"
             },
             {   data: "item",
                 render: function ( data, type, row ) {
@@ -292,17 +302,22 @@ $(function(){
             { data: "barcode" },
             { data: "unit_price" },
             { data: "making_cost" },
-            { data: "profit" }
+            { data: "profit",
+                render: function(data, type, row){
+                return `${row.profit} 
+                ${calculateProfit(row.profit, row.unit_price)}`;
+                }
+            }
         ],
         footerCallback: function( tfoot, data, start, end, display ) {
             var api = this.api();
 
-            updateSumOnFooter(api, 8); //unit_price
-            updateSumOnFooter(api, 9); //making_cost
-            updateSumOnFooter(api, 10); //profit
+            updateSumOnFooter(api, 9); //unit_price
+            updateSumOnFooter(api, 10); //making_cost
+            updateSumOnFooter(api, 11); //profit
         },
         "drawCallback": function(settings){
-            updateProfitPercentage(10, 8)
+            updateProfitPercentage(11, 9)
         }
     };
 
@@ -367,6 +382,10 @@ function updateProfitPercentage(profit_index, total_price_index){
     }, 2000);
 }
 
+function calculateProfit(_profit, _total_price){
+    return `(${((_profit/_total_price) * 100).toFixed(2)}%)`;
+}
+
 function updateSumOnFooter(api, column_index, prefix = "₹"){
     let total_sum = 0;
     if(api.column(column_index, { search:'applied' }).data().length){
@@ -374,7 +393,7 @@ function updateSumOnFooter(api, column_index, prefix = "₹"){
            .column(column_index, { search:'applied' } )
            .data()
            .reduce( function (a, b) {
-               return Math.round(a) + Math.round(b);
+                return Math.round(a) + Math.round(b);
            });
     }
 

@@ -594,3 +594,256 @@ function scan_items_bulk(){
 		})
 	}, 1000);
 }
+
+/*begin: OFFER */
+$(document).on('keyup', '#input_offer_percentage, #input_offer_amount', function(e){
+    scanner_data.evaluateOffer(e.target.id);
+})
+
+$(document).on('click', '#apply_offer_btn', function(e){
+    scanner_data.apply_offer();
+})
+
+function apply_offer(_sale_data, _sale_summary_table, _sale_list_table){
+    let apply_offer_btn = $("#apply_offer_btn");
+    let offer_percentage = parseInt($("#input_offer_percentage").val());
+    let offer_amount = parseInt($("#input_offer_amount").val());
+
+    let table_sale_items_overview = $("#sale_items_overview");
+
+    if(apply_offer_btn.hasClass("teal")){
+        //check the condition
+        if(offer_percentage && offer_amount){
+            //then apply the offer
+            _sale_data.billing.offer_percentage = offer_percentage;
+            _sale_data.billing.offer_amount = offer_amount;
+            
+            //if by any chance exist then remove it
+            table_sale_items_overview.children("#offer_row").remove();
+
+            table_sale_items_overview.append(`
+                <tr id="offer_row">
+                    <td>Offer(${offer_percentage}%)</td>
+                    <td><b>${offer_amount}</b></td>
+                </tr>
+            `);
+
+            _sale_summary_table.children('tfoot').children("tr").children("#offer_percentage").text(`Offer(${offer_percentage}%)`)
+            _sale_summary_table.children('tfoot').children("tr").children("#offer_amount").text(offer_amount)
+            
+            _sale_list_table.children('tfoot').children("tr").children("#offer_percentage").text(`Offer(${offer_percentage}%)`)
+            _sale_list_table.children('tfoot').children("tr").children("#offer_amount").text(offer_amount)
+
+        }else{
+            //possible bug/error
+            //so remove the offer as it will reset any offer
+            scanner_data.remove_offer();
+        }
+        
+        //update the button and fields
+        apply_offer_btn.removeClass("teal")
+        apply_offer_btn.addClass("red")
+        apply_offer_btn.children("#text").text("Remove Offer")
+
+        $("#input_offer_percentage").parent().addClass("disabled");
+        $("#input_offer_amount").parent().addClass("disabled");
+    }else{
+        //remove the offer
+        scanner_data.remove_offer();
+    }
+}
+
+function remove_offer(_sale_data, _sale_summary_table, _sale_list_table){
+    let apply_offer_btn = $("#apply_offer_btn");
+    let table_sale_items_overview = $("#sale_items_overview");
+
+    $("#input_offer_percentage").val('');
+    $("#input_offer_amount").val('');
+
+    if(_sale_data){
+        _sale_data.billing.offer_percentage = 0;
+        _sale_data.billing.offer_amount = 0;
+    }
+
+    table_sale_items_overview.children("#offer_row").remove();
+    
+    if(_sale_summary_table && _sale_list_table){
+        _sale_summary_table.children('tfoot').children("tr").children("#offer_percentage").text(`Offer(%)`)
+        _sale_summary_table.children('tfoot').children("tr").children("#offer_amount").text('')
+            
+        _sale_list_table.children('tfoot').children("tr").children("#offer_percentage").text(`Offer(%)`)
+        _sale_list_table.children('tfoot').children("tr").children("#offer_amount").text('')
+    }
+
+    //update the button and fields
+    apply_offer_btn.removeClass("red")
+    apply_offer_btn.addClass("teal")
+    apply_offer_btn.addClass("disabled")
+    apply_offer_btn.children("#text").text("Apply Offer")
+
+    $("#input_offer_percentage").parent().removeClass("disabled");
+    $("#input_offer_amount").parent().removeClass("disabled");
+}
+
+function evaluateOffer(offer_input_id, _sale_data){
+    let input_offer_percentage = $("#input_offer_percentage");
+    let input_offer_amount = $("#input_offer_amount");
+    let apply_offer_btn = $("#apply_offer_btn");
+
+    let offer_message = $("#offer_message");
+    let offer_message_title = $("#offer_message_title");
+    let offer_message_limit_percentage = $("#offer_message_content #limit_percentage");
+    let offer_message_limit_amount = $("#offer_message_content #limit_amount");
+
+    let making_cost = parseInt(_sale_data.billing.making_cost);
+    let sub_total = parseInt(_sale_data.billing.sub_total);
+    let pre_profit = parseInt(sub_total - making_cost);
+
+    let offer_limit_percentage = 15;
+    let offer_limit_amount = parseInt((offer_limit_percentage/100) * (pre_profit));
+    offer_message_limit_percentage.text(offer_limit_percentage)
+    offer_message_limit_amount.text(offer_limit_amount)
+    
+    let offer_percentage = parseInt(input_offer_percentage.val());
+    let offer_amount = parseInt(input_offer_amount.val());
+    
+    if(offer_input_id == "input_offer_percentage"){
+        offer_amount = parseInt((offer_percentage/100) * (sub_total))
+        input_offer_amount.val(offer_amount);
+    }else{
+        offer_percentage = parseInt((offer_amount/sub_total)*100);
+        input_offer_percentage.val(offer_percentage)
+    }
+
+    //update button
+    if(parseInt(input_offer_percentage.val()) && parseInt(input_offer_amount.val())){
+        apply_offer_btn.removeClass("disabled");
+    }else{
+        apply_offer_btn.addClass("disabled");
+    }
+
+    //update offer message ui
+    if(offer_amount < offer_limit_amount){
+        //postive profit
+        offer_message.removeClass("negative")
+        offer_message.addClass("positive")
+        offer_message_title.text('Offer in Profit Threshold')
+    }else{
+        //negetive profit
+        offer_message.removeClass("positive")
+        offer_message.addClass("negative")
+        offer_message_title.text('Offer beyond Profit Threshold')
+    }
+}
+
+function offer_dialogue(callback, _sale_data, _show_offer = true, is_return = false){
+    let offer_dom = '';
+    if(_show_offer){
+        offer_dom = 
+        `
+        <div class="ui form" id="offer_form">
+            <div class="inline fields">
+                <div class="three wide field">
+                    <div class="ui left labeled input">
+                        <input type="number" id="input_offer_percentage" name="input_offer_percentage" placeholder="">
+                        <label for="input_offer_percentage" class="ui label"><b>%</b></label>
+                    </div>
+                </div>
+                <div class="three wide field">
+                    <div class="ui left labeled input">
+                        <input type="number" id="input_offer_amount" name="input_offer_amount" placeholder="">
+                        <label for="input_offer_amount" class="ui label"><b>₹</b></label>
+                    </div>
+                </div>
+                <div class="four wide field">
+                    <button class="ui teal right labeled icon disabled button" id="apply_offer_btn">
+                        <i class="copy icon"></i>
+                        <span id="text">Apply Offer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="ui message" id="offer_message">
+            <div class="header" id="offer_message_title"></div>
+            <p id="offer_message_content">
+                Offer Amount of ₹<span id="limit_amount"></span> will cross the <span id="limit_percentage"></span>% profit threshold
+            </p>
+        </div>
+        `;
+    }
+
+    let dialogue_title = "Verify and Confirm Sale";
+    let dialogue_desc = "Sale Items Overview";
+    let primary_button_title = "Sale Stock";
+
+    if(is_return){
+        dialogue_title = "Verify and Confirm Return Stock";
+        dialogue_desc = "Return Items Overview";
+        primary_button_title = "Return Stock";
+    }
+    
+    smallModal(
+        `${dialogue_title}`,
+        `
+        <p><b>${dialogue_desc}</b></p>
+        <table border="1" id="sale_items_overview">
+            <tr>
+                <td>Total No.of. Items</td>
+                <td><b>${_sale_data.summary.length ?? "0"}</b></td>
+            </tr>
+            <tr>
+                <td>Total No.of. Units</td>
+                <td><b>${_sale_data.data.length ?? "0"}</b></td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+            <tr>
+                <td>Total Making Cost <i class="toggle-visibility eye icon"></i></td>
+                <td><b class="opacity-0">${_sale_data.billing.making_cost ?? "0"}</b></td>
+            </tr>
+            <tr>
+                <td>Sub Total</td>
+                <td><b>${_sale_data.billing.sub_total ?? "0"}</b></td>
+            </tr>
+            <tr>
+                <td>Tax</td>
+                <td><b>${_sale_data.billing.tax ?? "0"}</b></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><b>${_sale_data.billing.total ?? "0"}</b></td>
+            </tr>
+            <tr>
+                <td>Profit <i class="toggle-visibility eye icon"></i></td>
+                <td><b class="opacity-0">${_sale_data.billing.total - _sale_data.billing.making_cost}</b></td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+        </table>
+        </br>
+        ${offer_dom}
+        `,
+        [
+            {
+                "class": "ui positive approve medium button",
+                "id": "",
+                "text": `${primary_button_title}`,
+            },
+            {
+                "class": "ui negative deny button",
+                "id": "",
+                "text": "Close",
+            }
+        ], 
+        {
+            closable: false,
+            onApprove: function(){
+                callback();
+                return true;
+            },
+            onDeny: function(){
+                scanner_data.remove_offer();
+                return true;
+            }
+        }
+    );
+}
+/*end: OFFER */

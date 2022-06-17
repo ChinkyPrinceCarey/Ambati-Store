@@ -36,8 +36,8 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 if($start && $end){
                     $where_clause = "date BETWEEN '$start 00:00:00' AND '$end 23:59:59' AND `is_updated`='0'";
                     
-                    if($request_sale_type == "store"){
-                        $where_clause .= " AND `sale_type`='store'";
+                    if($request_sale_type != "all"){
+                        $where_clause .= " AND `sale_type`='$request_sale_type'";
                     }
                 }
 
@@ -50,6 +50,9 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                     $extra_columns = array("JSON_EXTRACT(`items_details`, '$.list') AS `list`");
                 }
 
+                $extra_columns[] = "vehicle_id";
+                $extra_columns[] = "vehicle_name";
+                
                 $fetched_all_records = fetchRecord($query_table, $extra_columns, $where_clause);
                 
                 if($fetched_all_records['result']){
@@ -73,6 +76,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                             $custom_id = $record['custom_id'];
                             $custom_name = $record['custom_name'];
 
+                            //either `summary` or `list`
                             $specified_records = $record[$type];
                             foreach($specified_records as &$specified_record){
                                 $specified_record['slno'] = $slno; $slno++;
@@ -84,6 +88,11 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                 $specified_record['seller_name'] = $record['seller_name'];
                                 $specified_record['custom_id'] = $record['custom_id'];
                                 $specified_record['custom_name'] = $record['custom_name'];
+
+                                if($specified_record['sale_type'] == "vehicle"){
+                                    $specified_record['vehicle_id'] = $record['vehicle_id'];
+                                    $specified_record['vehicle_name'] = $record['vehicle_name'];
+                                }
                                 
                                 if($type == "summary"){
                                     $specified_record['making_cost'] *= $specified_record['quantity'];
@@ -104,7 +113,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                     $specified_record['profit'] = round($specified_record['profit'], 2);
                                 }
 
-                                if($specified_record['sale_type'] == "store" && $type == "summary"){
+                                if($specified_record['sale_type'] == "vehicle" && $type == "summary"){
                                     if((int)$specified_record['sold_quantity'] > 0){
                                         $hold_quantity = (int)$specified_record['quantity'] - (int)$specified_record['sold_quantity'];
 
