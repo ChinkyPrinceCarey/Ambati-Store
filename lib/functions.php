@@ -22,17 +22,17 @@ function validate_fields($_fields_data, $_fields_def){
             $return['result'] = false;
             $return['info'] .= "empty $name";
         }else{
-			$_fields_data[$name] = sanitize_field_data($type, $_fields_data[$name], $sanitize);
-            $data = $_fields_data[$name];
-			
-            if($validation){
-                $validation_status = is_field_valid($data, $type, $validation);
-                if(!$validation_status['result']){
-                    $return['result'] = false;
-                    $return['info'] .= "$name : " . $validation_status['info'];
-                    break 1;
-                }
-            }
+					$_fields_data[$name] = sanitize_field_data($type, $_fields_data[$name], $sanitize);
+					$data = $_fields_data[$name];
+		
+					if($validation){
+						$validation_status = is_field_valid($data, $type, $validation);
+						if(!$validation_status['result']){
+								$return['result'] = false;
+								$return['info'] .= "$name : " . $validation_status['info'];
+								break 1;
+						}
+					}
         }
     }
 
@@ -278,6 +278,13 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "shortcode";
 			$columns[]  = "unit";
 			$columns[]  = "type";
+			$columns[]  = "desc_1";
+			$columns[]  = "desc_2";
+			$columns[]  = "actual_cost";
+			$columns[]  = "cost";
+			$columns[]  = "level";
+			$columns[]  = "in_stock";
+			$columns[]  = "priority";
 			return $columns;
 		break;
 		

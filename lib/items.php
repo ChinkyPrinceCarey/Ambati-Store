@@ -27,7 +27,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         $default_where_value = $id;
         $default_where = array("$default_where_column=$default_where_value");
 
-        $fields_def = array(MATERIAL, ITEM, SHORTCODE, UNIT, TYPE);
+        $fields_def = array(MATERIAL, ITEM, SHORTCODE, UNIT, TYPE, DESC_1, DESC_2, ACTUAL_COST, COST, LEVEL, IN_STOCK, PRIORITY);
         $_post_data = is_numeric($id) ? $_POST['data'][$id] : null ;
 
         if($action == "create"){
@@ -45,14 +45,28 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                     "item",
                                     "shortcode",
                                     "unit",
-                                    "type"
+                                    "type",
+                                    "desc_1",
+                                    "desc_2",
+                                    "actual_cost",
+                                    "cost",
+                                    "level",
+                                    "in_stock",
+                                    "priority"
                                 );
                 $query_values = array(
                                     $fields_data['data']['material'],
                                     $fields_data['data']['item'],
                                     strtoupper($fields_data['data']['shortcode']),
                                     $fields_data['data']['unit'],
-                                    $fields_data['data']['type']
+                                    $fields_data['data']['type'],
+                                    $fields_data['data']['desc_1'],
+                                    $fields_data['data']['desc_2'],
+                                    $fields_data['data']['actual_cost'],
+                                    $fields_data['data']['cost'],
+                                    $fields_data['data']['level'],
+                                    $fields_data['data']['in_stock'],
+                                    $fields_data['data']['priority']
                                 );
 
                 $insert_query = get_query($query_type, $query_table, $query_columns, $query_values);

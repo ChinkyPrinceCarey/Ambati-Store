@@ -69,8 +69,11 @@ function generate_quotes($quote_type, $array, $break_type="comma"){
 			
 			$column = $array_spilt[0];
 			$value = $array_spilt[1];
-			
+
 			if($value == "NULL"){
+				$string .= $backquote . $column . $backquote . $equal . $value . $break;
+			}elseif($value == ''){
+				$value = 'NULL';
 				$string .= $backquote . $column . $backquote . $equal . $value . $break;
 			}else{
 				$string .= $backquote . $column . $backquote . $equal . $quote . $value . $quote . $break;
@@ -81,8 +84,7 @@ function generate_quotes($quote_type, $array, $break_type="comma"){
 	}else{
 		
 		foreach($array as $array_loop){
-			
-			if($array_loop === null){
+			if($array_loop === null || $array_loop == ''){
 				$string .= "NULL" . $break;
 			}else{
 				if(is_exist($array_loop, " AS ")){

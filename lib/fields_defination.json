@@ -334,5 +334,47 @@
 				"allow_special_chars": false
 			}
 		]
+	},
+	{
+		"variable": "DESC_1",
+		"name": "desc_1",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "DESC_2",
+		"name": "desc_2",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "ACTUAL_COST",
+		"name": "actual_cost",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "COST",
+		"name": "cost",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "LEVEL",
+		"name": "level",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "IN_STOCK",
+		"name": "in_stock",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "PRIORITY",
+		"name": "priority",
+		"type": "name",
+		"accept_null": true
 	}
 ]

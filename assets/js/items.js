@@ -78,6 +78,66 @@ $(function(){
                     required: true,
                     name: 'unit'
                 }
+            },
+            {
+                label: "Description 1",
+                name: "desc_1",
+                attr: {
+                    name: 'desc_1'
+                }
+            },
+            {
+                label: "Description 2",
+                name: "desc_2",
+                attr: {
+                    name: 'desc_2'
+                }
+            },
+            {
+                label: "Actual Cost",
+                name: "actual_cost",
+                attr: {
+                    name: 'actual_cost'
+                }
+            },
+            {
+                label: "Cost",
+                name: "cost",
+                attr: {
+                    name: 'cost'
+                }
+            },
+            {
+                label: "Level",
+                name: "level",
+                type: "select",
+                options: [{ label: "Level I", value: "level_i"},{label: "Level II", value: "level_ii"},{label: "Level III", value: "level_iii"}],
+                attr: {
+                    name: 'level'
+                }
+            },
+            {
+                label: "In Stock?",
+                name: "in_stock",
+                type: "select",
+                options: [{ label: "Yes", value: "1"},{label: "No", value: "0"}],
+                attr: {
+                    name: 'level'
+                }
+            },
+            {
+                label: "Priority",
+                name: "priority",
+                type: "select",
+                options: [
+                    { label: "Default", value: "default"},
+                    {label: "Top", value: "top"},
+                    {label: "New", value: "new"},
+                    {label: "Offer", value: "offer"}
+                ],
+                attr: {
+                    name: 'priority'
+                }
             }
         ],
         ajax: function(method, url, data, success, error){
@@ -231,6 +291,19 @@ $(function(){
             { data: "unit" },
             { data: "item" },
             { data: "shortcode" },
+            { data: "desc_1" },
+            { data: "desc_2" },
+            { data: "actual_cost" },
+            { data: "cost" },
+            { data: "level" },
+            { data: "in_stock",
+            render: function(data, type, row){
+                let color = data == 0 ? "red" : "green";
+                let text = data == 0 ? "no" : "yes";
+                return `<div class="ui ${color} horizontal label">${text}</div>`;
+            }
+            },
+            { data: "priority" },
             {
                 data: null,
                 className: "dt-center stock-entry",
@@ -241,6 +314,19 @@ $(function(){
         rowId: 'id',
         "init.dt": function( settings, json ) {
             console.log(settings, json);
+        }
+    });
+
+    editor.field('material').input().on( 'change', function (e) {
+        fields = ['desc_1', 'desc_2', 'actual_cost', 'cost', 'level', 'in_stock', 'priority']
+        if(this.value == "raw"){
+            $.each(fields, function(){
+                editor.field(this).hide();
+            })
+        }else{
+            $.each(fields, function(){
+                editor.field(this).show();
+            })
         }
     });
 
