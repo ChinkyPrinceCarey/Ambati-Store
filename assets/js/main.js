@@ -197,7 +197,6 @@ function updateDialog(){
     );
 }
 
-
 function smallModal(header, content, buttons, options){
     let main_container = $('.small.modal');
     let buttons_container = "";
@@ -387,6 +386,14 @@ Number.prototype.pad = function(size) {
     while (s.length < (size || 2)) {s = "0" + s;}
     return s;
 }
+
+$('.ui.modal .content').on('click', '.message .close', function() {
+    console.log(`close fired`)
+    $(this)
+      .closest('.message')
+      .transition('fade')
+    ;
+});
 
 //websockets live reload
 let liveurl = "ws://localhost:8080";

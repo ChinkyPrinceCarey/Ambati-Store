@@ -47,22 +47,3 @@
 td i{
     cursor: pointer;
 }
-
-
-table#sale-summary tbody tr:first-child{
-    counter-reset: Serial;
-}
-
-table#sale-summary tbody tr td:first-child:before{
-  counter-increment: Serial;
-  content: counter(Serial);
-}
-
-table#sale-list{
-    counter-reset: DescendingSerial 0;
-}
-
-table#sale-list tbody tr td:first-child:before{
-    content: counter(DescendingSerial);
-    counter-increment: DescendingSerial -1;
-}

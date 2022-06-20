@@ -18,12 +18,19 @@ let customer_details;
 
 let selected_sale_type;
 
-let stock_data = [];
+let stock_data;
+let sale_data;
+
+let table_sale_summary;
+let table_sale_list;
 
 $(function(){
 
     $("span#date").text(getCurrentDate("dmy"));
 
+    table_sale_list = $("#sale-list");
+    table_sale_summary = $("#sale-summary");
+    
     seller_dropdown = $(".dropdown.seller-dropdown"); //$("#seller_dropdown");
     sale_type_dropdown = $(".dropdown.sale-type-dropdown"); //$("#sale_type_dropdown");
 
@@ -44,7 +51,7 @@ $(function(){
     edit_details_btn.hide();
     sale_stock_btn.hide();
 
-    initLoadStock();
+    initValues();
 
     initSellersOpts();
 
@@ -175,7 +182,7 @@ $(function(){
                     }
                 }
             );
-        }else if(!sale_data.length){
+        }else if(!sale_data.data.length){
             smallModal(
                 "Empty Sale Data", 
                 "No items are added to sale",
@@ -194,14 +201,66 @@ $(function(){
                 }
             );
         }else{
-            offer_dialogue(sale_items);
+            scanner_data.offer_dialogue();
         }
     });
 });
 
+function initValues(){
+    stock_data = {
+        data: [],
+        data_table: false,
+        summary: false,
+        summary_table: false,
+        billing: false,
+        sale_obj: true
+    }
+
+    sale_data = {
+        data: [],
+        data_table: true,
+        summary: true,
+        summary_table: true,
+        billing: true,
+        stock_obj: true
+    }
+
+    sale_data.data_table = table_sale_list;
+    sale_data.summary_table = table_sale_summary;
+
+    stock_data = {...stock_data, ...stock_obj_methods};
+    sale_data = {...sale_data, ...sale_obj_methods};
+
+    stock_data.sale_obj = sale_data;
+    sale_data.stock_obj = stock_data;
+
+    initLoadStock();
+
+    scanner_data = {
+        method(action, barcode){
+            stock_data.update_data(action, barcode);
+        },
+        checkItem(barcode){
+            sale_data.isItemExist(barcode);
+        },
+        offer_dialogue(){
+            offer_dialogue(sale_items, sale_data, true);
+        },
+        evaluateOffer(input_id){
+            evaluateOffer(input_id, sale_data);
+        },
+        apply_offer(){
+            apply_offer(sale_data, table_sale_summary, table_sale_list);
+        },
+        remove_offer(){
+            remove_offer(sale_data);
+        }
+    }
+}
+
 function sale_items(){
     data_param = {
-        no_of_vars: calculateNoOfVars(),
+        //no_of_vars: calculateNoOfVars(),
         action: "sale_items",
         seller_id: selected_seller_id,
         seller_name: selected_seller_name,
@@ -213,7 +272,7 @@ function sale_items(){
         sale_type: selected_sale_type,
         vehicle_id: "",
         vehicle_name: "",
-        data: {summary: sale_summary, list: sale_data, billing: billing}
+        data: JSON.stringify({summary: sale_data.summary, list: sale_data.data, billing: sale_data.billing})
     }
 
     ajaxPostCall('lib/sale_stock.php', data_param, function(response){
@@ -231,23 +290,23 @@ function sale_items(){
                 "Items Sale Successful",
                 `
                 <p>Invoice Id#: <b>${response.invoice_id}</b></p>
-                <p>Total No.# of items are sold <b>${sale_data.length}</b></p>
+                <p>Total No.# of items are sold <b>${sale_data.data.length}</b></p>
                 <table>
                     <tr>
                         <td>Total Price of</td>
-                        <td><b>${billing.total.toFixed(2)}</b></td>
+                        <td><b>${sale_data.billing.total.toFixed(2)}</b></td>
                     </tr>
                     <tr>
                         <td>Total Making Cost of</td>
-                        <td><b>${billing.making_cost.toFixed(2)}</b></td>
+                        <td><b>${sale_data.billing.making_cost.toFixed(2)}</b></td>
                     </tr>
                     <tr>
                         <td>Profit of</td>
-                        <td><b>${(billing.total-billing.making_cost).toFixed(2)}</b></td>
+                        <td><b>${(sale_data.billing.total - sale_data.billing.making_cost).toFixed(2)}</b></td>
                     </tr>
                     <tr>
-                        <td>Offer ${billing.offer_percentage}%</td>
-                        <td><b>${billing.offer_amount}</b></td>
+                        <td>Offer ${sale_data.billing.offer_percentage}%</td>
+                        <td><b>${sale_data.billing.offer_amount}</b></td>
                     </tr>
                 </table>
                 `,
@@ -318,45 +377,6 @@ function sale_items(){
     });
 }
 
-function initLoadStock(){
-    ajaxPostCall("lib/warehouse_stock_reports.php", {action: "fetch_all", data: ["something_random"]}, function(response){
-        let modal_title = "Loading Stock Error";
-        let modal_body = null;
-
-        if(response.status){
-            modal_body = response.status + ": " + response.statusText;
-        }else if(response.title){
-            modal_title = response.title;
-            modal_body = response.content;
-        }else if(response.result){
-            stock_data = response.data;
-        }else{
-            modal_body = "Something went wrong on backend connection";
-        }
-
-        if(modal_body){
-            smallModal(
-                modal_title, 
-                modal_body, 
-                [
-                    {
-                        "class": "ui positive approve button",
-                        "id": "",
-                        "text": "Reload",
-                    }
-                ], 
-                {
-                    closable: false,
-                    onApprove: function(){
-                        window.location.replace(getCurrentPage());
-                        return false;
-                    }
-                }
-            );    
-        }
-    });
-}
-
 function initSellersOpts(){
     seller_dropdown.addClass("loading");
 
@@ -413,8 +433,6 @@ function saleTypeOnChange(value, text, choice){
 }
 
 function sellerOnChange(value, text, choice){
-    console.log(value, text, choice)
-
     selected_seller_id = value;
     selected_seller_name = text.substring(0, text.indexOf("("));
 
@@ -430,4 +448,7 @@ function sellerOnChange(value, text, choice){
         custom_id.parent().addClass("disabled")
         custom_name.parent().addClass("disabled")   
     }
+
+    sale_type_dropdown.dropdown('set text', 'Retailer');
+    selected_sale_type = 'retailer';
 }

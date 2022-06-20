@@ -459,4 +459,194 @@ function get_date($type, $format = "default"){
 
 	return $date;
 }
+
+function sale_stock($_fields_data, $_is_vehicle_shift){
+	$return = array();
+	$return['result'] = false;
+	$return['info'] = "sale_stock(): ";
+	$return['additional_info'] = "sale_stock(): ";
+
+	$query_table = "sales";
+	
+	$last_record = fetchRecord($query_table, null, "1 ORDER BY `invoice_id` DESC LIMIT 1", false, false, true);
+	if($last_record['result']){
+		$items_data = $_fields_data['data']['data'];
+		$items_data = json_decode($items_data, true);
+
+		$return_data = 	array_key_exists('return_data', $_fields_data['data']) ? 
+										json_decode($_fields_data['data']['return_data'], true) : false ;
+
+		if (json_last_error() === JSON_ERROR_NONE){
+			if(count($items_data)){
+				/*----------------------BEGIN: operations on `stock` table----------------------*/
+					$stock_query = array();
+					if(!$return_data){
+						$stock_query_type = "update2";
+						$stock_table = "stock";
+						$stock_columns_set = array("is_sold=1");
+						$stock_where = array();
+
+						$items_list = array_key_exists('current_sale_list', $items_data) ? 
+														$items_data['current_sale_list'] : 
+														$items_data['list'];
+
+						foreach($items_list as $item){
+							$stock_where[] = "barcode=" . $item['barcode'];
+						}
+
+						$stock_query = get_query($stock_query_type, $stock_table, $stock_columns_set, $stock_where);
+						$stock_query['query'] .= " AND `is_sold`=0";
+					}else{
+						$return_list = $return_data['data'];
+
+						if($return_list && count($return_list)){
+							foreach($return_list as $item){
+								$stock_query_type = "insert";
+								$stock_table = "stock";
+								$stock_columns = array();
+								$stock_values = array();
+
+								unset(
+									$item['slno'],
+									$item['unit_price']
+								);
+
+								foreach($item as $column => $value){
+									$stock_columns[] = $column;
+									$stock_values[] = $value;
+								}
+								$stock_query[] = array("insert" => get_query($stock_query_type, $stock_table, $stock_columns, $stock_values));
+							}
+						}
+					}
+				/*----------------------END: operations on `stock` table----------------------*/
+
+				/*----------------------BEGIN: operations on `sales` table----------------------*/
+					$_fields_data['data']['no_of_items'] = count($items_data['summary']);
+					$_fields_data['data']['no_of_units'] = count($items_data['list']);
+
+					$_fields_data['data']['making_cost'] = $items_data['billing']['making_cost'];
+					$_fields_data['data']['sub_total'] = $items_data['billing']['sub_total'];
+					$_fields_data['data']['total_price'] = $items_data['billing']['total'];
+					$_fields_data['data']['offer_percentage'] = $items_data['billing']['offer_percentage'];
+					$_fields_data['data']['offer_amount'] = $items_data['billing']['offer_amount'];
+
+					unset(
+						$_fields_data['data']['action'], 
+						$_fields_data['data']['data'],
+						$_fields_data['data']['return_data'],
+						$_fields_data['data']['is_stock_shift']
+					);
+
+					if(
+						!array_key_exists('invoice_id', $_fields_data['data']) 
+						|| !$_fields_data['data']['invoice_id']
+					){
+						/* CREATING NEW INVOICE */
+
+						unset(
+							$_fields_data['data']['id'],
+							$_fields_data['data']['is_finished']
+						);
+						
+						$last_record = count($last_record['data']) ? $last_record['data'][0] : array("invoice_id" => 0);
+						$last_invoice_id = $last_record['invoice_id'];
+						
+						$_fields_data['data']['invoice_id'] = generateInvoiceId($last_invoice_id);
+
+						$sale_query_type = "insert";
+						//$query_table defined earlier
+						$sale_query_columns = 	array(
+							"items_details",
+							"is_finished"
+						);
+						$sale_query_values =	array(
+							json_encode($items_data),
+							$_is_vehicle_shift ? "0" : "1"
+						);
+
+						foreach($_fields_data['data'] as $column => $value){
+							$sale_query_columns[] = $column;
+							$sale_query_values[] = $value;
+						}
+					}else{
+						/* UPDATING EXISTING INVOICE */
+
+						unset($items_data['current_sale_list']); //because we've used itself in stock
+
+						$id = $_fields_data['data']['id'];
+						unset($_fields_data['data']['id']); //it's row id
+
+						$invoice_id = $_fields_data['data']['invoice_id'];
+
+						$sale_query_type = "update";
+						//$query_table defined earlier
+						$sale_query_columns = 	array(
+							"items_details=" . json_encode($items_data),
+						);
+
+						foreach($_fields_data['data'] as $column => $value){
+							$sale_query_columns[] = "$column=$value";
+						}
+
+						$sale_query_values = array(
+															'id=' . $id,
+															'invoice_id=' . $invoice_id
+														);
+					}
+
+					$sale_query = get_query($sale_query_type, $query_table, $sale_query_columns, $sale_query_values);
+				/*----------------------END: operations on `sales` table----------------------*/
+
+				/*----------------------BEGIN: DB Operations----------------------*/
+					$queries_to_execute = 	array(
+						array($sale_query_type => $sale_query)
+					);
+
+					if(!$return_data){
+						$queries_to_execute[] = array("update" => $stock_query);
+					}else{
+						$queries_to_execute = array_merge($queries_to_execute, $stock_query);
+					}
+
+					$trasaction_result = execute_transactions($queries_to_execute);
+
+					$return['transaction_queries'] = $queries_to_execute;
+					//$return['fields_data'] = $_fields_data['data'];
+
+					if($trasaction_result['result']){
+						$return['result'] = true;
+						$return['info'] .= "items sold successfully!";
+						$return['invoice_id'] = $_fields_data['data']['invoice_id'];
+						$return['usage'] = get_memory();
+					}else{
+						$return['info'] .= "error selling items";
+						$return['additional_info'] .= $trasaction_result['additional_information'];
+					}
+					/*----------------------END: DB Operations----------------------*/
+			}else{
+				$return['info'] .= "empty items data ";	
+			}
+		}else{
+			$return['info'] .= "invalid data!";
+		}
+	}else{
+		$return['info'] .= "unable to get last record ";
+		$return['additional_info'] .= $last_record['additional_info'];
+	}
+
+	return $return;
+}
+
+function get_memory(){
+   $mem_usage = memory_get_usage();
+   $mem_peak = memory_get_peak_usage();
+
+	 return array(
+		 	'memory_usage_kb' => number_format($mem_usage / 1024, 2), 
+	 		'memory_peak_usage_kb' => number_format($mem_peak / 1024, 2),
+		 	'memory_usage_mb' => number_format($mem_usage / (1024 * 1024), 2), 
+	 		'memory_peak_usage_mb' => number_format($mem_peak / (1024 * 1024), 2)
+		);
+}
 ?>

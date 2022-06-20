@@ -1,4 +1,5 @@
 let vehicle_dropdown;
+let finished_dropdown;
 let selected_vehicle_id;
 let selected_vehicle_name;
 
@@ -20,10 +21,10 @@ let earlier_invoice_table_summary;
 let earlier_invoice_table_list;
 let earlier_invoice;
 
-let current_invoice_table_summary;
-let current_invoice_table_list;
-let current_invoice_table_billing;
-let current_invoice;
+let return_invoice_table_summary;
+let return_invoice_table_list;
+let return_invoice_table_billing;
+let return_invoice;
 
 let final_invoice_table_summary;
 let final_invoice_table_list;
@@ -41,10 +42,10 @@ $(function(){
     earlier_invoice_table_summary = $("#earlier_invoice .card .wrapper div table#sale-summary");
     earlier_invoice_table_list = $("#earlier_invoice .card .wrapper div table#sale-list");
 
-    current_invoice_table_summary = $("#current_invoice .card .wrapper div table#sale-summary");
-    current_invoice_table_list = $("#current_invoice .card .wrapper div table#sale-list");
-    current_invoice_table_billing = current_invoice_table_summary.children('tfoot')
-                                    .add(current_invoice_table_list.children('tfoot'))
+    return_invoice_table_summary = $("#current_invoice .card .wrapper div table#sale-summary");
+    return_invoice_table_list = $("#current_invoice .card .wrapper div table#sale-list");
+    return_invoice_table_billing = return_invoice_table_summary.children('tfoot')
+                                    .add(return_invoice_table_list.children('tfoot'))
 
     final_invoice_table_summary = $("#final_invoice .card .wrapper div table#sale-summary");
     final_invoice_table_list = $("#final_invoice .card .wrapper div table#sale-list");
@@ -52,6 +53,9 @@ $(function(){
                                     .add(final_invoice_table_list.children('tfoot'))
 
     vehicle_dropdown = $(".dropdown.vehicle-dropdown");
+    finished_dropdown = $(".dropdown.finished-dropdown");
+    finished_dropdown.dropdown();
+    
     initVehicles();
 
     selected_sale_type = "vehicle";
@@ -101,7 +105,9 @@ $(function(){
         resetData();
 
         save_details_btn.show();
-        vehicle_dropdown.removeClass("disabled");
+        vehicle_dropdown
+          .add(finished_dropdown)
+          .removeClass("disabled");
 
         edit_details_btn.hide();
         sale_stock_btn.hide();
@@ -126,10 +132,11 @@ $(function(){
                     }
                 }
             );
-        }else if(!current_invoice.data.length){
+        }else if(!return_invoice.data.length && !getVehicleInvoiceStatus()){
+            //          0                ALSO        not_finished
             smallModal(
-                "Empty Sale Data", 
-                "No items are added to sale",
+                "Empty Return Data", 
+                "No items are added for return",
                 [
                     {
                         "class": "ui positive approve button",
@@ -145,7 +152,7 @@ $(function(){
                 }
             );
         }else{
-            scanner_data.offer_dialogue(sale_items, current_invoice, false);
+            scanner_data.offer_dialogue();
         }
     });
 });
@@ -170,7 +177,7 @@ function initValues(){
         billing: false
     }
 
-    current_invoice = {
+    return_invoice = {
         data: [],
         data_table: true,
         summary: true,
@@ -188,42 +195,32 @@ function initValues(){
         stock_obj: true
     }
 
-    stock_data = {...stock_data, ...stock_obj_methods};    
+    return_invoice = {...return_invoice, ...sale_obj_methods};
+    return_invoice.data_table = return_invoice_table_list;
+    return_invoice.summary_table = return_invoice_table_summary;
 
-    current_invoice = {...current_invoice, ...sale_obj_methods};
-    current_invoice.data_table = current_invoice_table_list;
-    current_invoice.summary_table = current_invoice_table_summary;
-
-    final_invoice = {...final_invoice, ...sale_obj_methods};
+    final_invoice = {...final_invoice, ...stock_obj_methods};
     final_invoice.data_table = final_invoice_table_list;
     final_invoice.summary_table = final_invoice_table_summary;
 
-    current_invoice.stock_obj = stock_data;
-    stock_data.sale_obj = current_invoice;
-
-    initLoadStock();
+    return_invoice.stock_obj = final_invoice;
+    final_invoice.sale_obj = return_invoice;
 
     scanner_data = {
         method(action, barcode){
-
-            let final_invoice_action = action == "add" ? "remove" : "add";
-            let item = stock_data.update_data(action, barcode)
-
-            if(item){
-                final_invoice.update_data(final_invoice_action, item, false);
-            }
+          final_invoice.update_data(action, barcode);
         },
         checkItem(barcode){
-            current_invoice.isItemExist(barcode);
+            return_invoice.isItemExist(barcode);
         },
         offer_dialogue(){
-            offer_dialogue(sale_items, current_invoice, false);
+            offer_dialogue(return_items, return_invoice, false, true);
         },
         evaluateOffer(input_id){
-            evaluateOffer(input_id, current_invoice);
+            evaluateOffer(input_id, return_invoice);
         },
         remove_offer(){
-            remove_offer(current_invoice);
+            remove_offer(return_invoice);
         }
     }
 }
@@ -287,6 +284,14 @@ function isVehicleSelected(){
             )
 }
 
+function getVehicleInvoiceStatus(_return_boolean = true){
+    let vehicle_invoice_status = finished_dropdown.dropdown('get value') == "yes" ? true : false;
+    
+    if(_return_boolean !== true) return vehicle_invoice_status ? 1 : 0;
+
+    return vehicle_invoice_status;
+}
+
 function fetchVehicleInvoice(){
     data_param = {
         action: "fetch_vehicle_invoice",
@@ -303,10 +308,7 @@ function fetchVehicleInvoice(){
             modal_title = response.title;
             modal_body = response.content;
         }else if(response.result){
-            //two types of results
-            //1. a invoice id already created
-            //2. no invoice id is exist; has to be created
-            if(response.data.length <= 1){
+            if(response.data.length == 1){
                 //correct invoice
                 vehicle_invoice = response.data;
                 initVehicleInvoice();
@@ -314,14 +316,18 @@ function fetchVehicleInvoice(){
                 scanner_state.isEnabled = true;
                 scanner_state.reason = 'Vehicle selected and invoice fetched and it is saved';
 
-                vehicle_dropdown.addClass("disabled");
+                vehicle_dropdown
+                            .add(finished_dropdown)
+                            .addClass("disabled");
 
                 save_details_btn.hide();
 
                 edit_details_btn.show();
                 sale_stock_btn.show();
+            }else if(response.data.length == 0){
+                modal_body = "no invoice available for the vehicle";
+                save_details_btn.addClass("disabled");
             }else{
-                //more than 1 invoice must be error
                 modal_body = "something wrong with vehicle invoice";
                 save_details_btn.addClass("disabled");
             }
@@ -367,103 +373,98 @@ function resetData(){
 }
 
 function initVehicleInvoice(){
-    if(vehicle_invoice.length == 0){
-        //create invoice
-        //hide earlier and current invoice
-        //show only final invoice
-        vehicle_invoice.invoice_id = null;
-        vehicle_invoice.id = null;
-    }else if(vehicle_invoice.length == 1){
-        //init invoice
-        vehicle_invoice = vehicle_invoice[0];
+  if(vehicle_invoice.length == 1){
+      //init invoice
+      vehicle_invoice = vehicle_invoice[0];
 
-        input_invoice_id.val(vehicle_invoice.invoice_id);
-        input_invoice_date.val(vehicle_invoice.date);
-        input_total_units.val(vehicle_invoice.no_of_units);
+      input_invoice_id.val(vehicle_invoice.invoice_id);
+      input_invoice_date.val(vehicle_invoice.date);
+      input_total_units.val(vehicle_invoice.no_of_units);
 
-        /*
-        //changing `list` property name to `data` 
-        const { list: data, ...otherProps } = earlier_invoice;
-        earlier_invoice = { data, ...otherProps };
-        */
+      /*
+      //changing `list` property name to `data` 
+      const { list: data, ...otherProps } = earlier_invoice;
+      earlier_invoice = { data, ...otherProps };
+      */
 
-        earlier_invoice.data = JSON.parse(JSON.stringify(vehicle_invoice.items_details.list));
-        earlier_invoice.summary = JSON.parse(JSON.stringify(vehicle_invoice.items_details.summary));
-        earlier_invoice.billing = JSON.parse(JSON.stringify(vehicle_invoice.items_details.billing));
+      earlier_invoice.data = JSON.parse(JSON.stringify(vehicle_invoice.items_details.list));
+      earlier_invoice.summary = JSON.parse(JSON.stringify(vehicle_invoice.items_details.summary));
+      earlier_invoice.billing = JSON.parse(JSON.stringify(vehicle_invoice.items_details.billing));
 
-        final_invoice.data = JSON.parse(JSON.stringify(earlier_invoice.data));
-        final_invoice.summary = JSON.parse(JSON.stringify(earlier_invoice.summary));
-        final_invoice.billing = JSON.parse(JSON.stringify(earlier_invoice.billing));
+      final_invoice.data = JSON.parse(JSON.stringify(earlier_invoice.data));
+      final_invoice.summary = JSON.parse(JSON.stringify(earlier_invoice.summary));
+      final_invoice.billing = JSON.parse(JSON.stringify(earlier_invoice.billing));
 
-        /* ---begin: updating UI---- */
-        
-        $("#earlier_invoice").addClass("loading");
-        $("#final_invoice").addClass("loading");
-        /* -------------------- Summary -------------------- */
-        for(let item of earlier_invoice.summary){
-            earlier_invoice_table_summary
-            .children("tbody")
-            .append(`
-                <tr data-item="${item.shortcode}_${item.unit_price}">
-                    <td class="slno collapsing"></td>
-                    <td class="item_shortcode">${item.item}[${item.shortcode}]</td>
-                    <td class="quantity right aligned collapsing">${item.quantity}</td>
-                    <td class="unit_price right aligned collapsing">${item.unit_price}</td>
-                    <td class="total_price right aligned collapsing">${item.total_price}</td>
-                </tr>
-            `)
-        }
+      /* ---begin: updating UI---- */
+      
+      $("#earlier_invoice").addClass("loading");
+      $("#final_invoice").addClass("loading");
+      /* -------------------- Summary -------------------- */
+      for(let item of earlier_invoice.summary){
+          earlier_invoice_table_summary
+          .children("tbody")
+          .append(`
+              <tr data-item="${item.shortcode}_${item.unit_price}">
+                  <td class="slno collapsing"></td>
+                  <td class="item_shortcode">${item.item}[${item.shortcode}]</td>
+                  <td class="quantity right aligned collapsing">${item.quantity}</td>
+                  <td class="unit_price right aligned collapsing">${item.unit_price}</td>
+                  <td class="total_price right aligned collapsing">${item.total_price}</td>
+              </tr>
+          `)
+      }
 
-        earlier_invoice_table_summary.children('tfoot').children("tr").children("#sub_total").text(earlier_invoice.billing.sub_total)
-        earlier_invoice_table_summary.children('tfoot').children("tr").children("#tax").text(earlier_invoice.billing.tax)
-        earlier_invoice_table_summary.children('tfoot').children("tr").children("#total").text(earlier_invoice.billing.total)
+      earlier_invoice_table_summary.children('tfoot').children("tr").children("#sub_total").text(earlier_invoice.billing.sub_total)
+      earlier_invoice_table_summary.children('tfoot').children("tr").children("#tax").text(earlier_invoice.billing.tax)
+      earlier_invoice_table_summary.children('tfoot').children("tr").children("#total").text(earlier_invoice.billing.total)
 
-        /* -------------------- List -------------------- */
-        for(let item of earlier_invoice.data){
-            earlier_invoice_table_list
-            .children("tbody")
-            .append(`
-                <tr data-barcode="${item.barcode}">
-                    <td class="collapsing"></td>
-                    <td>${item.item}[${item.shortcode}]</td>
-                    <td>${item.barcode}</td>
-                    <td class="right aligned collapsing">${item.unit_price}</td>
-                    <td class="right aligned collapsing">
-                        <!--<i class="large trash icon remove-item"></i>-->
-                    </td>
-                </tr>
-            `)
-        }
+      /* -------------------- List -------------------- */
+      for(let item of earlier_invoice.data){
+          earlier_invoice_table_list
+          .children("tbody")
+          .append(`
+              <tr data-barcode="${item.barcode}">
+                  <td class="collapsing"></td>
+                  <td>${item.item}[${item.shortcode}]</td>
+                  <td>${item.barcode}</td>
+                  <td class="right aligned collapsing">${item.unit_price}</td>
+                  <td class="right aligned collapsing">
+                      <!--<i class="large trash icon remove-item"></i>-->
+                  </td>
+              </tr>
+          `)
+      }
 
-        earlier_invoice_table_list.children('tfoot').children("tr").children("#sub_total").text(earlier_invoice.billing.sub_total)
-        earlier_invoice_table_list.children('tfoot').children("tr").children("#tax").text(earlier_invoice.billing.tax)
-        earlier_invoice_table_list.children('tfoot').children("tr").children("#total").text(earlier_invoice.billing.total)
-        
-        earlier_invoice_table_list
-        .add(final_invoice_table_list)
-        .css("counter-reset", `DescendingSerial ${earlier_invoice.data.length+1}`);
+      earlier_invoice_table_list.children('tfoot').children("tr").children("#sub_total").text(earlier_invoice.billing.sub_total)
+      earlier_invoice_table_list.children('tfoot').children("tr").children("#tax").text(earlier_invoice.billing.tax)
+      earlier_invoice_table_list.children('tfoot').children("tr").children("#total").text(earlier_invoice.billing.total)
+      
+      earlier_invoice_table_list
+      .add(final_invoice_table_list)
+      .css("counter-reset", `DescendingSerial ${earlier_invoice.data.length+1}`);
 
-        final_invoice_table_summary.html(earlier_invoice_table_summary.html())
-        final_invoice_table_list.html(earlier_invoice_table_list.html())
+      final_invoice_table_summary.html(earlier_invoice_table_summary.html())
+      final_invoice_table_list.html(earlier_invoice_table_list.html())
 
 
-        $("#earlier_invoice").removeClass("loading")
-        $("#final_invoice").removeClass("loading")
-        /* ---end: updating UI---- */
+      $("#earlier_invoice").removeClass("loading")
+      $("#final_invoice").removeClass("loading")
+      /* ---end: updating UI---- */
 
-        /* ---begin: reinitialise variable */
+      /* ---begin: reinitialise variable */
 
-        /* ---end: reinitialise variable */
+      /* ---end: reinitialise variable */
 
-    }else{
-        //more than two invoices
-        save_details_btn.addClass("disabled");
-    }
+  }else{
+      //more than two invoices
+      save_details_btn.addClass("disabled");
+  }
 }
 
-function sale_items(){
+function return_items(){
     data_param = {
-        action: "vehicle_stock_shift",
+        action: "vehicle_stock_return",
+        is_finished: getVehicleInvoiceStatus(false),
         is_stock_shift: true,
         id: vehicle_invoice.id,
         invoice_id: vehicle_invoice.invoice_id,
@@ -477,7 +478,8 @@ function sale_items(){
         sale_type: selected_sale_type,
         vehicle_id: selected_vehicle_id,
         vehicle_name: selected_vehicle_name,
-        data: JSON.stringify({summary: final_invoice.summary, list: final_invoice.data, billing: final_invoice.billing, current_sale_list: current_invoice.data})
+        data: JSON.stringify({summary: final_invoice.summary, list: final_invoice.data, billing: final_invoice.billing}),
+        return_data: JSON.stringify({summary: return_invoice.summary, data: return_invoice.data, billing: return_invoice.billing})
     }
 
     ajaxPostCall('lib/sale_stock.php', data_param, function(response){
@@ -489,27 +491,34 @@ function sale_items(){
             modal_title = response.title;
             modal_body = response.content;
         }else if(response.result){
+
+            let modal_title = "Items Return Successful";
+
+            if(getVehicleInvoiceStatus()){
+                let prefix = '';
+                if(return_invoice.data.length){
+                    prefix = "Items Return and ";
+                }
+                modal_title = prefix + "Invoice Finished Successfully";
+            }
+            
             smallModal(
-                "Items Sale Successful",
+                modal_title,
                 `
                 <p>Invoice Id#: <b>${response.invoice_id}</b></p>
-                <p>Total No.# of items are sold <b>${current_invoice.data.length}</b></p>
+                <p>Total No.# of items are returned <b>${return_invoice.data.length ? return_invoice.data.length : "0"}</b></p>
                 <table>
                     <tr>
                         <td>Total Price of</td>
-                        <td><b>${current_invoice.billing.total.toFixed(2)}</b></td>
+                        <td><b>${return_invoice.billing.total ? return_invoice.billing.total.toFixed(2) : "0"}</b></td>
                     </tr>
                     <tr>
                         <td>Total Making Cost of</td>
-                        <td><b>${current_invoice.billing.making_cost.toFixed(2)}</b></td>
+                        <td><b>${return_invoice.billing.making_cost ? return_invoice.billing.making_cost.toFixed(2) : "0"}</b></td>
                     </tr>
                     <tr>
                         <td>Profit of</td>
-                        <td><b>${(current_invoice.billing.total - current_invoice.billing.making_cost).toFixed(2)}</b></td>
-                    </tr>
-                    <tr>
-                        <td>Offer ${current_invoice.billing.offer_percentage}%</td>
-                        <td><b>${current_invoice.billing.offer_amount}</b></td>
+                        <td><b>${return_invoice.billing.total ? (return_invoice.billing.total - return_invoice.billing.making_cost).toFixed(2) : "0"}</b></td>
                     </tr>
                 </table>
                 `,

@@ -78,7 +78,7 @@
                             <input type="text" id="barcode_input" name="barcode" placeholder="barcode">
                         </div>
                         <button id="scanner_btn" class="ui red labeled icon button" type="submit">
-                            <i class="cloud upload icon large"></i>
+                            <i class="cloud download icon large"></i>
                             REMOVE ITEM
 						</button>
                     </form>
@@ -89,75 +89,58 @@
         <div class="card" id="details">
             <div class="wrapper">
                 <h5 class="ui dividing header right aligned date">DATE: <span id="date"></span></h5>
-                <form class="ui form" id="search_form">
-                    <div class="right aligned three fields">
-                        <div class="field opacity-1">
-                            <label>Invoice Id#</label>
-                            <input type="text" id="invoice_id" placeholder="Invoice Id#">
+                <form class="ui form" id="generate_stock" method="POST" action="lib/items.php">
+                    <div class="fields">
+                        <div class="field">
+                            <label>Vehicle</label>
+                            <select name="store" id="vehicle_dropdown" class="ui search dropdown vehicle-dropdown" required>
+                                <option value="">Select Vehicle</option>
+                            </select>
+                        </div>
+                        <div class="field disabled opacity-1">
+                            <label>Invoice Id</label>
+                            <input type="text" id="invoice_id" placeholder="invoice_id" value="" tabindex="-1" disabled>
+                        </div>
+                        <div class="field disabled opacity-1">
+                            <label>Invoice Date</label>
+                            <input type="text" id="invoice_date" placeholder="invoice_date" value="" tabindex="-1" disabled>
+                        </div>
+                        <div class="field disabled opacity-1">
+                            <label>Total No#of Units</label>
+                            <input type="text" id="total_units" placeholder="total_units" value="" tabindex="-1" disabled>
                         </div>
                         <div class="field">
-                            <label>.</label>
-                            <button type="button" class="ui primary button" id="search_invoice_btn">
-                                Search
-                            </button>
+                            <label>Finished</label>
+                            <select name="store" id="finished_dropdown" class="ui search dropdown finished-dropdown" required>
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="three fields">
-                        <div class="field disabled opacity-1">
-                            <label>Seller Id</label>
-                            <input type="text" id="seller_id" placeholder="custom_name" tabindex="-1">
-                        </div>
-                        <div class="field disabled opacity-1">
-                            <label>Seller Name</label>
-                            <input type="text" id="seller_name" placeholder="custom_name" tabindex="-1">
-                        </div>
-                        <div class="field disabled opacity-1">
-                            <label>Sale Type</label>
-                            <input type="text" id="sale_type" placeholder="sale_type" tabindex="-1">
-                        </div>
-                    </div>
-                    <div class="three fields">
-                        <div class="field disabled opacity-1">
-                            <label>Customer Name</label>
-                            <input type="text" id="customer_name" placeholder="customer_name" tabindex="-1">
-                        </div>
-                        <div class="field disabled opacity-1">
-                            <label>Customer Village</label>
-                            <input type="text" id="customer_village" placeholder="customer_village" tabindex="-1">
-                        </div>
-                        <div class="field disabled opacity-1">
-                            <label>Customer Details</label>
-                            <input type="text" id="customer_details" placeholder="customer_details" tabindex="-1">
-                        </div>
-                    </div>
-                    <button type="button" class="ui violet labeled icon button" id="save_details_btn">
+                    <button class="ui violet labeled icon button" id="save_details_btn">
                         <i class="save icon large"></i>
                         SAVE DETAILS
                     </button>
-                    <button type="button" class="ui pink labeled icon button" id="edit_details_btn">
+                    <button class="ui pink labeled icon button" id="edit_details_btn">
                         <i class="edit icon large"></i>
                         EDIT DETAILS
                     </button>
-                    <button type="button" class="ui purple labeled icon button" id="sale_cancel_btn">
-                        <i class="undo icon large"></i>
-                        SALE CANCEL
+                    <button class="ui purple labeled icon button" id="sale_stock_btn">
+                        <i class="step backward icon large"></i>
+                        RETURN STOCK
                     </button>
                 </form>
             </div>
         </div>
 
-        <h4 class="ui horizontal divider header">
-            <i class="icon"></i>
-        </h4>
-
         <div class="ui red segment" id="current_invoice">
-            <div class="ui small center red header">CURRENT INVOICE</div>
+            <div class="ui small center red header">RETURN INVOICE</div>
             <input type="checkbox" name="current_invoice_toggle" id="current_invoice_toggle" checked>
             <label for="current_invoice_toggle"></label>
-            
+        
             <div class="card">
                 <div class="wrapper">
-                    <h4 class="ui dividing header center violet">Current Sale Summary</h4>
+                    <h4 class="ui dividing header center violet">Return Sale Summary</h4>
                     <input type="checkbox" name="current_sale_summary_toggle" id="current_sale_summary_toggle">
                     <label for="current_sale_summary_toggle"></label>
                     <div class="table_container">
@@ -171,8 +154,7 @@
                                 <th>Total Price</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                             <tfoot>
                                 <tr>
                                     <th></th>
@@ -189,6 +171,11 @@
                                     <th class="right aligned" colspan="3">Total</th>
                                     <th id="total" class="right aligned">0</th>
                                 </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -197,7 +184,7 @@
 
             <div class="card">
                 <div class="wrapper">
-                    <h4 class="ui dividing header center pink">Current Sale List</h4>
+                    <h4 class="ui dividing header center pink">Return Sale List</h4>
                     <input type="checkbox" name="current_sale_list_toggle" id="current_sale_list_toggle" checked>
                     <label for="current_sale_list_toggle"></label>
                     <div class="table_container">
@@ -211,8 +198,7 @@
                                 <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                             <tfoot>
                                 <tr>
                                     <th></th>
@@ -232,6 +218,12 @@
                                     <th id="total" class="right aligned">0</th>
                                     <th></th>
                                 </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="2">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -243,16 +235,16 @@
             <i class="icon"></i>
         </h4>
 
-        <div class="ui blue segment" id="cancelled_invoice">
-            <div class="ui small center blue header">CANCELLED INVOICE</div>
-            <input type="checkbox" name="cancelled_invoice_toggle" id="cancelled_invoice_toggle" checked>
-            <label for="cancelled_invoice_toggle"></label>
-            
+        <div class="ui green segment" id="final_invoice">
+            <div class="ui small center green header">FINAL INVOICE</div>
+            <input type="checkbox" name="final_invoice_toggle" id="final_invoice_toggle" checked>
+            <label for="final_invoice_toggle"></label>
+        
             <div class="card">
                 <div class="wrapper">
-                    <h4 class="ui dividing header center violet">Cancelled Sale Summary</h4>
-                    <input type="checkbox" name="cancelled_sale_summary_toggle" id="cancelled_sale_summary_toggle">
-                    <label for="cancelled_sale_summary_toggle"></label>
+                    <h4 class="ui dividing header center violet">Final Sale Summary</h4>
+                    <input type="checkbox" name="final_sale_summary_toggle" id="final_sale_summary_toggle">
+                    <label for="final_sale_summary_toggle"></label>
                     <div class="table_container">
                         <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
                             <thead>
@@ -264,8 +256,7 @@
                                 <th>Total Price</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                             <tfoot>
                                 <tr>
                                     <th></th>
@@ -282,6 +273,11 @@
                                     <th class="right aligned" colspan="3">Total</th>
                                     <th id="total" class="right aligned">0</th>
                                 </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -290,9 +286,9 @@
 
             <div class="card">
                 <div class="wrapper">
-                    <h4 class="ui dividing header center pink">Cancelled Sale List</h4>
-                    <input type="checkbox" name="cancelled_sale_list_toggle" id="cancelled_sale_list_toggle" checked>
-                    <label for="cancelled_sale_list_toggle"></label>
+                    <h4 class="ui dividing header center pink">Final Sale List</h4>
+                    <input type="checkbox" name="final_sale_list_toggle" id="final_sale_list_toggle" checked>
+                    <label for="final_sale_list_toggle"></label>
                     <div class="table_container">
                         <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
                             <thead>
@@ -304,8 +300,7 @@
                                 <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                             <tfoot>
                                 <tr>
                                     <th></th>
@@ -325,6 +320,12 @@
                                     <th id="total" class="right aligned">0</th>
                                     <th></th>
                                 </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="2">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -336,16 +337,17 @@
             <i class="icon"></i>
         </h4>
 
-        <div class="ui green segment" id="earlier_invoice">
-            <div class="ui small center green header">EARLIER INVOICE</div>
+        <div class="ui blue segment" id="earlier_invoice">
+            <div class="ui small center blue header">EARLIER INVOICE</div>
             <input type="checkbox" name="earlier_invoice_toggle" id="earlier_invoice_toggle" checked>
             <label for="earlier_invoice_toggle"></label>
+        
             <div class="card">
                 <div class="wrapper">
                     <h4 class="ui dividing header center violet">Earlier Sale Summary</h4>
                     <input type="checkbox" name="earlier_sale_summary_toggle" id="earlier_sale_summary_toggle">
                     <label for="earlier_sale_summary_toggle"></label>
-                    <div>
+                    <div class="table_container">
                         <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
                             <thead>
                             <tr>
@@ -356,8 +358,7 @@
                                 <th>Total Price</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                             <tfoot>
                                 <tr>
                                     <th></th>
@@ -390,7 +391,7 @@
                     <h4 class="ui dividing header center pink">Earlier Sale List</h4>
                     <input type="checkbox" name="earlier_sale_list_toggle" id="earlier_sale_list_toggle" checked>
                     <label for="earlier_sale_list_toggle"></label>
-                    <div>
+                    <div class="table_container">
                         <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
                             <thead>
                             <tr>
@@ -401,8 +402,7 @@
                                 <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                             <tfoot>
                                 <tr>
                                     <th></th>
@@ -482,6 +482,6 @@
 
     <script type="text/javascript" src="assets/js/main.js"></script>
     <script type="text/javascript" src="assets/js/scanner.js"></script>
-    <script type="text/javascript" src="assets/js/sale_cancel.js"></script>
+    <script type="text/javascript" src="assets/js/vehicle_stock_return.js"></script>
 </body>
 </html>

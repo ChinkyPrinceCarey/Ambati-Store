@@ -82,7 +82,13 @@
 					{
 						"icon": "icon shipping fast",
 						"title": "vehicle stock",
-						"link": "store_stock.html",
+						"link": "vehicle_stock.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "step backward icon",
+						"title": "return stock",
+						"link": "return_stock.html",
 						"access": ["admin", "seller", "operator"]
 					},
 					{

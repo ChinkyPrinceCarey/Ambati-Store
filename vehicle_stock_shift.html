@@ -22,7 +22,7 @@
 
     <link rel="stylesheet" type="text/css" href="assets/css/utility.css">
     <link rel="stylesheet" type="text/css" href="assets/css/main.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/sale_stock.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/sale_and_cancel.css">
 	
 	
 	<script type="text/javascript">
@@ -101,6 +101,14 @@
                             <label>Invoice Id</label>
                             <input type="text" id="invoice_id" placeholder="invoice_id" value="" tabindex="-1" disabled>
                         </div>
+                        <div class="field disabled opacity-1">
+                            <label>Invoice Date</label>
+                            <input type="text" id="invoice_date" placeholder="invoice_date" value="" tabindex="-1" disabled>
+                        </div>
+                        <div class="field disabled opacity-1">
+                            <label>Total No#of Units</label>
+                            <input type="text" id="total_units" placeholder="total_units" value="" tabindex="-1" disabled>
+                        </div>
                     </div>
                     <button class="ui violet labeled icon button" id="save_details_btn">
                         <i class="save icon large"></i>
@@ -118,94 +126,304 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="wrapper">
-                <h4 class="ui dividing header center violet">Sale Summary</h4>
-                <input type="checkbox" name="sale_summary_toggle" id="sale_summary_toggle">
-                <label for="sale_summary_toggle"></label>
-                <div class="table_container">
-                    <table id="sale-summary" class="ui celled striped pink table">
-                        <thead>
-                          <tr>
-                              <th>Slno</th>
-                              <th>Item[Shortcode]</th>
-                              <th>Quantity</th>
-                              <th>Unit Price</th>
-                              <th>Total Price</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot>
+        <div class="ui red segment" id="current_invoice">
+            <div class="ui small center red header">CURRENT INVOICE</div>
+            <input type="checkbox" name="current_invoice_toggle" id="current_invoice_toggle" checked>
+            <label for="current_invoice_toggle"></label>
+        
+            <div class="card">
+                <div class="wrapper">
+                    <h4 class="ui dividing header center violet">Current Sale Summary</h4>
+                    <input type="checkbox" name="current_sale_summary_toggle" id="current_sale_summary_toggle">
+                    <label for="current_sale_summary_toggle"></label>
+                    <div class="table_container">
+                        <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
+                            <thead>
                             <tr>
-                                <th></th>
-                                <th class="right aligned" colspan="3">Sub Total</th>
-                                <th id="sub_total" class="right aligned">0</th>
-                            </tr>
+                                <th>Slno</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3">Sub Total</th>
+                                    <th id="sub_total" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
+                                    <th id="tax" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3">Total</th>
+                                    <th id="total" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="wrapper">
+                    <h4 class="ui dividing header center pink">Current Sale List</h4>
+                    <input type="checkbox" name="current_sale_list_toggle" id="current_sale_list_toggle" checked>
+                    <label for="current_sale_list_toggle"></label>
+                    <div class="table_container">
+                        <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
+                            <thead>
                             <tr>
-                                <th></th>
-                                <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
-                                <th id="tax" class="right aligned">0</th>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th class="right aligned" colspan="3">Total</th>
-                                <th id="total" class="right aligned">0</th>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
-                                <th id="offer_amount" class="right aligned">0</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                                <th>Slno</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Barcode</th>
+                                <th>Unit Price</th>
+                                <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2">Sub Total</th>
+                                    <th id="sub_total" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
+                                    <th id="tax" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2">Total</th>
+                                    <th id="total" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="2">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="wrapper">
-                <h4 class="ui dividing header center pink">Sale List</h4>
-                <input type="checkbox" name="sale_list_toggle" id="sale_list_toggle" checked>
-                <label for="sale_list_toggle"></label>
-                <div class="table_container">
-                    <table id="sale-list" class="ui celled striped violet table">
-                        <thead>
-                          <tr>
-                              <th>Slno</th>
-                              <th>Item[Shortcode]</th>
-                              <th>Barcode</th>
-                              <th>Unit Price</th>
-                              <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot>
+        <h4 class="ui horizontal divider header">
+            <i class="icon"></i>
+        </h4>
+
+        <div class="ui blue segment" id="earlier_invoice">
+            <div class="ui small center blue header">EARLIER INVOICE</div>
+            <input type="checkbox" name="earlier_invoice_toggle" id="earlier_invoice_toggle" checked>
+            <label for="earlier_invoice_toggle"></label>
+        
+            <div class="card">
+                <div class="wrapper">
+                    <h4 class="ui dividing header center violet">Earlier Sale Summary</h4>
+                    <input type="checkbox" name="earlier_sale_summary_toggle" id="earlier_sale_summary_toggle">
+                    <label for="earlier_sale_summary_toggle"></label>
+                    <div class="table_container">
+                        <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
+                            <thead>
                             <tr>
-                                <th></th>
-                                <th class="right aligned" colspan="2">Sub Total</th>
-                                <th id="sub_total" class="right aligned">0</th>
-                                <th></th>
-                            </tr>
+                                <th>Slno</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3">Sub Total</th>
+                                    <th id="sub_total" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
+                                    <th id="tax" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3">Total</th>
+                                    <th id="total" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="wrapper">
+                    <h4 class="ui dividing header center pink">Earlier Sale List</h4>
+                    <input type="checkbox" name="earlier_sale_list_toggle" id="earlier_sale_list_toggle" checked>
+                    <label for="earlier_sale_list_toggle"></label>
+                    <div class="table_container">
+                        <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
+                            <thead>
                             <tr>
-                                <th></th>
-                                <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
-                                <th id="tax" class="right aligned">0</th>
-                                <th></th>
-                            </tr>
+                                <th>Slno</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Barcode</th>
+                                <th>Unit Price</th>
+                                <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2">Sub Total</th>
+                                    <th id="sub_total" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
+                                    <th id="tax" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2">Total</th>
+                                    <th id="total" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="2">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="ui horizontal divider header">
+            <i class="icon"></i>
+        </h4>
+
+        <div class="ui green segment" id="final_invoice">
+            <div class="ui small center green header">FINAL INVOICE</div>
+            <input type="checkbox" name="final_invoice_toggle" id="final_invoice_toggle" checked>
+            <label for="final_invoice_toggle"></label>
+        
+            <div class="card">
+                <div class="wrapper">
+                    <h4 class="ui dividing header center violet">Final Sale Summary</h4>
+                    <input type="checkbox" name="final_sale_summary_toggle" id="final_sale_summary_toggle">
+                    <label for="final_sale_summary_toggle"></label>
+                    <div class="table_container">
+                        <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
+                            <thead>
                             <tr>
-                                <th></th>
-                                <th class="right aligned" colspan="2">Total</th>
-                                <th id="total" class="right aligned">0</th>
-                                <th></th>
-                            </tr>
+                                <th>Slno</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3">Sub Total</th>
+                                    <th id="sub_total" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
+                                    <th id="tax" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3">Total</th>
+                                    <th id="total" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="wrapper">
+                    <h4 class="ui dividing header center pink">Final Sale List</h4>
+                    <input type="checkbox" name="final_sale_list_toggle" id="final_sale_list_toggle" checked>
+                    <label for="final_sale_list_toggle"></label>
+                    <div class="table_container">
+                        <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
+                            <thead>
                             <tr>
-                                <th></th>
-                                <th id="offer_percentage" class="right aligned" colspan="2">Offer(%)</th>
-                                <th id="offer_amount" class="right aligned">0</th>
-                                <th></th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                                <th>Slno</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Barcode</th>
+                                <th>Unit Price</th>
+                                <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2">Sub Total</th>
+                                    <th id="sub_total" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
+                                    <th id="tax" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2">Total</th>
+                                    <th id="total" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th id="offer_percentage" class="right aligned" colspan="2">Offer(%)</th>
+                                    <th id="offer_amount" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -258,7 +476,6 @@
 
     <script type="text/javascript" src="assets/js/main.js"></script>
     <script type="text/javascript" src="assets/js/scanner.js"></script>
-    <script type="text/javascript" src="assets/js/scanner_add.js"></script>
     <script type="text/javascript" src="assets/js/vehicle_stock_shift.js"></script>
 </body>
 </html>

@@ -82,7 +82,7 @@ function generate_quotes($quote_type, $array, $break_type="comma"){
 		
 		foreach($array as $array_loop){
 			
-			if($array_loop == null){
+			if($array_loop === null){
 				$string .= "NULL" . $break;
 			}else{
 				if(is_exist($array_loop, " AS ")){
