@@ -214,7 +214,8 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             LEFT JOIN `stock`
             ON `items`.`shortcode` = `stock`.`shortcode`
             WHERE `items`.`shortcode` = '$shortcode' 
-            ORDER BY `stock`.`id` DESC LIMIT 1";
+            ORDER BY `stock`.`date` DESC, `stock`.`item_number` DESC LIMIT 1";
+            //ORDER BY `stock`.`id` DESC LIMIT 1";
 
             $select_query = get_query($query_type, $query_table, $query_text);
             $select_result = select_query($select_query);
