@@ -338,8 +338,9 @@ $(function(){
         //console.log($(this).closest('tr').attr('id'));
  
                         //icon   stockentry   shortcode
-        let shortcode = $(this).closest('td').prev('td').text();
-
+        //let shortcode = $(this).closest('td').prev('td').text();
+        let shortcode = table.row($(this).parent()).data().shortcode;
+        
         if(shortcode){
             window.location.replace(`warehouse_stock_entry.html?shortcode=${shortcode}`);
         }else{
