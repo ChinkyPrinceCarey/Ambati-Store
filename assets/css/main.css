@@ -398,3 +398,15 @@ table.dsc-serial-counter tbody tr td:first-child:before{
     counter-increment: DescendingSerial -1;
 }
 /* end: Descending Serial Counter */
+
+.editor-field-disable{
+    border-bottom: 2px solid red;
+}
+
+.editor-field-disable > input{
+    background-color: rgba(255, 0, 0, 0.251) !important;
+    cursor: no-drop;
+    font-weight: 500;
+    color: red !important;
+    border: none !important;
+}

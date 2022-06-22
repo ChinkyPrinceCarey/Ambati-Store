@@ -101,10 +101,17 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $fields_data = validate_fields($_post_data, $fields_def);
             if($fields_data['result']){
                 $query_set = array();
-                foreach($fields_data['data'] as $set_column => $set_value){
-                    if(!($set_column == "id" || $set_column == "slno")){
-                        $query_set[] = "$set_column=$set_value";
-                    }
+                $row_set_arr = $fields_data['data'];
+                unset(
+                    $row_set_arr['id'],
+                    $row_set_arr['slno'],
+                    $row_set_arr['making_cost'],
+                    $row_set_arr['retailer_cost'],
+                    $row_set_arr['available_stock']
+                );
+
+                foreach($row_set_arr as $set_column => $set_value){
+                    $query_set[] = "$set_column=$set_value";
                 }
                 
                 $query_type = "update";
@@ -167,19 +174,34 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['query'] = $delete_query;
             }
         }elseif($action == "fetch_all"){
-            $fetched_all_records = fetchRecord($query_table);
+            set_mysql_values($query_table, 'SET @slno=0');
+            $query_type = "custom";
+            //$query_table defined earlier
+            $query_text = 
+            "
+            SELECT @slno:=@slno+1 AS `slno`, `items`.*, `t1`.*, `t2`.* FROM `items`
 
-            //echo "<pre>"; print_r($fetched_all_records); echo "</pre>";
+            LEFT JOIN (SELECT `shortcode` AS `t1_shortcode`,`making_cost`, `retailer_cost` FROM `stock` WHERE `id` IN (SELECT MAX(`id`) FROM `stock` WHERE `is_sold`=0 GROUP BY `shortcode`)) t1 
+            ON `items`.`shortcode` = `t1`.`t1_shortcode`
 
-            if($fetched_all_records['result']){
+            LEFT JOIN (SELECT `shortcode` AS `t2_shortcode`, COUNT(`id`) AS `available_stock` FROM `stock` WHERE `is_sold`=0 GROUP BY `shortcode`) t2
+            ON `items`.`shortcode` = `t2`.`t2_shortcode`  
+
+            ORDER BY `items`.`id`  ASC
+            ";
+
+            $select_query = get_query($query_type, $query_table, $query_text);
+            $select_result = select_query($select_query);
+
+            if($select_result['result']){
                 $return['result'] = true;
                 $return['info'] .= "fetched all records ";
-                $return['data'] = $fetched_all_records['data'];
+                $return['data'] = $select_result['additional_data'];
             }else{
                 $return['result'] = true;
                 $return['data'] = array();
-                $return['info'] .= $fetched_all_records['info'];
-                //$return['additional_info'] .= $fetched_all_records['additional_info'];
+                $return['info'] .= $select_result['info'];
+                //$return['additional_info'] .= $select_result['additional_info'];
             }
         }elseif($action == "fetch_specified"){
             $query_type = "select";

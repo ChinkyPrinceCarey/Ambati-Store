@@ -94,6 +94,27 @@ $(function(){
                 }
             },
             {
+                label: "Making Cost",
+                name: "making_cost",
+                attr: {
+                    readonly: true
+                }
+            },
+            {
+                label: "Retailer Cost",
+                name: "retailer_cost",
+                attr: {
+                    readonly: true
+                }
+            },
+            {
+                label: "Available Stock",
+                name: "available_stock",
+                attr: {
+                    readonly: true
+                }
+            },
+            {
                 label: "Actual Cost",
                 name: "actual_cost",
                 attr: {
@@ -111,7 +132,13 @@ $(function(){
                 label: "Level",
                 name: "level",
                 type: "select",
-                options: [{ label: "Level I", value: "level_i"},{label: "Level II", value: "level_ii"},{label: "Level III", value: "level_iii"}],
+                options: [
+                    { label: "Level 1", value: "level_1"},
+                    {label: "Level 2", value: "level_2"},
+                    {label: "Level 3", value: "level_3"},
+                    {label: "Level 4", value: "level_4"},
+                    {label: "Level 5", value: "level_5"}
+                ],
                 attr: {
                     name: 'level'
                 }
@@ -169,10 +196,20 @@ $(function(){
     })
 
     editor.on('opened', function(a, b, action){
-        //if(action == "create"){} //for future improvements commenting as of now group_name to focus for any fields
+        if(action == "create"){
+            editor.field('making_cost').hide();
+            editor.field('retailer_cost').hide();
+            editor.field('available_stock').hide();
+
+            editor.field('material').focus();
+        }else if(action == "edit"){
+            editor.field('making_cost').show();
+            editor.field('retailer_cost').show();
+            editor.field('available_stock').show();
+        }
+
         editor.field('id').hide();
         editor.field('slno').hide();
-        editor.field('material').focus();
     });
 
     editor.on( 'preSubmit', function (e, data, action) {
@@ -201,6 +238,11 @@ $(function(){
 
     editor.on('onSubmitComplete', function(e, xhr, err, thrown, data){
         this.error(xhr);
+
+        setTimeout(function(){
+            $('.ui.rating').rating('disable');
+        }, 200);
+
         return false;
     });
 
@@ -293,9 +335,30 @@ $(function(){
             { data: "shortcode" },
             { data: "desc_1" },
             { data: "desc_2" },
+            { data: "making_cost" },
+            { data: "retailer_cost" },
+            { data: "available_stock",
+            render: function(data, type, row){
+                let color = "green";
+                data = parseInt(data) ? parseInt(data) : 0 ;
+
+                if(data < 100) color = "orange"
+                if(data < 50) color = "red";
+
+                return `<a class="ui ${color} label">${data}</a>`;
+            }
+            },
             { data: "actual_cost" },
             { data: "cost" },
-            { data: "level" },
+            { data: "level", 
+            render: function(data, type, row){
+                let rating = 0
+                if(data){
+                    rating = parseInt(data.replace("level_", ""));
+                }
+                return `<div class="ui star rating" data-rating="${rating}" data-max-rating="5"></div>`;
+            }
+            },
             { data: "in_stock",
             render: function(data, type, row){
                 let color = data == 0 ? "red" : "green";
@@ -312,8 +375,9 @@ $(function(){
             }
         ],
         rowId: 'id',
-        "init.dt": function( settings, json ) {
-            console.log(settings, json);
+        "initComplete": function( settings, json ) {
+            //console.log(settings, json);
+            $('.ui.rating').rating('disable');
         }
     });
 
@@ -402,6 +466,11 @@ $(function(){
 
     //table.buttons().container().appendTo( $('div.eight.column:eq(0)', table.table().container()) );
     table.buttons(0, null).container().removeClass('ui');
+
+    editor.field('making_cost').input().parent()
+    .add(editor.field('retailer_cost').input().parent())
+    .add(editor.field('available_stock').input().parent())
+    .addClass('editor-field-disable');
 })
 
 function setSelectOpts(url, fieldName){
