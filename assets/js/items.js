@@ -525,7 +525,11 @@ $(function(){
     .add(editor.field('available_stock').input().parent())
     .addClass('editor-field-disable');
 
-    $(document).on('input', editor.field('item').dom.inputControl, function(){
+    onInput_fields =    editor.field('item').dom.inputControl
+                        .add(editor.field('company_name').dom.inputControl)
+                        .add(editor.field('flavour').dom.inputControl)
+
+    $(document).on('input', onInput_fields, function(){
         let item_val = editor.field('item').val();
         if(item_val.length >=5){
             $("#generate_btn").click();
