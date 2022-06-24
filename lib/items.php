@@ -21,6 +21,8 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         $action = $_POST['action'];
         $query_table = "items";
 
+        $manual_key_names = ['slno', 'making_cost', 'retailer_cost', 'available_stock'];
+
         $id = getKeyinArr($_POST['data']);
 
         $default_where_column = "id";
@@ -34,51 +36,47 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $fields_data = validate_fields($_post_data, $fields_def);
 
             if($fields_data['result']){
-                $default_where_column = "type";
-                $default_where_value = $fields_data['data']['type'];
-                $default_where = array("$default_where_column=$default_where_value");
+                $default_where = "1 ORDER BY `id` DESC LIMIT 1";
+
+                $insert_arr = $fields_data['data'];
+
+                if($insert_arr['material'] == "raw"){
+                    $manual_key_names[] = 'level';
+                    $manual_key_names[] = 'priority';
+                    $manual_key_names[] = 'in_stock';
+                }
+
+                unset($insert_arr['id']);
+                foreach($manual_key_names as $key){
+                    unset($insert_arr[$key]);
+                }
 
                 $query_type = "insert";
                 //$query_table defined earlier
-                $query_columns = array(
-                                    "material",
-                                    "item",
-                                    "shortcode",
-                                    "unit",
-                                    "type",
-                                    "desc_1",
-                                    "desc_2",
-                                    "actual_cost",
-                                    "cost",
-                                    "level",
-                                    "in_stock",
-                                    "priority"
-                                );
-                $query_values = array(
-                                    $fields_data['data']['material'],
-                                    $fields_data['data']['item'],
-                                    strtoupper($fields_data['data']['shortcode']),
-                                    $fields_data['data']['unit'],
-                                    $fields_data['data']['type'],
-                                    $fields_data['data']['desc_1'],
-                                    $fields_data['data']['desc_2'],
-                                    $fields_data['data']['actual_cost'],
-                                    $fields_data['data']['cost'],
-                                    $fields_data['data']['level'],
-                                    $fields_data['data']['in_stock'],
-                                    $fields_data['data']['priority']
-                                );
+                $query_columns = array();
+                $query_values = array();
+                foreach($insert_arr as $key => $value){
+                    $query_columns[] = $key;
+                    $query_values[] = $value;
+                }
 
                 $insert_query = get_query($query_type, $query_table, $query_columns, $query_values);
 
                 $insert_result = insert_query($insert_query);
                 if($insert_result['result']){
-                    $inserted_record = fetchRecord($query_table, null, $default_where, "count_slno");
+                    unset($insert_arr['slno']);
+                    $manual_columns = array();
+                    foreach($manual_key_names as $key){
+                        $manual_columns[] = "NULL AS `$key`";
+                    }
+                    $inserted_record = fetchRecord($query_table, $manual_columns, $default_where, "count_slno");
                     $return['info'] .= "record inserted ";
                     if($inserted_record['result']){
                         $return['result'] = true;
                         $return['info'] .= "and fetched record";
                         $return['data'] = $inserted_record['data'];
+
+                        $return['fetch_query'] = $inserted_record['query'];
                     }else{
                         $return['info'] .= "but " . $inserted_record['info'];
                         $return['additional_info'] .= $inserted_record['additional_info'];
@@ -96,19 +94,16 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         }elseif($action == "edit"){
             $data = $_POST['data'];
 
-            $slno = $_post_data['slno'];
-            
             $fields_data = validate_fields($_post_data, $fields_def);
             if($fields_data['result']){
                 $query_set = array();
                 $row_set_arr = $fields_data['data'];
-                unset(
-                    $row_set_arr['id'],
-                    $row_set_arr['slno'],
-                    $row_set_arr['making_cost'],
-                    $row_set_arr['retailer_cost'],
-                    $row_set_arr['available_stock']
-                );
+                
+                unset($row_set_arr['id']);
+                
+                foreach($manual_key_names as $key){
+                    unset($row_set_arr[$key]);
+                }
 
                 foreach($row_set_arr as $set_column => $set_value){
                     $query_set[] = "$set_column=$set_value";
@@ -124,7 +119,11 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                 $update_result = update_query($update_query);
                 if($update_result['result']){
-                    $updated_record = fetchRecord($query_table, null, $default_where, $slno);
+                    $manual_columns =  array();
+                    foreach($manual_key_names as $key_name){
+                        $manual_columns[] = "'$_post_data[$key_name]' AS `$key_name`";
+                    }
+                    $updated_record = fetchRecord($query_table, $manual_columns, $default_where, false);
                     $return['info'] .= "record updated ";
                     if($updated_record['result']){
                         $return['result'] = true;
@@ -250,6 +249,28 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['data'] = array();
                 $return['info'] .= $select_result['info'];
                 $return['additional_info'] .= $select_result['additional_info'];
+            }
+        }elseif($action == "fetch_distinct_column"){
+            $distinct_column = $_POST['data'];
+
+            $query_type = "custom";
+            //$query_table defined earlier
+            $query_text = 
+            "
+                SELECT DISTINCT `$distinct_column` AS `$distinct_column` FROM `$query_table` WHERE `$distinct_column` IS NOT NULL;
+            ";
+
+            $select_query = get_query($query_type, $query_table, $query_text);
+            $select_result = select_query($select_query);
+
+            if($select_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "fetched all records ";
+                $return['data'] = $select_result['additional_data'];
+            }else{
+                $return['result'] = false;
+                $return['data'] = array();
+                $return['info'] = $select_result;
             }
         }else{
             $return['info'] .= "action: $action does not exist";

@@ -22,6 +22,7 @@
 
     <link rel="stylesheet" type="text/css" href="assets/css/utility.css">
     <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/sale_and_cancel.css">
 </head>
 <body>
 
@@ -73,8 +74,11 @@
                             <th>Unit</th>
                             <th>Item</th>
                             <th>Shortcode</th>
-                            <th>Desc 1</th>
-                            <th>Desc 2</th>
+                            <th>Desc 1(counting etc.)</th>
+                            <th>Desc 2(for offer)</th>
+                            <th>Company</th>
+                            <th>Flavour</th>
+                            <th>Denomination</th>
                             <th>Making Cost</th>
                             <th>Retailer Cost</th>
                             <th>Available Stock</th>
@@ -94,8 +98,11 @@
                             <th>Unit</th>
                             <th>Item</th>
                             <th>Shortcode</th>
-                            <th>Desc 1</th>
-                            <th>Desc 2</th>
+                            <th>Desc 1(counting etc.)</th>
+                            <th>Desc 2(for offer)</th>
+                            <th>Company</th>
+                            <th>Flavour</th>
+                            <th>Denomination</th>
                             <th>Making Cost</th>
                             <th>Retailer Cost</th>
                             <th>Available Stock</th>
@@ -104,7 +111,6 @@
                             <th>Level</th>
                             <th>In Stock</th>
                             <th>Priority</th>
-                            
                             <th>Stock Entry</th>
                         </tr>
                     </tfoot>
@@ -112,6 +118,80 @@
             </div>
         </div>
     </main>
+
+    <!--BEGIN: editor-form template-->
+    <form class="ui form" id="editorForm">
+        <div id="key">
+            <editor-field name="slno"></editor-field>
+            <editor-field name="id"></editor-field>
+        </div>
+
+        <div class="ui red segment" id="item_basic_information">
+            <h4 class="ui dividing header center red">ITEM BASIC INFORMATION</h4>
+            <input type="checkbox" name="item_basic_information_toggle" id="item_basic_information_toggle">
+            <label for="item_basic_information_toggle"></label>
+            <div class="card">
+                <div class="wrapper">
+                    <div class="field" style="position: relative;">
+                        <editor-field name="material"></editor-field>
+                        <editor-field name="type"></editor-field>
+                        <editor-field name="unit"></editor-field>
+                        <editor-field name="item"></editor-field>
+                        <editor-field name="shortcode">
+                        </editor-field>
+                        <editor-field style="position: absolute;bottom: 1px;right: 1px;">
+                            <button class="ui primary button" id="generate_btn">
+                                Generate
+                            </button>
+                        </editor-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui violet segment" id="item_app_information">
+            <h4 class="ui dividing header center violet">ITEM APP INFORMATION</h4>
+            <input type="checkbox" name="item_app_information_toggle" id="item_app_information_toggle">
+            <label for="item_app_information_toggle"></label>
+            <div class="card">
+                <div class="wrapper">
+                    <div class="field">
+                        <editor-field name="desc_1"></editor-field>
+                        <editor-field name="desc_2"></editor-field>
+                        <editor-field name="company_name"></editor-field>
+                        <editor-field name="flavour"></editor-field>
+                        <editor-field name="denomination"></editor-field>
+                        <editor-field name="level"></editor-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ui green segment" id="item_app_cost">
+            <h4 class="ui dividing header center green">ITEM APP COST</h4>
+            <input type="checkbox" name="item_app_cost_toggle" id="item_app_cost_toggle">
+            <label for="item_app_cost_toggle"></label>
+            <div class="card">
+                <div class="wrapper">
+                    <div class="field">
+                        <div class="two fields">
+                            <editor-field name="making_cost"></editor-field>
+                            <editor-field name="actual_cost"></editor-field>
+                        </div>
+                        <div class="two fields">
+                            <editor-field name="retailer_cost"></editor-field>
+                            <editor-field name="cost"></editor-field>
+                        </div>
+                        <div class="two fields">
+                            <editor-field name="available_stock"></editor-field>
+                            <editor-field name="in_stock"></editor-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!--END: editor-form template-->
 
     <footer>
         <div class="copyright">
@@ -146,6 +226,7 @@
     <script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/dataTables.select.min.js"></script>
     <script type="text/javascript" src="assets/library/DataTables/DateTime/1.1.1/js/dataTables.dateTime.min.js"></script>
     <script type="text/javascript" src="assets/library/data-tables-editor/js/dataTables.editor.js"></script>
+    <script type="text/javascript" src="assets/js/search.custom.field.dataTables.editor.js"></script>
     <script type="text/javascript" src="assets/library/data-tables-editor/js/editor.semanticui.min.js"></script>
     
     <script type="text/javascript" src="assets/library/DataTables/Plugins/api/processing().js"></script>

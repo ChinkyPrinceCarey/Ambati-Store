@@ -84,6 +84,10 @@ function sanitize_the_value($_value, $_sanitize_rule){
 			return preg_replace('/[^A-Za-z0-9#\ ]/', '', $_value);
 			break;
 
+		case 'toUpper':
+			return strtoupper($_value);
+			break;
+
 		default:
 			return $_value;
 	}
@@ -280,6 +284,9 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "type";
 			$columns[]  = "desc_1";
 			$columns[]  = "desc_2";
+			$columns[]  = "company_name";
+			$columns[]  = "flavour";
+			$columns[]  = "denomination";
 			$columns[]  = "actual_cost";
 			$columns[]  = "cost";
 			$columns[]  = "level";
