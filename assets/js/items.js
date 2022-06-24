@@ -651,7 +651,7 @@ $(document).on('click', '#generate_btn', function(e){
     if(company_name.length) compiled_string += company_name;
     if(flavour_name.length) compiled_string += flavour_name;
 
-    compiled_string = compiled_string.replaceAll(/[\W_]/g,"")
+    compiled_string = compiled_string.replace(/[\W_]/g,"")
 
     if(compiled_string.length){
         compiled_string = compiled_string.toUpperCase();
