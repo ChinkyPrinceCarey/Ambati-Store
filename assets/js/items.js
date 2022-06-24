@@ -531,7 +531,9 @@ onInput_fields = '.DTE_Field_Name_item input, .DTE_Field_Name_company_name input
 $(document).on('input', onInput_fields, function(){
     let item_val = editor.field('item').val();
     if(item_val.length >=5){
-        $("#generate_btn").click();
+        if(!editor.field('shortcode').dom.container.hasClass('disabled')){
+            $("#generate_btn").click();
+        }
     }
 })
 
@@ -634,25 +636,27 @@ function randomString(charSet, strLength = 5){
 $(document).on('click', '#generate_btn', function(e){
     e.preventDefault();
 
-    let item = "";
-    item = editor.field('item').val();
-    
-    let company_name = "";
-    company_name = editor.field('item').val();
-    
-    let flavour_name = "";
-    flavour_name = editor.field('flavour').val();
+    if(!editor.field('shortcode').dom.container.hasClass('disabled')){
+        let item = "";
+        item = editor.field('item').val();
+        
+        let company_name = "";
+        company_name = editor.field('item').val();
+        
+        let flavour_name = "";
+        flavour_name = editor.field('flavour').val();
 
-    let compiled_string = "";
+        let compiled_string = "";
 
-    if(item.length) compiled_string += item;
-    if(company_name.length) compiled_string += company_name;
-    if(flavour_name.length) compiled_string += flavour_name;
+        if(item.length) compiled_string += item;
+        if(company_name.length) compiled_string += company_name;
+        if(flavour_name.length) compiled_string += flavour_name;
 
-    compiled_string = compiled_string.replace(/[\W_]/g,"")
+        compiled_string = compiled_string.replace(/[\W_]/g,"")
 
-    if(compiled_string.length){
-        compiled_string = compiled_string.toUpperCase();
-        editor.field('shortcode').val(randomString(compiled_string));
+        if(compiled_string.length){
+            compiled_string = compiled_string.toUpperCase();
+            editor.field('shortcode').val(randomString(compiled_string));
+        }
     }
 })
