@@ -85,14 +85,14 @@ $(function(){
                 }
             },
             {
-                label: "Description 1",
+                label: "Description (counting)",
                 name: "desc_1",
                 attr: {
                     name: 'desc_1'
                 }
             },
             {
-                label: "Description 2",
+                label: "Description (offer)",
                 name: "desc_2",
                 attr: {
                     name: 'desc_2'
