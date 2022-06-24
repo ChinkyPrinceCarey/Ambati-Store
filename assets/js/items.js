@@ -524,17 +524,15 @@ $(function(){
     .add(editor.field('retailer_cost').input().parent())
     .add(editor.field('available_stock').input().parent())
     .addClass('editor-field-disable');
+})
 
-    onInput_fields =    editor.field('item').dom.inputControl
-                        .add(editor.field('company_name').dom.inputControl)
-                        .add(editor.field('flavour').dom.inputControl)
+onInput_fields = '.DTE_Field_Name_item input, .DTE_Field_Name_company_name input, .DTE_Field_Name_flavour input';
 
-    $(document).on('input', onInput_fields, function(){
-        let item_val = editor.field('item').val();
-        if(item_val.length >=5){
-            $("#generate_btn").click();
-        }
-    })
+$(document).on('input', onInput_fields, function(){
+    let item_val = editor.field('item').val();
+    if(item_val.length >=5){
+        $("#generate_btn").click();
+    }
 })
 
 function parseSearchOpts(_required_distinct_column){
