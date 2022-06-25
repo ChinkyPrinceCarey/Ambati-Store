@@ -180,10 +180,10 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             "
             SELECT @slno:=@slno+1 AS `slno`, `items`.*, `t1`.*, `t2`.* FROM `items`
 
-            LEFT JOIN (SELECT `shortcode` AS `t1_shortcode`,`making_cost`, `retailer_cost` FROM `stock` WHERE `id` IN (SELECT MAX(`id`) FROM `stock` WHERE `is_sold`=0 GROUP BY `shortcode`)) t1 
+            LEFT JOIN (SELECT `shortcode` AS `t1_shortcode`,`making_cost`, `retailer_cost` FROM `stock` WHERE `id` IN (SELECT MAX(`id`) FROM `stock` GROUP BY `shortcode`)) t1 
             ON `items`.`shortcode` = `t1`.`t1_shortcode`
 
-            LEFT JOIN (SELECT `shortcode` AS `t2_shortcode`, COUNT(`id`) AS `available_stock` FROM `stock` WHERE `is_sold`=0 GROUP BY `shortcode`) t2
+            LEFT JOIN (SELECT `shortcode` AS `t2_shortcode`, COUNT(`id`) AS `available_stock` FROM `stock` GROUP BY `shortcode`) t2
             ON `items`.`shortcode` = `t2`.`t2_shortcode`  
 
             ORDER BY `items`.`id`  ASC
@@ -230,13 +230,25 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $query_type = "custom";
             //$query_table defined earlier
             $query_text = 
-            "SELECT `items`.`material`, `items`.`item`, `items`.`shortcode`, `items`.`unit`, `items`.`type`, `stock`.`making_cost`, `stock`.`retailer_cost`, `stock`.`wholesale_cost`, `stock`.`item_number`, `stock`.`date`
+            "
+            SELECT 
+                `items`.`material`, `items`.`item`, `items`.`shortcode`, `items`.`unit`, `items`.`type`, 
+                `stock_and_stock_nouse`.`making_cost`, `stock_and_stock_nouse`.`retailer_cost`, `stock_and_stock_nouse`.`wholesale_cost`, `stock_and_stock_nouse`.`item_number`, `stock_and_stock_nouse`.`date`
             FROM `items`
-            LEFT JOIN `stock`
-            ON `items`.`shortcode` = `stock`.`shortcode`
-            WHERE `items`.`shortcode` = '$shortcode' 
-            ORDER BY `stock`.`date` DESC, `stock`.`item_number` DESC LIMIT 1";
-            //ORDER BY `stock`.`id` DESC LIMIT 1";
+
+            LEFT JOIN (
+            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock` WHERE `shortcode`= '$shortcode'
+            UNION
+            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_nouse` WHERE `shortcode`= '$shortcode'
+            UNION
+            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_deleted` WHERE `shortcode`= '$shortcode'
+            ) AS `stock_and_stock_nouse`
+            ON `items`.`shortcode` = `stock_and_stock_nouse`.`shortcode`
+
+            WHERE `items`.`shortcode` = '$shortcode'
+
+            ORDER BY `stock_and_stock_nouse`.`date` DESC, `stock_and_stock_nouse`.`item_number` DESC LIMIT 1
+            ";
 
             $select_query = get_query($query_type, $query_table, $query_text);
             $select_result = select_query($select_query);
@@ -247,8 +259,9 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             }else{
                 $return['result'] = true;
                 $return['data'] = array();
-                $return['info'] .= $select_result['info'];
-                $return['additional_info'] .= $select_result['additional_info'];
+                //$return['info'] .= $select_result['info'];
+                //$return['additional_info'] .= $select_result['additional_info'];
+                $return['select_result'] = $select_result;
             }
         }elseif($action == "fetch_distinct_column"){
             $distinct_column = $_POST['data'];

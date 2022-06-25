@@ -20,49 +20,49 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
     if(isset($_POST['action']) && !empty($_POST['action'])){
         $action = $_POST['action'];
         $query_table = "stock";
-        $is_sold_clause_str = " AND `is_sold`=0 ";
-
+        
         if($action == "remove"){
 
             /*
-                Unlike the other pages operation for `remove` action,
-                Here we,
-                first insert the record to `stock_deleted` table
-                then delete the record from `stock` table
-                And we do it in a transaction to avoid any data lose
+                OPERATIONS
+                ==>insert the row in `stock_deleted`
+                ==>insert the row in `stock_nouse`
+                ==>delete the row from `stock`
             */
 
             $data = $_POST['data'];
 
             $query_where = array();
             foreach($data as $iter_data){
-                //'cause we delete multiple rows at once
-                $query_where[] = "id=" . $iter_data['id'];
+                $query_where[] = "`id`='" . $iter_data['id'] . "'";
             }
+            $where_str = join(" || ", $query_where);
 
-            $insert_into_type = "custom";
-            $insert_into_table = "stock_deleted";
-            $insert_into = "INSERT INTO stock_deleted SELECT * FROM stock WHERE " . join(" || ", $query_where);
-            $insert_into .= $is_sold_clause_str;
+            $stock_deleted_query_type = "custom";
+            $stock_deleted_query_table = "stock_deleted";
+            $stock_deleted_query_text = "INSERT INTO `stock_deleted` SELECT * FROM `stock` WHERE $where_str";
 
-            $insert_into_query = get_query($insert_into_type, $insert_into_table, $insert_into);
+            $stock_deleted_query = get_query($stock_deleted_query_type, $stock_deleted_query_table, $stock_deleted_query_text);
             
-            
-            $update_type = "update2";
-            $update_table = $query_table;
-            $update_set = array("is_sold=1");
-            $update_where = $query_where;
 
-            $update_query = get_query($update_type, $update_table, $update_set, $update_where);
-            $update_query['query'] .= $is_sold_clause_str;
+            $stock_nouse_query_type = "custom";
+            $stock_nouse_query_table = "stock_nouse";
+            $stock_nouse_query_text = "INSERT INTO `stock_nouse` SELECT NULL AS `row_id`, `stock`.* FROM `stock` WHERE $where_str";
+
+            $stock_nouse_query = get_query($stock_nouse_query_type, $stock_nouse_query_table, $stock_nouse_query_text);
+
+            $stock_query_type = "custom";
+            $stock_query_table = $query_table;
+            $stock_query_text = "DELETE FROM `stock` WHERE $where_str";
+            $stock_query = get_query($stock_query_type, $stock_query_table, $stock_query_text);
 
             $transaction_arr =  array(
-                                    array("insert" => $insert_into_query),
-                                    array("update" => $update_query)
+                                    array("insert" => $stock_deleted_query),
+                                    array("insert" => $stock_nouse_query),
+                                    array("delete" => $stock_query)
                                 );
             
             $trasaction_result = execute_transactions($transaction_arr);
-            
             $return['queries'] = $transaction_arr;
             
             if($trasaction_result['result']){
@@ -82,10 +82,9 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $return['start'] = $start;
             $return['end'] = $end;
 
-            $where_clause = array("is_sold=0");
+            $where_clause = array("1");
             if($start && $end){
                 $where_clause = "date BETWEEN '$start' AND '$end'";
-                $where_clause .= $is_sold_clause_str;
             }
 
             $extra_column = null;
@@ -100,10 +99,8 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                 $group_by = "GROUP BY `shortcode`";
                 if(is_array($where_clause)){
-                    $where_clause = "`is_sold`=0 ";
-                    $where_clause .= $group_by;
+                    $where_clause = $group_by;
                 }else{
-                    $where_clause .= $is_sold_clause_str;
                     $where_clause .= $group_by;
                 }
             }

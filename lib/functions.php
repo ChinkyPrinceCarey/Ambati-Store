@@ -493,24 +493,48 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 		if (json_last_error() === JSON_ERROR_NONE){
 			if(count($items_data)){
 				/*----------------------BEGIN: operations on `stock` table----------------------*/
-					$stock_query = array();
+					$stock_related_queries = array();
 					if(!$return_data){
-						$stock_query_type = "update2";
-						$stock_table = "stock";
-						$stock_columns_set = array("is_sold=1");
-						$stock_where = array();
+						/**--------------------GETS EXECUTED ON SALE[or]STOCK_SHIFT--------------------**/
+						/* OPERATIONS:
+							==>insert the row in `stock_nouse`
+							==>delete the row in `stock`
+						*/
 
 						$items_list = array_key_exists('current_sale_list', $items_data) ? 
 														$items_data['current_sale_list'] : 
 														$items_data['list'];
 
+						$where_data = array();
 						foreach($items_list as $item){
-							$stock_where[] = "barcode=" . $item['barcode'];
+							$where_data[] = "`barcode`='" . $item['barcode'] . "'";
 						}
 
-						$stock_query = get_query($stock_query_type, $stock_table, $stock_columns_set, $stock_where);
-						$stock_query['query'] .= " AND `is_sold`=0";
+						$stock_nouse_query_type = "custom";
+						$stock_nouse_table = "stock_nouse";
+						$stock_nouse_query_text = 
+						"
+						INSERT INTO `stock_nouse` SELECT NULL AS `row_id`, `stock`.* FROM `stock` WHERE ". implode(" OR ",$where_data) .";
+						";
+
+						$stock_nouse_query = get_query($stock_nouse_query_type, $stock_nouse_table, $stock_nouse_query_text);
+						$stock_related_queries[] = array("insert" => $stock_nouse_query);
+
+						$stock_query_type = "custom";
+						$stock_table = "stock";
+						$stock_query_text = 
+						"
+						DELETE FROM `stock` WHERE ". implode(" OR ",$where_data) .";
+						";
+
+						$stock_query = get_query($stock_query_type, $stock_table, $stock_query_text);
+						$stock_related_queries[] = array("delete" => $stock_query);
 					}else{
+						/**--------------------GETS EXECUTED ON SALE_CANCEL[or]RETURN_STOCK_SHIFT--------------------**/
+						/*
+							OPERATIONS:
+							==>insert the row to `stock` table
+						*/
 						$return_list = $return_data['data'];
 
 						if($return_list && count($return_list)){
@@ -529,7 +553,7 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 									$stock_columns[] = $column;
 									$stock_values[] = $value;
 								}
-								$stock_query[] = array("insert" => get_query($stock_query_type, $stock_table, $stock_columns, $stock_values));
+								$stock_related_queries[] = array("insert" => get_query($stock_query_type, $stock_table, $stock_columns, $stock_values));
 							}
 						}
 					}
@@ -538,7 +562,7 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 				/*----------------------BEGIN: operations on `sales` table----------------------*/
 					$_fields_data['data']['no_of_items'] = count($items_data['summary']);
 					$_fields_data['data']['no_of_units'] = count($items_data['list']);
-
+					
 					$_fields_data['data']['making_cost'] = $items_data['billing']['making_cost'];
 					$_fields_data['data']['sub_total'] = $items_data['billing']['sub_total'];
 					$_fields_data['data']['total_price'] = $items_data['billing']['total'];
@@ -617,11 +641,7 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 						array($sale_query_type => $sale_query)
 					);
 
-					if(!$return_data){
-						$queries_to_execute[] = array("update" => $stock_query);
-					}else{
-						$queries_to_execute = array_merge($queries_to_execute, $stock_query);
-					}
+					$queries_to_execute = array_merge($queries_to_execute, $stock_related_queries);
 
 					$trasaction_result = execute_transactions($queries_to_execute);
 
@@ -637,7 +657,7 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 						$return['info'] .= "error selling items";
 						$return['additional_info'] .= $trasaction_result['additional_information'];
 					}
-					/*----------------------END: DB Operations----------------------*/
+				/*----------------------END: DB Operations----------------------*/
 			}else{
 				$return['info'] .= "empty items data ";	
 			}
