@@ -736,7 +736,12 @@ function evaluateOffer(offer_input_id, _sale_data){
     }
 }
 
-function offer_dialogue(callback, _sale_data, _show_offer = true, is_return = false){
+function offer_dialogue(
+    callback, 
+    _sale_data, 
+    _show_offer = true, 
+    _modal_data = {title: "Verify and Confirm Sale", desc: "Sale Items Overview", primary_btn_title: "Sale Stock"}
+){
     let offer_dom = '';
     if(_show_offer){
         offer_dom = 
@@ -772,15 +777,9 @@ function offer_dialogue(callback, _sale_data, _show_offer = true, is_return = fa
         `;
     }
 
-    let dialogue_title = "Verify and Confirm Sale";
-    let dialogue_desc = "Sale Items Overview";
-    let primary_button_title = "Sale Stock";
-
-    if(is_return){
-        dialogue_title = "Verify and Confirm Return Stock";
-        dialogue_desc = "Return Items Overview";
-        primary_button_title = "Return Stock";
-    }
+    let dialogue_title = _modal_data.title;
+    let dialogue_desc = _modal_data.desc;
+    let primary_button_title = _modal_data.primary_btn_title;
     
     smallModal(
         `${dialogue_title}`,

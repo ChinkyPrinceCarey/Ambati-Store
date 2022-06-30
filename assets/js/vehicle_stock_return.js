@@ -214,7 +214,12 @@ function initValues(){
             return_invoice.isItemExist(barcode);
         },
         offer_dialogue(){
-            offer_dialogue(return_items, return_invoice, false, true);
+            offer_dialogue(
+                return_items, 
+                return_invoice, 
+                false, 
+                {title: "Verify and Confirm Return Stock", desc: "Return Items Overview", primary_btn_title: "Return Stock"}
+            );
         },
         evaluateOffer(input_id){
             evaluateOffer(input_id, return_invoice);

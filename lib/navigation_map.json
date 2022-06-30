@@ -54,9 +54,27 @@
 						"access": ["admin", "seller", "operator"]
 					},
 					{
+						"icon": "icon list ol",
+						"title": "dump reports",
+						"link": "warehouse_stock_dump_reports.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
 						"icon": "trash icon",
 						"title": "stock deleted",
 						"link": "warehouse_stock_deleted.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "calendar check icon",
+						"title": "stock check",
+						"link": "warehouse_stock_check.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "backward icon",
+						"title": "stock restore",
+						"link": "warehouse_stock_restore.html",
 						"access": ["admin", "seller", "operator"]
 					}
 				]

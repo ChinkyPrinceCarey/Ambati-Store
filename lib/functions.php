@@ -294,6 +294,25 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "priority";
 			return $columns;
 		break;
+
+		/*
+			id
+			generate_id
+			date
+			material
+			item
+			shortcode
+			type
+			unit
+			quantity
+			making_cost
+			retailer_cost
+			wholesale_cost
+			profit
+			item_number
+			barcode
+			custom_data
+		*/
 		
 		case 'stock':
 			$columns[]  = "generate_id";
@@ -301,12 +320,34 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "material";
 			$columns[]  = "item";
 			$columns[]  = "shortcode";
-			$columns[]  = "unit";
 			$columns[]  = "type";
+			$columns[]  = "unit";
 			$columns[]  = "quantity";
 			$columns[]  = "making_cost";
 			$columns[]  = "retailer_cost";
 			$columns[]  = "wholesale_cost";
+			$columns[]  = "profit";
+			$columns[]  = "item_number";
+			$columns[]  = "barcode";
+			$columns[]  = "custom_data";
+			return $columns;
+		break;
+		
+		case 'stock_dump':
+			$columns[]  = "row_id";
+			$columns[]  = "row_date";
+			$columns[]  = "generate_id";
+			$columns[]  = "date";
+			$columns[]  = "material";
+			$columns[]  = "item";
+			$columns[]  = "shortcode";
+			$columns[]  = "type";
+			$columns[]  = "unit";
+			$columns[]  = "quantity";
+			$columns[]  = "making_cost";
+			$columns[]  = "retailer_cost";
+			$columns[]  = "wholesale_cost";
+			$columns[]  = "profit";
 			$columns[]  = "item_number";
 			$columns[]  = "barcode";
 			$columns[]  = "custom_data";
@@ -319,14 +360,16 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "material";
 			$columns[]  = "item";
 			$columns[]  = "shortcode";
-			$columns[]  = "unit";
 			$columns[]  = "type";
+			$columns[]  = "unit";
 			$columns[]  = "quantity";
 			$columns[]  = "making_cost";
 			$columns[]  = "retailer_cost";
 			$columns[]  = "wholesale_cost";
+			$columns[]  = "profit";
 			$columns[]  = "item_number";
 			$columns[]  = "barcode";
+			$columns[]  = "custom_data";
 			return $columns;
 		break;
 
