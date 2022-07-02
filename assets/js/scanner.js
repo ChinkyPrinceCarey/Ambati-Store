@@ -644,7 +644,7 @@ function scan_items_bulk(){
 	setTimeout(function(){
 		let barcodes_arr =  barcode_input
                             .val()
-                            .replaceAll(",", " ")
+                            .replace(/,/g, " ")
                             .split(" ");
 		barcode_input.val('');
 		$.each(barcodes_arr, function(){
