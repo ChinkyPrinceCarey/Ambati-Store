@@ -321,6 +321,9 @@ function fetchVehicleInvoice(){
                 scanner_state.isEnabled = true;
                 scanner_state.reason = 'Vehicle selected and invoice fetched and it is saved';
 
+                return_invoice.cookie_name = `stock_return_${selected_vehicle_name}[${selected_vehicle_id}]`;
+                return_invoice.initCookieData();
+
                 vehicle_dropdown
                             .add(finished_dropdown)
                             .addClass("disabled");
@@ -496,6 +499,7 @@ function return_items(){
             modal_title = response.title;
             modal_body = response.content;
         }else if(response.result){
+            return_invoice.reset_cookie();
 
             let modal_title = "Items Return Successful";
 

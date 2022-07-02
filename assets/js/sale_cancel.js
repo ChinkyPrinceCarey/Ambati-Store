@@ -139,9 +139,6 @@ $(function(){
                         input_customer_village.val(invoice_data.customer_village);
                         input_customer_name.val(invoice_data.customer_name);
                         input_customer_details.val(invoice_data.customer_details);
-
-                        scanner_state.isEnabled = true;
-                        scanner_state.reason = "Invoice Data Parsed Successfully";
                         
                         input_invoice_id.parent().addClass('disabled');
                         search_invoice_btn.parent().addClass('disabled');
@@ -161,6 +158,12 @@ $(function(){
                         //removing the offer for current sale
                         current_sale.billing.offer_percentage = 0;
                         current_sale.billing.offer_amount = 0;
+
+                        scanner_state.isEnabled = true;
+                        scanner_state.reason = "Invoice Data Parsed Successfully";
+
+                        cancelled_sale.cookie_name = `sale_cancel_${invoice_id}`;
+                        cancelled_sale.initCookieData();
                     }
                 }else{
                     modal_body = response.info;
@@ -418,6 +421,8 @@ function sale_cancel(){
             modal_title = response.title;
             modal_body = response.content;
         }else if(response.result){
+            cancelled_sale.reset_cookie();
+            
             smallModal(
                 response.success_title,
                 response.success_content,

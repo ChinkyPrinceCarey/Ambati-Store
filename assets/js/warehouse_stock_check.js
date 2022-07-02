@@ -42,6 +42,7 @@ $(function(){
 
                 scanner_state.isEnabled = true;
                 scanner_state.reason = 'Stock Loaded';
+
                 dump_stock_btn.removeClass('disabled');
             });
         });
@@ -84,10 +85,12 @@ function initValues(){
         billing: true
     }
 
+    //SALE_OBJ
     scanned_data = {...scanned_data, ...sale_obj_methods};
     scanned_data.data_table = scanned_data_table_list;
     scanned_data.summary_table = scanned_data_table_summary;
 
+    //STOCK_OBJ
     unscanned_data = {...unscanned_data, ...stock_obj_methods};
     unscanned_data.data_table = unscanned_data_table_list;
     unscanned_data.summary_table = unscanned_data_table_summary;
@@ -117,6 +120,9 @@ function initValues(){
             remove_offer(unscanned_data);
         }
     }
+
+    scanned_data.cookie_name = "dump_scan_all";
+    scanned_data.initCookieData();
 }
 
 function initLoadStock(_type, _table, callback){
@@ -229,6 +235,7 @@ function dump_stock(){
             modal_title = response.title;
             modal_body = response.content;
         }else if(response.result){
+            scanned_data.reset_cookie();
             smallModal(
                 "Stock Dump Successful",
                 `

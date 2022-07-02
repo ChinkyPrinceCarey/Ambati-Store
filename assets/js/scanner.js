@@ -142,7 +142,9 @@ $(function(){
                     this.data.push(_param);
                     this.update_data_table(_action, _param, _show_trash_row); //@param == item
                     this.update_summary(_action, _param); //ignores if summary object is null
-                    this.update_billing(_action, _param)
+                    this.update_billing(_action, _param);
+
+                    this.update_cookie(); //ignores if `cookie_name` not present 
                 }else if(_action == "remove"){
                     barcode = _param;
                     
@@ -158,6 +160,8 @@ $(function(){
                             this.update_data_table(_action, sale_item); //@param == barcode
                             this.update_summary(_action, sale_item); //ignores if summary object is null
                             this.update_billing(_action, sale_item);
+
+                            this.update_cookie();
                             
                             return sale_item;
                         }else{
@@ -171,10 +175,59 @@ $(function(){
                 }
             }
         },
+        initCookieData: function(){
+            let cookie_name = this.cookie_name;
+            let cookie_data = Cookies.get(cookie_name);
+
+            if(cookie_data && cookie_data != ""){
+                smallModal(
+                    `Restore Previous Scanned Data?`,
+                    `Previously uncompleted scanned data is available to restore, would you like to restore it?`,
+                    [
+                        {
+                            "class": "ui positive approve medium button",
+                            "id": "",
+                            "text": `Yes`,
+                        },
+                        {
+                            "class": "ui negative deny button",
+                            "id": "",
+                            "text": "No",
+                        }
+                    ], 
+                    {
+                        closable: false,
+                        onApprove: function(){
+                            Cookies.set(cookie_name, "");
+                            barcode_input.val(cookie_data);
+                            scanner_btn.click();          
+                            return true;
+                        },
+                        onDeny: function(){
+                            Cookies.set(cookie_name, "");
+                            return true;
+                        }
+                    }
+                );
+            }
+        },
+        update_cookie: function(){
+            if(
+                this.cookie_name !== undefined
+            &&  this.cookie_name !== ""
+            //&&  this.isCookieEnabled
+            ){
+                Cookies.set(this.cookie_name, this.data.map((item)=>{return item.barcode}));
+            }
+        },
+        reset_cookie: function(){
+            Cookies.set(this.cookie_name, "");
+        },
         update_data_table: update_data_table,
         update_summary: update_summary,
         update_billing: update_billing,
-        isItemExist: isItemExist
+        isItemExist: isItemExist,
+        isCookieEnabled: true
     }
 
     success_notification = $("#success_notification")[0];
@@ -184,6 +237,7 @@ $(function(){
     scanner_form = $("#scanner_form");
     scanner_btn = $("#scanner_btn");
     barcode_input = $("#barcode_input");
+    barcode_input.attr("autocomplete", false);
 
     scanner_state.isEnabled = false; //just to trigger the updateScannerFormUI()
 
@@ -217,11 +271,13 @@ $(function(){
 
             }else{
                 if(barcode_input.val()){
-                    if(barcode_input.val().length < 25){
-                        scanner_data.method("remove", barcode_input.val());
-                    }else{
-                        //bulk items are inputed
+                    if(
+                            barcode_input.val().includes(" ")
+                        ||  barcode_input.val().includes(",")
+                    ){
                         scan_items_bulk();
+                    }else{
+                        scanner_data.method("remove", barcode_input.val());
                     }
                 }else{
                     smallModal(
@@ -586,7 +642,10 @@ function calculateNoOfVars(){
 
 function scan_items_bulk(){
 	setTimeout(function(){
-		let barcodes_arr = barcode_input.val().split(" ");
+		let barcodes_arr =  barcode_input
+                            .val()
+                            .replaceAll(",", " ")
+                            .split(" ");
 		barcode_input.val('');
 		$.each(barcodes_arr, function(){
 			barcode_input.val(this);
@@ -846,3 +905,9 @@ function offer_dialogue(
     );
 }
 /*end: OFFER */
+
+/*begin: COOKIE */
+function initCookieData(){
+    
+}
+/*end: COOKIE */

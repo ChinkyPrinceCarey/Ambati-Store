@@ -120,6 +120,19 @@ $(function(){
             customer_name.parent().addClass("disabled");
             customer_village.parent().addClass("disabled");
             customer_details.parent().addClass("disabled");
+
+            let cookie_name = `sale_stock_${selected_seller_name}[${selected_seller_id}]`;
+            sale_data.cookie_name = cookie_name;
+
+            if(!sale_data.data.length){
+                //data is not exist
+                //so initializing the data if available in cookie
+                sale_data.initCookieData();
+            }else{
+                //data is already exist 
+                //copying that data to cookie
+                Cookies.set(cookie_name, sale_data.data.map((item)=>{return item.barcode}));
+            }
             
             save_details_btn.hide();
 
@@ -143,6 +156,13 @@ $(function(){
 
         edit_details_btn.hide();
         sale_stock_btn.hide();
+
+        if(sale_data.data.length){
+            if(selected_seller_id && selected_seller_name){
+                let cookie_name = `sale_stock_${selected_seller_name}[${selected_seller_id}]`;
+                Cookies.set(cookie_name, '');
+            }
+        }
     })
 
     sale_stock_btn.on('click', function(){
@@ -286,6 +306,7 @@ function sale_items(){
             modal_title = response.title;
             modal_body = response.content;
         }else if(response.result){
+            sale_data.reset_cookie();
             smallModal(
                 "Items Sale Successful",
                 `

@@ -117,6 +117,9 @@ function initValues(){
             remove_offer(scanned_data);
         }
     }
+
+    scanned_data.cookie_name = "restore_scan_all";
+    scanned_data.initCookieData();
 }
 
 function initLoadStock(_type, _table, callback){
@@ -229,6 +232,7 @@ function restore_stock(){
             modal_title = response.title;
             modal_body = response.content;
         }else if(response.result){
+            scanned_data.reset_cookie();
             smallModal(
                 "Stock Restore Successful",
                 `
