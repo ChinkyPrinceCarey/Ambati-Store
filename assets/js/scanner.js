@@ -198,13 +198,13 @@ $(function(){
                     {
                         closable: false,
                         onApprove: function(){
-                            Cookies.set(cookie_name, "");
+                            Cookies.set(cookie_name, "", { expires: 7 });
                             barcode_input.val(cookie_data);
                             scanner_btn.click();          
                             return true;
                         },
                         onDeny: function(){
-                            Cookies.set(cookie_name, "");
+                            Cookies.set(cookie_name, "", { expires: 7 });
                             return true;
                         }
                     }
@@ -217,11 +217,11 @@ $(function(){
             &&  this.cookie_name !== ""
             //&&  this.isCookieEnabled
             ){
-                Cookies.set(this.cookie_name, this.data.map((item)=>{return item.barcode}));
+                Cookies.set(this.cookie_name, this.data.map((item)=>{return item.barcode}), { expires: 7 });
             }
         },
         reset_cookie: function(){
-            Cookies.set(this.cookie_name, "");
+            Cookies.set(this.cookie_name, "", { expires: 7 });
         },
         update_data_table: update_data_table,
         update_summary: update_summary,

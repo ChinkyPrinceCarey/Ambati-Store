@@ -131,7 +131,7 @@ $(function(){
             }else{
                 //data is already exist 
                 //copying that data to cookie
-                Cookies.set(cookie_name, sale_data.data.map((item)=>{return item.barcode}));
+                Cookies.set(cookie_name, sale_data.data.map((item)=>{return item.barcode}), { expires: 7 });
             }
             
             save_details_btn.hide();
@@ -160,7 +160,7 @@ $(function(){
         if(sale_data.data.length){
             if(selected_seller_id && selected_seller_name){
                 let cookie_name = `sale_stock_${selected_seller_name}[${selected_seller_id}]`;
-                Cookies.set(cookie_name, '');
+                Cookies.set(cookie_name, '', { expires: 7 });
             }
         }
     })
