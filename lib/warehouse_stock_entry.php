@@ -76,6 +76,29 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 								
 								$current_item_no++;
 							}
+
+							$no_of_items = count($fields_data['data']['barcodes']);
+
+							$stock_history_query_type = "insert";
+							$stock_history_query_table = "stock_history";
+							$stock_history_query_columns = array("generate_id", "date", "material", "item", "shortcode", "type", "unit", "quantity", "making_cost", "retailer_cost", "wholesale_cost", "profit");
+							$stock_history_query_values = array(
+													$fields_data['data']['generate_id'],
+													$fields_data['data']['date'],
+													$fields_data['data']['material'],
+													$fields_data['data']['item'],
+													$fields_data['data']['shortcode'],
+													$fields_data['data']['type'],
+													$fields_data['data']['unit'],
+													$no_of_items,
+													($fields_data['data']['making_cost'] * $no_of_items),
+													($fields_data['data']['retailer_cost'] * $no_of_items),
+													($fields_data['data']['wholesale_cost'] * $no_of_items),
+													'0'
+							);
+							$stock_history_query = get_query($stock_history_query_type, $stock_history_query_table, $stock_history_query_columns, $stock_history_query_values);
+
+							$queries_to_execute[] = array("insert" => $stock_history_query);
 							
 							$trasaction_result = execute_transactions($queries_to_execute);
 							

@@ -54,6 +54,12 @@
 						"access": ["admin", "seller", "operator"]
 					},
 					{
+						"icon": "icon history",
+						"title": "stock history",
+						"link": "warehouse_stock_history.html",
+						"access": ["admin", "seller", "operator"]
+					},
+					{
 						"icon": "icon list ol",
 						"title": "dump reports",
 						"link": "warehouse_stock_dump_reports.html",

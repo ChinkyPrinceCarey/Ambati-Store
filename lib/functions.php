@@ -333,6 +333,22 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			return $columns;
 		break;
 		
+		case 'stock_history':
+			$columns[]  = "generate_id";
+			$columns[]  = "date";
+			$columns[]  = "material";
+			$columns[]  = "item";
+			$columns[]  = "shortcode";
+			$columns[]  = "type";
+			$columns[]  = "unit";
+			$columns[]  = "quantity";
+			$columns[]  = "making_cost";
+			$columns[]  = "retailer_cost";
+			$columns[]  = "wholesale_cost";
+			$columns[]  = "profit";
+			return $columns;
+		break;
+		
 		case 'stock_dump':
 			$columns[]  = "row_id";
 			$columns[]  = "row_date";
