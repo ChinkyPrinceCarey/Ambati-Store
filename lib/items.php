@@ -21,7 +21,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         $action = $_POST['action'];
         $query_table = "items";
 
-        $manual_key_names = ['slno', 'making_cost', 'retailer_cost', 'available_stock'];
+        $manual_key_names = ['slno', 'making_cost', 'retailer_cost', 'available_stock', 'image-many-count'];
 
         $id = getKeyinArr($_POST['data']);
 
@@ -29,7 +29,12 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         $default_where_value = $id;
         $default_where = array("$default_where_column=$default_where_value");
 
-        $fields_def = array(MATERIAL, ITEM, SHORTCODE, UNIT, TYPE, DESC_1, DESC_2, ACTUAL_COST, COST, LEVEL, IN_STOCK, PRIORITY);
+        $fields_def = array(
+                        MATERIAL, ITEM, SHORTCODE, 
+                        UNIT, TYPE, DESC_1, DESC_2, 
+                        ACTUAL_COST, COST, LEVEL, 
+                        IN_STOCK, PRIORITY, IMAGE
+                    );
         $_post_data = is_numeric($id) ? $_POST['data'][$id] : null ;
 
         if($action == "create"){
@@ -40,13 +45,14 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                 $insert_arr = $fields_data['data'];
 
+                //`level`, `priority`, `in_stock` fields aren't required for `raw` material
                 if($insert_arr['material'] == "raw"){
-                    $manual_key_names[] = 'level';
-                    $manual_key_names[] = 'priority';
-                    $manual_key_names[] = 'in_stock';
+                    $manual_key_names[] = "level";
+                    $manual_key_names[] = "priority";
+                    $manual_key_names[] = "in_stock";
                 }
 
-                unset($insert_arr['id']);
+                $manual_key_names[] = "id";
                 foreach($manual_key_names as $key){
                     unset($insert_arr[$key]);
                 }

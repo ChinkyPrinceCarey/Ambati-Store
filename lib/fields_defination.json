@@ -379,5 +379,11 @@
 		"name": "priority",
 		"type": "name",
 		"accept_null": true
+	},
+	{
+		"variable": "IMAGE",
+		"name": "image",
+		"type": "image",
+		"accept_null": true
 	}
 ]

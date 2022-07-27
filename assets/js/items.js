@@ -3,7 +3,14 @@ var editor;
 var tableDom;
 var selectOptsArr = [{value: '', label: '', disabled: true}];
 
+let cropper;
+let cropperDom;
+
 $(function(){
+
+    cropperDom = $(".crop-container");
+    cropperDom.hide();
+    $("#cropBtn").click(cropButton);
 
     $.fn.search.settings.showNoResults = false;
 
@@ -198,6 +205,11 @@ $(function(){
                 attr: {
                     name: 'priority'
                 }
+            },
+            {
+                label: "Image:",
+                name: "image[]",
+                type: "imagesUpload"
             }
         ],
         ajax: function(method, url, data, success, error){
@@ -226,6 +238,12 @@ $(function(){
             }
         },
         idSrc: 'id',
+        formOptions: {
+          main: {
+            onBackground: 'none',
+            onBlur: 'none'
+          }
+        }
     })
 
     editor.on('opened', function(a, b, action){
@@ -251,7 +269,7 @@ $(function(){
         editor.field('id').hide();
         editor.field('slno').hide();
     });
-
+    
     editor.on( 'preSubmit', function (e, data, action) {
         if(action == "remove") return true;
 
@@ -415,6 +433,13 @@ $(function(){
             }
             },
             { data: "priority" },
+            { data: "image",
+            render: function(data, type, row){
+                //if(data[0].thumb){
+                    return `<img src="${data[0].thumb}" height="80px" onerror="this.onerror=null;this.src='./uploads/no-image.jpg';">`;
+                //}
+            }
+            },
             {
                 data: null,
                 className: "dt-center stock-entry",
@@ -524,6 +549,8 @@ $(function(){
     .add(editor.field('retailer_cost').input().parent())
     .add(editor.field('available_stock').input().parent())
     .addClass('editor-field-disable');
+
+    $(document).on('change', '#imageupload', function(){ initCropper(this); });
 })
 
 onInput_fields = '.DTE_Field_Name_item input, .DTE_Field_Name_company_name input, .DTE_Field_Name_flavour input';
@@ -535,7 +562,117 @@ $(document).on('input', onInput_fields, function(){
             $("#generate_btn").click();
         }
     }
-})
+});
+
+$(document).on('click', '.remove-image', function(){
+    let imageContainer = $(this).parent().parent();
+    imageContainer.remove();
+});
+
+$(document).on('click', '.move-image-left', function(){
+    moveImage("left", this);
+});
+
+$(document).on('click', '.move-image-right', function(){
+    moveImage("right", this);
+});
+
+function moveImage(direction, elem){
+    let imageContainer = $(elem).parent().parent();
+
+    if(direction == "left"){
+        $(imageContainer).insertBefore($(imageContainer).prev())
+    }else{
+        $(imageContainer).insertAfter($(imageContainer).next())
+    }
+}
+
+function initCropper(event){
+    if($(event).val()){
+        
+        $('div.DTE_Form_Buttons button').attr('disabled', true); //disable editor form submit button
+
+        var tmppath = URL.createObjectURL(event.files[0]);
+        
+        console.log(tmppath);
+        
+        $("#imageList").append(`
+            <li class="s-200px image-container cropping-preview">
+                <img class="maxWidth100" src="${tmppath}" />
+            </li>
+        `);
+
+        preview_image = $("#imageList li").last().children("img");
+
+        let cropper_image = cropperDom.find(".crop-image-container img");
+        
+        cropper_image.attr("src", preview_image.attr("src"))
+
+        cropper_image.cropper({
+            aspectRatio: 1 / 1,
+            setDragMode: "move",
+            cropBoxResizable: false,
+            setCropBoxData: {left: 0, top: 0, width: "100", height: "100"},
+            preview: preview_image.parent()
+            //crop: function(event){}
+        });
+
+        cropper = cropper_image.data('cropper');
+
+        cropperDom.show();
+    }
+}
+
+function destroyCropper(){
+    $(cropper.image).attr('src', '');
+    $(cropper.viewBoxImage).attr('src', '');
+    
+    let cropper_image = cropperDom.find(".crop-image-container img");
+    cropper_image.cropper("destroy");
+    cropper = null;
+    cropperDom.hide();
+
+    $('div.DTE_Form_Buttons button').attr('disabled', false); //enable editor form submit button
+}
+
+function cropButton(){
+    let thumbnail = cropper.getCroppedCanvas({
+        width: 400,
+        height: 400,
+        fillColor: '#fff',
+        imageSmoothingEnabled: false,
+        imageSmoothingQuality: 'medium',
+    }).toDataURL('image/jpeg');
+
+    let orginal = cropper.getCroppedCanvas({
+        maxWidth: 800,
+        fillColor: '#fff',
+        imageSmoothingEnabled: false,
+        imageSmoothingQuality: 'high',
+    }).toDataURL('image/jpeg');
+
+    let previewContainer = cropper.previews;
+
+    destroyCropper();
+
+    let popupDom = `
+    <div class="ui customised-popup">
+        <i class="trash icon link remove-image"></i>
+        <i class="arrow alternate circle left icon move-image-left"></i>
+        <i class="arrow alternate circle right icon move-image-right"></i>
+    </div>`;
+
+    previewContainer
+        .addClass('s-200px')
+        .children('img')
+            .addClass('maxWidth100')
+            .attr('onload', '')
+            .attr('src', thumbnail)
+            .attr('data-orginal', orginal)
+        .parent()
+        .removeClass('cropping-preview')
+        .append(popupDom);
+}
 
 function parseSearchOpts(_required_distinct_column){
     ajaxPostCall('lib/items.php', {action: "fetch_distinct_column", data: _required_distinct_column}, function(response){

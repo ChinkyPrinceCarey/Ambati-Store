@@ -56,6 +56,8 @@ function sanitize_field_data($_type, $_data, $_sanitize_rules){
 		$_sanitize_rules[] = "special_chars_remove";
 	}elseif($_type == "text"){
 		$_sanitize_rules[] = "lr_trim";
+	}elseif($_type == "image"){
+		$_sanitize_rules[] = "upload_and_return_path";
 	}
 
 	foreach($_sanitize_rules as $_iter_sanitize_rule){
@@ -86,6 +88,26 @@ function sanitize_the_value($_value, $_sanitize_rule){
 
 		case 'toUpper':
 			return strtoupper($_value);
+			break;
+		
+		case 'upload_and_return_path':
+			if(!is_array($_value)) $_value = array();
+
+			foreach($_value as &$image){
+				//thumb [or] orginal
+				foreach($image as $type => &$data){
+					if(strlen($data) > 40){
+						//it's base_64 image
+						//we've to upload to server
+						$path = UPLOADS_DIR . "/" . time() . "_". $type . ".jpg";
+						if(file_put_contents($path, file_get_contents($data)) !== FALSE){
+							$data = $path;
+						}
+					}
+				}
+				usleep(100);
+			}
+			return json_encode($_value);
 			break;
 
 		default:
@@ -292,6 +314,7 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "level";
 			$columns[]  = "in_stock";
 			$columns[]  = "priority";
+			$columns[]  = "image";
 			return $columns;
 		break;
 

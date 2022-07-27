@@ -496,3 +496,74 @@ td i{
 .ui.modal .actions > .button{
     margin-top: 6px;
 }
+
+.crop-image-container{
+    height: 500px;
+}
+
+.crop-image-container img{
+    height: 100%;
+}
+
+.cell > .rendered > #imageList{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 8px;
+    padding: 0px;
+    margin: 14px auto;
+    list-style: none;
+}
+
+.cell > .rendered > #imageList > .image-container{
+    border: 1px solid red;
+    border-radius: 7px;
+    background: gray;
+    position: relative;
+    overflow: hidden !important;
+}
+
+.cell > .rendered > #imageList > .image-container img{
+    border-radius: 7px;
+}
+
+.cell > .rendered > #imageList > .image-container .customised-popup{
+    font-size: 20px;
+    padding: 2px;
+    position: absolute;
+    top: -33px;
+    right: 0;
+    background: white;
+    border-radius: 1px 7px 1px 5px;
+    background-color: white;
+    color: red;
+    display: none;
+}
+
+.cell > .rendered > #imageList > .image-container .customised-popup i{
+    cursor: pointer;
+}
+
+.cell > .rendered > #imageList > .image-container:first-child .customised-popup .move-image-left{
+    display: none;
+}
+
+.cell > .rendered > #imageList > .image-container:last-child .customised-popup .move-image-right{
+    display: none;
+}
+
+.cell > .rendered > #imageList > .image-container:not(.cropping-preview):hover{
+    overflow: unset !important;
+}
+
+.cell > .rendered > #imageList > .image-container:not(.cropping-preview):hover .customised-popup{
+    display: block;
+}
+
+.s-200px{
+    width: 200px !important;
+    height: 200px !important;
+}
+
+.maxWidth100{
+    max-width: 100% !important;
+}
