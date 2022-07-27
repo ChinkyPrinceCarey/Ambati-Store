@@ -470,6 +470,32 @@ function delete_query($_query, $_transaction_conn=null){
 	}
 }
 
+function begin_transaction(){
+	global $conn;
+	$conn->beginTransaction();
+
+	return $conn;
+}
+
+function commit_transaction($_transaction_conn){
+	$return_array = array();
+	$return_array['result'] = false;
+	$return_array['additional_information'] = "commit_transaction(): called";
+
+	try{
+		$_transaction_conn->commit();
+		$return_array['result'] = true;
+		$return_array['additional_information'] = "commit_transaction(): All queries are executed successfully!";
+		
+		return $return_array;
+		
+	}catch(PDOException $e){
+		$_transaction_conn->rollBack();
+		$return_array['additional_information'] = "commit_transaction(): Catch Block: PDO Exception while commit: " . $e->getMessage();
+		return $return_array;
+	}
+}
+
 //insert query
 function insert_query($_query, $_transaction_conn=null){
 	
@@ -492,7 +518,7 @@ function insert_query($_query, $_transaction_conn=null){
 		$result['additional_information'] = "insert_query(): Error executing query: " . $_query['query'];
 
 		if($_transaction_conn){
-			if (!empty($stmt)){
+			if(!empty($stmt)){
 				$result['result'] = true;
 				$result['additional_information'] = "insert_query(): New record(s) created successfully!";
 				$result['pdo_statement'] = $pdo_statement;

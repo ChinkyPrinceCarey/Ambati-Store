@@ -6,6 +6,9 @@ var selectOptsArr = [{value: '', label: '', disabled: true}];
 let cropper;
 let cropperDom;
 
+let API_ENDPOINT = "";
+//API_ENDPOINT = "https://ambatitastyfoods.com/sms/"; //for remote server
+
 $(function(){
 
     cropperDom = $(".crop-container");
@@ -215,7 +218,7 @@ $(function(){
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  "lib/items.php",
+                url:  `${API_ENDPOINT}lib/items.php`,
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -340,7 +343,7 @@ $(function(){
             ],
         },
         "ajax": {
-            "url": "lib/items.php",
+            "url": `${API_ENDPOINT}lib/items.php`,
             "type": "POST",
             "data" : {"action": "fetch_all", "data": "random_data"},
             "dataType": 'json',
@@ -675,7 +678,7 @@ function cropButton(){
 }
 
 function parseSearchOpts(_required_distinct_column){
-    ajaxPostCall('lib/items.php', {action: "fetch_distinct_column", data: _required_distinct_column}, function(response){
+    ajaxPostCall(`${API_ENDPOINT}lib/items.php`, {action: "fetch_distinct_column", data: _required_distinct_column}, function(response){
 
         let modal_title = `On parse '${_required_distinct_column}' error`;
         let modal_body = null;
