@@ -1,0 +1,389 @@
+[
+	{
+		"variable": "USERNAME",
+		"name": "username",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 16
+			}
+		]
+	},
+	{
+		"variable": "PASSWORD",
+		"name": "password",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 8
+			}
+		]
+	},
+	{
+		"variable": "ROLE",
+		"name": "role",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 20
+			}
+		]
+	},
+	{
+		"variable": "UNIT",
+		"name": "unit",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 15
+			}
+		]
+	},
+	{
+		"variable": "TYPE",
+		"name": "type",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 15,
+				"allow_spaces": false,
+				"allow_only_alpha": true
+			}
+		]
+	},
+	{
+		"variable": "MATERIAL",
+		"name": "material",
+		"type": "name",
+		"validation": [
+			{
+				"minlength": 3,
+				"maxlength": 15,
+				"allow_spaces": false,
+				"allow_only_alpha": true
+			}
+		]
+	},
+	{
+		"variable": "ITEM",
+		"name": "item",
+		"type": "name",
+		"validation": [
+			{
+				"minlength": 3,
+				"maxlength": 25
+			}
+		]
+	},
+	{
+		"variable": "SHORTCODE",
+		"name": "shortcode",
+		"type": "name",
+		"validation": [
+			{
+				"length": 5,
+				"allow_spaces": false,
+				"allow_special_chars": false
+			}
+		],
+		"sanitize":[
+			"toUpper"
+		]
+	},
+	{
+		"variable": "GENERATE_ID",
+		"name": "generate_id",
+		"type": "name",
+		"validation": [
+			{
+				"length": 14
+			}
+		]
+	},
+	{
+		"variable": "QUANTITY",
+		"name": "quantity",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 10
+			}
+		]
+	},
+	{
+		"variable": "MAKING_COST",
+		"name": "making_cost",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 6
+			}
+		]
+	},
+	{
+		"variable": "RETAILER_COST",
+		"name": "retailer_cost",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 6
+			}
+		]
+	},
+	{
+		"variable": "WHOLESALE_COST",
+		"name": "wholesale_cost",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 6
+			}
+		]
+	},
+	{
+		"variable": "PROFIT",
+		"name": "profit",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 6
+			}
+		]
+	},
+	{
+		"variable": "ITEM_NUMBER",
+		"name": "item_number",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 5
+			}
+		]
+	},
+	{
+		"variable": "BARCODE",
+		"name": "barcode",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 30,
+				"allow_spaces": false
+			}
+		]
+	},
+	{
+		"variable": "SALE_TYPE",
+		"name": "sale_type",
+		"type": "name",
+		"validation": [
+			{
+				"minlength": 3,
+				"maxlength": 15,
+				"allow_spaces": false,
+				"allow_only_alpha": true
+			}
+		]
+	},
+	{
+		"variable": "SELLER_ID",
+		"name": "seller_id",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 4,
+				"allow_spaces": false
+			}
+		]
+	},
+	{
+		"variable": "SELLER_NAME",
+		"name": "seller_name",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 16,
+				"allow_special_chars": false
+			}
+		]
+	},
+	{
+		"variable": "SELLER_MOBILE_NUMBER",
+		"name": "seller_mobile_number",
+		"type": "digits",
+		"validation": [
+			{
+				"length": 10
+			}
+		]
+	},
+	{
+		"variable": "INVOICE_ID",
+		"name": "invoice_id",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 8,
+				"allow_spaces": false
+			}
+		]
+	},
+	{
+		"variable": "CUSTOM_ID",
+		"name": "custom_id",
+		"type": "name",
+		"accept_null": true,
+		"validation": [
+			{
+				"maxlength": 10,
+				"allow_spaces": false
+			}
+		]
+	},
+	{
+		"variable": "CUSTOM_NAME",
+		"name": "custom_name",
+		"type": "name",
+		"accept_null": true,
+		"validation": [
+			{
+				"maxlength": 16
+			}
+		]
+	},
+	{
+		"variable": "CUSTOMER_NAME",
+		"name": "customer_name",
+		"type": "name",
+		"accept_null": true,
+		"validation": [
+			{
+				"maxlength": 16
+			}
+		]
+	},
+	{
+		"variable": "CUSTOMER_VILLAGE",
+		"name": "customer_village",
+		"type": "name",
+		"accept_null": true,
+		"validation": [
+			{
+				"maxlength": 16
+			}
+		]
+	},
+	{
+		"variable": "CUSTOMER_DETAILS",
+		"name": "customer_details",
+		"type": "name",
+		"accept_null": true,
+		"validation": [
+			{
+				"maxlength": 20
+			}
+		]
+	},
+	{
+		"variable": "NO_OF_ITEMS",
+		"name": "no_of_items",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 3
+			}
+		]
+	},
+	{
+		"variable": "NO_OF_UNITS",
+		"name": "no_of_units",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 4
+			}
+		]
+	},
+	{
+		"variable": "TOTAL_PRICE",
+		"name": "total_price",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 6
+			}
+		]
+	},
+	{
+		"variable": "VEHICLE_ID",
+		"name": "vehicle_id",
+		"type": "name",
+		"validation": [
+			{
+				"minlength": 3,
+				"maxlength": 15,
+				"allow_special_chars": false,
+				"allow_spaces": false
+			}
+		]
+	},
+	{
+		"variable": "VEHICLE_NAME",
+		"name": "vehicle_name",
+		"type": "name",
+		"validation": [
+			{
+				"minlength": 3,
+				"maxlength": 25,
+				"allow_special_chars": false
+			}
+		]
+	},
+	{
+		"variable": "DESC_1",
+		"name": "desc_1",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "DESC_2",
+		"name": "desc_2",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "ACTUAL_COST",
+		"name": "actual_cost",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "COST",
+		"name": "cost",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "LEVEL",
+		"name": "level",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "IN_STOCK",
+		"name": "in_stock",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "PRIORITY",
+		"name": "priority",
+		"type": "name",
+		"accept_null": true
+	},
+	{
+		"variable": "IMAGE",
+		"name": "image",
+		"type": "image",
+		"accept_null": true
+	}
+]

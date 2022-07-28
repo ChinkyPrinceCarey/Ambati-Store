@@ -1,0 +1,174 @@
+:root{
+  --color-primary: hsl(240, 100%, 10%);
+  --color-primary-1: hsl(240, 61%, 28%);
+  --color-primary-2: hsl(240, 79.7%, 88.4%);
+  --color-secondary:hsl(0, 100%, 40%);
+  --color-secondary-1:rgba(204, 0, 0, 0.329);
+  --color-secondary-2:hsl(0, 79.7%, 88.4%);
+}
+
+/*Use body selector on individual login page only*/
+/*
+body{
+  font-family: roboto, sans-serif;
+	background-color: aliceblue;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+*/
+
+.login-conatiner{
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+}
+
+.center-container{
+  width: 90%;
+  max-width: 600px;
+  height: 60vh;
+  min-height: 420px;
+  background-color: #fafafa;
+  box-shadow: 0 30px 75px 0 rgba(10, 25, 41, 0.2);
+  border-radius: 4px;
+}
+
+.center-container .wrapper{
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.center-container .wrapper .brand-name{
+  font-weight: bolder;
+  margin-top: 2px;
+  color: #444;
+}
+
+.center-container .wrapper .login-status{
+  margin-top: 8px;
+  font-size: 12px;
+  padding: 5px;
+  border-radius: 2px;
+}
+
+.center-container .wrapper .login-status.success{
+  border: 1px solid #4BB543;
+  color: #4BB543;
+}
+
+.center-container .wrapper .login-status.danger{
+  border: 1px solid var(--color-secondary);
+  color: var(--color-secondary);
+}
+
+.center-container .wrapper form{
+  align-self: flex-start;
+  text-transform: uppercase;
+
+}
+
+.center-container .wrapper form{
+  margin-top: 30px;
+  width: 100%;
+  padding: 5px;
+}
+
+.center-container .wrapper form .form-element:not(:first-child){
+  margin-top: 16px;
+}
+
+.center-container .wrapper form .form-element *{
+  display: block;
+  font-size: 12px;
+}
+
+.center-container .wrapper form .form-element label{
+  color: #444;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.center-container .wrapper form .form-element input{
+  width: 96%;
+  height: 20px;
+  padding: 8px 0;
+  outline: none;
+  border: none;
+  background: none;
+  border-bottom: 1px solid #ddd;
+}
+
+.center-container .wrapper form .form-element input:focus{
+  border-color: var(--color-primary-1);
+  outline: 0;
+  background: none;
+  color: #444;
+}
+
+.center-container .wrapper form .form-element.btn-primary{
+  margin-top: 18px;
+}
+
+.center-container .wrapper form .form-element.loading.btn-primary button{
+  background-image: url('../imgs/loading.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom;
+}
+
+.center-container .wrapper form .form-element.loading.btn-primary button > span{
+  display: none;
+}
+
+.center-container .wrapper form .form-element.btn-primary button{
+  width: 96%;
+  height: 30px;
+  font-weight: 600;
+  font-size: 10px;
+  border-radius: 4px;
+  outline: none;
+  border: none;
+  background-color: unset;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-2);
+  text-transform: uppercase;
+}
+
+.center-container .wrapper form .form-element.btn-primary button:hover{
+  background-color: var(--color-primary-2);
+}
+
+.center-container .wrapper form .form-element.btn-secondary{
+  margin-top: 14px;
+}
+
+.center-container .wrapper form .form-element.btn-secondary button{
+  width: 96%;
+  height: 30px;
+  font-weight: 600;
+  font-size: 10px;
+  border-radius: 4px;
+  outline: none;
+  border: none;
+  background-color: var(--color-secondary-2);
+  color: var(--color-secondary);
+  border: 1px solid var(--color-secondary-2);
+  text-transform: uppercase;
+}
+
+.center-container .wrapper form .form-element.btn-secondary button:hover{
+  background-color: var(--color-secondary-3);
+}
