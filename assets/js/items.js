@@ -609,8 +609,6 @@ function initCropper(event){
 
         var tmppath = URL.createObjectURL(event.files[0]);
         
-        console.log(tmppath);
-        
         $("#imageList").append(`
             <li class="s-200px image-container cropping-preview">
                 <img class="maxWidth100" src="${tmppath}" />
