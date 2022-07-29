@@ -653,28 +653,21 @@ function getFullImgOrginalPath(rootPath, absolutePath){
 }
 
 function initPreview(selector){
-  let img_selector = $(selector).children();
-  let preview_1_src = img_selector.attr("preview-1-src");
-  let preview_2_src = img_selector.attr("preview-2-src");
-  let preview_3_src = img_selector.attr("preview-3-src");
-
   let preview_main_img = $('#previewMainImg');
   let preview_side_imgs = $('#previewSideImgs');  
 
   preview_main_img.empty();
   preview_side_imgs.empty();
-  if(preview_1_src != undefined){
-    preview_main_img.append('<img class="lazyPreview no-preloader" data-src="'+ preview_1_src +'" src="imgs/loading.svg" alt="">');
-    preview_side_imgs.append('<img class="lazyPreview active" src="'+ preview_1_src +'" width="100" height="100">')
-  }
 
-  if(preview_2_src != undefined){
-    preview_side_imgs.append('<img class="lazyPreview" data-src="'+ preview_2_src +'" width="100" height="100">')
-  }
-
-  if(preview_3_src != undefined){
-    preview_side_imgs.append('<img class="lazyPreview" data-src="'+ preview_3_src +'" width="100" height="100">')
-  }
+  let previews = $(selector).find(".previews img");
+  previews.each(function(index, img){
+    if(index == 0){
+      preview_main_img.append('<img class="lazyPreview no-preloader" data-src="'+ img.src +'" src="imgs/loading.svg" alt="">');
+      preview_side_imgs.append('<img class="lazyPreview active" src="'+ img.src +'" width="100" height="100">');
+    }else{
+      preview_side_imgs.append('<img class="lazyPreview" src="'+ img.src +'" width="100" height="100">');
+    }
+  });
 
   $(".image-preview-container").removeClass("d-none");
   $("#imgPreviewWrapper").addClass("animate-zoom-in");

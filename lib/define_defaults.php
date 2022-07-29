@@ -6,10 +6,11 @@ define("DB_PASSWORD", "1@Passwordtrue");
 define("DB_DBNAME", "sanketma_ambati"); //ambati_sms_v2
 
 //## default directories ## //
-define("BASE_DIR", ".");
+define("BASE_DIR", "/home/sanketma/public_html/ambatitastyfoods.com");
 define("LIB_DIR", BASE_DIR . "/lib");
 define("NAVIGATION_FILE", LIB_DIR . "/navigation_map.json");
-define("UPLOADS_DIR", "../uploads");
+define("UPLOADS_DIRNAME", "uploads");
+define("UPLOADS_DIR", "/" . UPLOADS_DIRNAME);
 
 define("HOST_BASE_API", "https://ambatitastyfoods.com");
 define("LIB_BASE_API", HOST_BASE_API . "/lib");
