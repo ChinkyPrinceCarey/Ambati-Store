@@ -672,6 +672,7 @@ function cropButton(){
             .attr('onload', '')
             .attr('src', thumbnail)
             .attr('data-orginal', orginal)
+            .attr('data-timestamp', getCurrentDate("dmt"))
         .parent()
         .removeClass('cropping-preview')
         .append(popupDom);

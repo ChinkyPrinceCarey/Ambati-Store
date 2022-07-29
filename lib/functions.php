@@ -95,12 +95,27 @@ function sanitize_the_value($_value, $_sanitize_rule){
 
 			foreach($_value as &$image){
 				//thumb [or] orginal
+				$timestamp = time();
+				if(array_key_exists('timestamp', $image)){
+					$timestamp = $image['timestamp'];
+					unset($image['timestamp']);
+				}
 				foreach($image as $type => &$data){
 					if(strlen($data) > 40){
 						//it's base_64 image
 						//we've to upload to server
-						$path = UPLOADS_DIR . "/" . time() . "_". $type . ".jpg";
-						if(file_put_contents($path, file_get_contents($data)) !== FALSE){
+						$imagename = "{$timestamp}_{$type}.jpg";
+
+						$path = UPLOADS_DIRNAME . "/" . $imagename;
+						$imageSavePath = BASE_DIR . "/" . $path;
+						
+						if($_SERVER['HTTP_HOST'] != "localhost"){
+							//for remote server
+							$path = UPLOADS_DIR . "/" . $imagename;
+							$imageSavePath = BASE_DIR . $path;
+						}
+
+						if(file_put_contents($imageSavePath, file_get_contents($data)) !== FALSE){
 							$data = $path;
 						}
 					}
@@ -318,25 +333,6 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			return $columns;
 		break;
 
-		/*
-			id
-			generate_id
-			date
-			material
-			item
-			shortcode
-			type
-			unit
-			quantity
-			making_cost
-			retailer_cost
-			wholesale_cost
-			profit
-			item_number
-			barcode
-			custom_data
-		*/
-		
 		case 'stock':
 			$columns[]  = "generate_id";
 			$columns[]  = "date";

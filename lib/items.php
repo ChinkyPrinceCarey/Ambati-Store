@@ -68,29 +68,38 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 }
 
                 $insert_query = get_query($query_type, $query_table, $query_columns, $query_values);
-
                 $return['insert_query'] = $insert_query;
 
-                $transaction_connection = begin_transaction();
+                $insert_result = null;
 
-                $insert_result = insert_query($insert_query, $transaction_connection);
-                if($insert_result['result']){
-                    $insert_result = curl_request("https://ambatitastyfoods.com/sms/lib/items.php", $_POST);
+                if($_SERVER['HTTP_HOST'] == "localhost"){
+                    //request on localhost,
+                    //so have to queue update on localhost
+                    //then call & update on remote server
+                    $transaction_connection = begin_transaction();
+                    $insert_result = insert_query($insert_query, $transaction_connection);
                     if($insert_result['result']){
-                        if(
-                                array_key_exists("result", $insert_result['data'])
-                            &&  $insert_result['data']['result']
-                        ){
-                            $insert_result = commit_transaction($transaction_connection);
+                        $insert_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $_POST);
+                        if($insert_result['result']){
+                            if(
+                                    array_key_exists("result", $insert_result['data'])
+                                &&  $insert_result['data']['result']
+                            ){
+                                $insert_result = commit_transaction($transaction_connection);
+                            }else{
+                                $insert_result['result'] = false;
+                                $insert_result['info'] = "error from remote server: " . $insert_result['data']['info'];
+                                $insert_result['additional_information'] = "error from remote server: " . $insert_result['data']['additional_info'];
+                            }
                         }else{
-                            $insert_result['result'] = false;
-                            $insert_result['info'] = "error from remote server: " . $insert_result['data']['info'];
-                            $insert_result['additional_information'] = "error from remote server: " . $insert_result['data']['additional_info'];
+                            $insert_result['info'] = "error connecting to remote server: " . $insert_result['info'];
+                            $insert_result['additional_information'] = "error connecting to remote server: " . $insert_result['info'];
                         }
-                    }else{
-                        $insert_result['info'] = "error connecting to remote server: " . $insert_result['info'];
-                        $insert_result['additional_information'] = "error connecting to remote server: " . $insert_result['info'];
                     }
+                }else{
+                    //request on remote server,
+                    //just update on remote server
+                    $insert_result = insert_query($insert_query);
                 }
 
                 if($insert_result['result']){
@@ -130,6 +139,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $row_set_arr = $fields_data['data'];
                 
                 unset($row_set_arr['id']);
+                unset($row_set_arr['image-many-count']);
                 
                 foreach($manual_key_names as $key){
                     unset($row_set_arr[$key]);
@@ -147,26 +157,37 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $update_query = get_query($query_type, $query_table, $query_set, $default_where);
                 $return['query'] = $update_query; //for debugging
 
-                $transaction_connection = begin_transaction();
+                $update_result = null;
 
-                $update_result = update_query($update_query, $transaction_connection);
-                if($update_result['result']){
-                    $update_result = curl_request("https://ambatitastyfoods.com/sms/lib/items.php", $_POST);
+                if($_SERVER['HTTP_HOST'] == "localhost"){
+                    //request on localhost,
+                    //so have to queue update on localhost
+                    //then call & update on remote server
+                    $transaction_connection = begin_transaction();
+
+                    $update_result = update_query($update_query, $transaction_connection);
                     if($update_result['result']){
-                        if(
-                                array_key_exists("result", $update_result['data'])
-                            &&  $update_result['data']['result']
-                        ){
-                            $update_result = commit_transaction($transaction_connection);
+                        $update_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $_POST);
+                        if($update_result['result']){
+                            if(
+                                    array_key_exists("result", $update_result['data'])
+                                &&  $update_result['data']['result']
+                            ){
+                                $update_result = commit_transaction($transaction_connection);
+                            }else{
+                                $update_result['result'] = false;
+                                $update_result['info'] = "error from remote server: " . $update_result['data']['info'];
+                                $update_result['additional_information'] = "error from remote server: " . $update_result['data']['additional_info'];
+                            }
                         }else{
-                            $update_result['result'] = false;
-                            $update_result['info'] = "error from remote server: " . $update_result['data']['info'];
-                            $update_result['additional_information'] = "error from remote server: " . $update_result['data']['additional_info'];
+                            $update_result['info'] = "error connecting to remote server: " . $update_result['info'];
+                            $update_result['additional_information'] = "error connecting to remote server: " . $update_result['info'];
                         }
-                    }else{
-                        $update_result['info'] = "error connecting to remote server: " . $update_result['info'];
-                        $update_result['additional_information'] = "error connecting to remote server: " . $update_result['info'];
                     }
+                }else{
+                    //request on remote server,
+                    //just update on remote server
+                    $update_result = update_query($update_query);
                 }
 
                 if($update_result['result']){
@@ -211,27 +232,38 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $delete_query = get_query($query_type, $query_table, $query_column, $query_where);
             $return['query'] = $delete_query; //for debugging
 
-            $transaction_connection = begin_transaction();
+            $delete_result = null;
 
-            $delete_result = delete_query($delete_query, $transaction_connection);
-            if($delete_result['result']){
-                $delete_result = curl_request("https://ambatitastyfoods.com/sms/lib/items.php", $_POST);
+            if($_SERVER['HTTP_HOST'] == "localhost"){
+                //request on localhost,
+                //so have to queue update on localhost
+                //then call & update on remote server
+                $transaction_connection = begin_transaction();
+                $delete_result = delete_query($delete_query, $transaction_connection);
                 if($delete_result['result']){
-                    if(
-                            array_key_exists("result", $delete_result['data'])
-                        &&  $delete_result['data']['result']
-                    ){
-                        $delete_result = commit_transaction($transaction_connection);
+                    $delete_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $_POST);
+                    if($delete_result['result']){
+                        if(
+                                array_key_exists("result", $delete_result['data'])
+                            &&  $delete_result['data']['result']
+                        ){
+                            $delete_result = commit_transaction($transaction_connection);
+                        }else{
+                            $delete_result['result'] = false;
+                            $delete_result['info'] = "error from remote server: " . $delete_result['data']['info'];
+                            $delete_result['additional_information'] = "error from remote server: " . $delete_result['data']['additional_info'];
+                        }
                     }else{
-                        $delete_result['result'] = false;
-                        $delete_result['info'] = "error from remote server: " . $delete_result['data']['info'];
-                        $delete_result['additional_information'] = "error from remote server: " . $delete_result['data']['additional_info'];
+                        $delete_result['info'] = "error connecting to remote server: " . $delete_result['info'];
+                        $delete_result['additional_information'] = "error connecting to remote server: " . $delete_result['info'];
                     }
-                }else{
-                    $delete_result['info'] = "error connecting to remote server: " . $delete_result['info'];
-                    $delete_result['additional_information'] = "error connecting to remote server: " . $delete_result['info'];
                 }
+            }else{
+                //request on remote server,
+                //just update on remote server
+                $delete_result = delete_query($delete_query);
             }
+            
             if($delete_result['result']){
                 $return['result'] = true;
                 $return['info'] .= count($query_where) . "record(s) deleted ";
@@ -270,6 +302,45 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             }else{
                 $return['result'] = true;
                 $return['data'] = array();
+                $return['info'] .= $select_result['info'];
+                //$return['additional_info'] .= $select_result['additional_info'];
+            }
+        }elseif($action == "fetch_for_app"){
+            $query_type = "custom";
+            //$query_table defined earlier
+            $categories_query_text = 
+            "
+            SELECT DISTINCT `type` FROM `items`
+            ";
+			
+            $categories_query = get_query($query_type, $query_table, $categories_query_text);
+            $categories_result = select_query($categories_query);
+			
+			$query_text = 
+            "
+            SELECT `image`, `shortcode`, `item`, `desc_1`, `desc_2`, `cost`, `type`, `priority` FROM `items`
+            ORDER BY `items`.`id`  ASC
+            ";
+			
+            $select_query = get_query($query_type, $query_table, $query_text);
+            $select_result = select_query($select_query);
+			
+			//$return['query'] = $select_query;
+
+            if($categories_result['result'] && $select_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "fetched all records ";
+				$return['header'] = array(
+										"header_1" => "Ambati Tasty Foods - Laxmiravulapalle, Telangana",
+										"header_2" => "Online store for Keerana Vendors",
+										"app_button" => "App Coming Soon",
+										"mobile_number" => "8096031765"
+									);
+                $return['categories'] = $categories_result['additional_data'];
+                $return['items'] = $select_result['additional_data'];
+            }else{
+                $return['result'] = true;
+                $return['items'] = array();
                 $return['info'] .= $select_result['info'];
                 //$return['additional_info'] .= $select_result['additional_info'];
             }

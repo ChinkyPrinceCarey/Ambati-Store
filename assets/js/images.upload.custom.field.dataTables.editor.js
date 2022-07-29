@@ -35,7 +35,8 @@
         $(images).each(function(){
           dataArr.push({
             thumb: $(this).children("img").attr("src"),
-            orginal: $(this).children("img").data("orginal")
+            orginal: $(this).children("img").data("orginal"),
+            timestamp: $(this).children("img").data("timestamp")
           })
         });
 
@@ -60,7 +61,11 @@
         for(var key in dataArr){
           imagesList.append(`
           <li class="s-200px image-container">
-              <img class="maxWidth100" src="${dataArr[key].thumb}" data-orginal="${dataArr[key].orginal}" />
+              <img 
+                class="maxWidth100" 
+                src="${dataArr[key].thumb}" 
+                data-orginal="${dataArr[key].orginal}" 
+              />
               ${popupDom}
           </li>
           `);
