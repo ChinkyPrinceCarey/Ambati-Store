@@ -12,21 +12,286 @@
 	
   	<!-- Import Fonts Web [or] Local -->
     <link rel="stylesheet" href="./css/fonts.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.im/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- /Import Fonts Web [or] Local -->
 
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/login.css">
+
+    <!-- Content Render -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.im/ajax/libs/template7/1.4.1/template7.min.js"></script>
+	<!-- /Content Render -->
 </head>
 <body>
-  <h1>Hello World!</h1>
+    <!-- Preloader -->
+    <div class="preloader">
+        <img class="logo-svg" src="./imgs/logo.min.svg"/>
+    </div>
+    <!-- /-Preloader -->
 
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
-  <script type="text/javascript" src='//cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
-  <script type="text/javascript" src="./js/custom_event.js"></script>
-  <script type="text/javascript" src="./js/parse_data.js"></script>
-  <script type="text/javascript" src="./js/main.js"></script>
+    <!-- Content Loader -->
+    <noscript id="content-template" type="text/template7">
+        <div class="header">
+            <div class="wrapper">
+                <div id="name" class="bold clr-primary">{{header.header_1}}</div>
+                <div id="addr" class="dark-gray">{{header.header_2}}</div>
+                <div id="btn" class="button-container">
+                    <button class="bold">{{header.app_button}}</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="brand-info">
+                <div class="wrapper">
+                    <div class="contact">
+                        <div class="name bold">AMBATI TASTY FOODS</div>
+                        <div class="tel">
+                            <div class="icon"><img src="./imgs/phone-3.svg"></div>
+                            <div class="text" id="mobile_number">{{header.mobile_number}}</div>
+                        </div>
+                        <div class="social">
+                            <div class="app call">
+                                <a href="tel:{{header.mobile_number}}"><img src="./imgs/phone.svg"><span>Ask Queries</span></a>
+                            </div>
+                            <div class="app whatsapp">
+                                <a href="https://wa.me/91{{header.mobile_number}}?text=Hello,%20I've%20few%20queries">
+                                    <img src="./imgs/whatsapp-new.svg"><span>Send Queries</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="logo">
+                        <img src="./imgs/logo.min.svg">
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="sticky-items">
+                <div class="wrapper">
+                    <div class="search">
+                        <div class="wrapper">
+                            <div class="icon"><img src="./imgs/search.svg"></div>
+                            <input type="text" name="search" class="" placeholder="Search for an item">
+                        </div>
+                    </div>
+                    <div class="wrap-collapsible">
+                        <input type="checkbox" id="collapsible" class="toggle" checked>
+                        <label for="collapsible" class="lbl-toggle">Categories</label>
+                        <div class="collapsible-content">
+                            <div class="content-inner">
+                                <div class="categories">
+                                    <div class="tag c-primary" id="cart">In Cart</div>
+                                    {{#each categories}}
+                                        <div class="tag c-secondary">{{flavour}}</div>
+                                    {{/each}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="catalogue" id="catalogueItems">
+        {{#if items}}
+        {{#each items}}
+                <div class="catalogue-item {{ js 'isItemHighlight(this.priority, "forClass")'}}" data-category={{flavour}}>
+                    {{#js_if "isItemHighlight(this.priority, 'forRibbon') "}}
+                        <div class="ribbon"><span>{{priority}}</span></div>
+                    {{/js_if}}
+                    <div class="section-1">
+            <div class="img">
+                <img class="lazy" 
+                {{#if image[0].thumb}}
+                                data-src="https://www.ambatitastyfoods.com/sms/uploads/{{image[0].thumb}}"
+                            {{else}}
+                                data-src="https://www.ambatitastyfoods.com/sms/uploads/no-image.jpg" 
+                            {{/if}}
+                            >
+            </div>
+            <div class="code">Item Code: <span id="item_code">{{shortcode}}</span></div>
+            </div>
+                    <div class="name">{{item}}</div>
+                    <div class="desc">Desc: <span>{{desc_1}}</span></div>
+                    <div class="desc2">{{desc_2}}</div>
+                    <div class="footer">
+                        <div class="price">
+                            ₹ <span id="cost">{{cost}}</span>
+                        </div>
+                        <div class="add-container">
+                            {{#js_if "this.in_stock == 'yes'"}}
+                                <div class="initial">+ Add</div>
+                            {{else}}
+                                <div class="no-stock">No Stock</div>
+                            {{/js_if}}
+                            <div class="post-initial d-none">
+                                <span id="add">+</span>
+                                <input type="number" name="itemCount" id="" value="1" min="1" max="999" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onpaste="return false" onwheel="return false;">
+                                <span id="remove">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        {{/each}}
+        {{/if}}
+        </div>
+
+            <div class="cart-summary d-none">
+                <div class="items-summary">
+                    <div class="items"></div>
+                    <div id="ellipse">.</div>
+                    <div id="amount">₹ <span></span></div>
+                </div>
+                <div class="v-line"></div>
+                <div class="place-order">
+                    <div class="img"><div class="count" id="shortItemCount"></div><img src="./imgs/buy-icon.svg"></div>
+                    <div class="text" id="order-btn">Checkout</div>
+                </div>
+            </div>
+
+            <div class="menu-container">
+                <div class="menu-wrapper">
+                    <div class="menu-item active">
+                        <div class="menu-icon"><i class="fa fa-home" aria-hidden="true"></i></div>
+                        <div class="menu-name">Home</div>
+                    </div>
+                    <div class="menu-item fade-outs">
+                        <div class="menu-icon"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i></div>
+                        <div class="menu-name">Orders</div>
+                    </div>
+                    <div class="menu-item fade-outs">
+                        <div class="menu-icon"><i class="fa fa-user" aria-hidden="true"></i></div>
+                        <div class="menu-name">Profile</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal d-none">
+            <div class="modal-wrapper animate-open-top">
+                <div class="close-icon" id="modal-close">x</div>
+                <div class="alert d-none" id="alert">
+                    <div class="wrapper">
+                        <div class="title">
+                            Alert Title
+                        </div>
+                        <div class="body">
+                            Alert Body
+                        </div>
+                        <div class="footer">
+                            <button class="primary" id="modal-okay">Okay!</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert" id="order-confirmation">
+                    <div class="wrapper">
+                        <div class="title">
+                            Order Confirmation
+                        </div>
+                        <form id="order-form">
+                        <div class="body">
+                            <div class="element">
+                                <label for="name">Name</label>
+                                <input type="text" name="name" id="name" minlength="4" required>
+                            </div>
+                            <div class="element">
+                                <label for="name">Mobile Number</label>
+                                <input type="text" name="mobile_number" id="mobile_number" maxlength="10" minlength="10" required apattern="^\d*$" title="Enter your valid mobile number">
+                            </div>
+                            <div class="element">
+                                <label for="name">Address</label>
+                                <textarea name="address" id="address" cols="30" rows="5" required minlength="3"></textarea>
+                            </div>
+                            <div class="order-summary">
+                                <h4>Order Summary</h4>
+                                <table id="order-summary">
+                                    <thead>
+                                        <tr>
+                                            <th>Slno</th>
+                                            <th>Item Name</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot>
+                                        <tr class="footer-element">
+                                            <td class="right-align" colspan="4">Sub Total</td>
+                                            <td class="right-align bold" id="sub_total"></td>
+                                        </tr>
+                                        <tr class="footer-element">
+                                            <td class="right-align" colspan="4">0% GST</td>
+                                            <td class="right-align bold" id="gst"></td>
+                                        </tr>
+                                        <tr class="footer-element" id="total">
+                                            <td class="right-align"  colspan="4">Total</td>
+                                            <td class="right-align bold" id="total"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>                          
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <button class="primary" id="modal-order">Order</button>
+                            <button type="button" class="primary-2" id="modal-close">Cancel</button>
+                            <a class="d-none" id="anchor_whatsapp" target="_self">Self Send WhatsApp</a>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </noscript>
+    <!-- -/Content Loader -->
+  
+    <div id="content-rendered"></div>
+
+    <div class="login-conatiner d-none">
+        <div class="center-container">
+            <div class="wrapper">
+                <div class="logo">
+                    <img src="./imgs/logo.min.svg" alt="" width="80px">
+                </div>
+                <div class="brand-name">
+                    Ambati Tasty Foods
+                </div>
+                <div class="login-status" id="login_status"></div>
+                <form id="loginForm" action="">
+                    <div class="form-element">
+                        <label>Username</label>
+                        <input type="text" name="username" id="username">
+                    </div>
+                    <div class="form-element">
+                        <label>Password</label>
+                        <input type="password" name="password" id="password">
+                    </div>
+                    <div class="form-element btn-primary" id="login_btn">
+                        <button type="submit"><span>Login</span></button>
+                    </div>
+                    <div class="form-element btn-secondary" id="register_btn">
+                        <button type="button"><span>For Registration</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-preview-container d-none">
+        <div class="image-preview-wrapper" id="imgPreviewWrapper">
+            <div class="close-button" id="previewClose">X</div>
+            <div class="main-image" id="previewMainImg"></div>
+            <div class="side-images" id="previewSideImgs"></div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.im/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.im/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+    <script type="text/javascript" src='//cdnjs.cloudflare.im/ajax/libs/gsap/latest/TweenMax.min.js'></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.im/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+    <script type="text/javascript" src="./js/custom_event.js"></script>
+    <script type="text/javascript" src="./js/parse_data.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
 </body>
 </html>
