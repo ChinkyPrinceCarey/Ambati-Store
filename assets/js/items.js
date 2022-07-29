@@ -249,6 +249,18 @@ $(function(){
         }
     })
 
+    editor.on('processing', function(a, b){
+        if(b){
+            $('div.DTE_Form_Buttons button')
+            .addClass("loading")
+            .attr('disabled', true); //enable editor form submit button
+        }else{
+            $('div.DTE_Form_Buttons button')
+            .removeClass("loading")
+            .attr('disabled', false); //enable editor form submit button
+        }
+    });
+
     editor.on('opened', function(a, b, action){
         if(action == "create"){
             editor.field('making_cost').hide();
