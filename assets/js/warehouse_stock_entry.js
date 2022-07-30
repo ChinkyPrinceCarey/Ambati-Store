@@ -237,7 +237,7 @@ $(function(){
 				edit_stock_btn.show();
 				
 				//show add stock btn
-				add_stock_btn.show();
+				add_stock_btn.show().focus();
 				
 				//now generate barcodes
 				generateBarcodes(fields);
@@ -326,12 +326,14 @@ $(function(){
                         `${field_no_of_items.val()} stock items of ${selected_item_name}[${selected_item_shortcode}] are added successfully, click on print to print labels or notedown generated_id to print labels later</br><h2>GENERATED_ID: <b>${data_param.generate_id}</b></h2>`, 
                         [
                             {
-                                "class": "ui positive approve medium button",
+                                "node": "button",
+                                "class": "ui positive approve medium button focusbgblack",
                                 "id": "modalPrintBtn",
                                 "text": "Print",
                             },
 							{
-                                "class": "ui negative deny button",
+                                "node": "button",
+                                "class": "ui negative deny button focusbgblack",
                                 "id": "modalCloseBtn",
                                 "text": "Close",
                             }
@@ -353,6 +355,9 @@ $(function(){
                         }
                     );
 					
+                    setTimeout(function(){
+                        $("#modalPrintBtn").focus();
+                    }, 100)
                 }else{
                     modal_body = response.info;
                 }

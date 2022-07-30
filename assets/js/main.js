@@ -204,7 +204,11 @@ function smallModal(header, content, buttons, options){
     main_container.children(".header").html(header);
     main_container.children(".content").children("p").html(content);
     buttons.forEach(element => {
-        buttons_container += `<div class="${element.class}" id="${element.id}">${element.text}</div>`;
+        if(element.node == "button"){
+            buttons_container += `<button class="${element.class}" id="${element.id}">${element.text}</button>`;
+        }else{
+            buttons_container += `<div class="${element.class}" id="${element.id}">${element.text}</div>`;
+        }
     });
     main_container.children(".actions").html(buttons_container);
 
