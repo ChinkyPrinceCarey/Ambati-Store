@@ -24,6 +24,7 @@ $(function(){
         initStats();
     }
 
+    /*
     $('.icon.toggle-visibility').on('click', function(){
         console.log(`clicked`);
         let toggle = $(this);
@@ -46,7 +47,19 @@ $(function(){
             element.addClass("opacity-0");
             toggle.removeClass("slash");
         }
-        //console.log(element);
+    });
+    */
+
+    $('.icon.toggle-visibility').on('mouseenter', function(){
+        let element = $(this).parent().children('div').children('.number');
+        element.removeClass("opacity-0");
+        element.addClass("opacity-1")
+    });
+    
+    $('.icon.toggle-visibility').on('mouseleave', function(){
+        let element = $(this).parent().children('div').children('.number');
+        element.removeClass("opacity-1");
+        element.addClass("opacity-0")
     });
 })
 
