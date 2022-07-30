@@ -244,7 +244,7 @@ $(function(){
         formOptions: {
           main: {
             onBackground: 'none',
-            onBlur: 'none'
+            //onBlur: 'none'
           }
         }
     })
@@ -450,9 +450,9 @@ $(function(){
             { data: "priority" },
             { data: "image",
             render: function(data, type, row){
-                //if(data[0].thumb){
+                if(data){
                     return `<img src="${data[0].thumb}" height="80px" onerror="this.onerror=null;this.src='./uploads/no-image.jpg';">`;
-                //}
+                }
             }
             },
             {

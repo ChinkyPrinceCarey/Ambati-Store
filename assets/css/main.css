@@ -567,3 +567,10 @@ td i{
 .maxWidth100{
     max-width: 100% !important;
 }
+
+
+.ui.modal.DTED > .close{
+    top: 0;
+    right: 0;
+    color: black;
+}
