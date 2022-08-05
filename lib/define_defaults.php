@@ -14,7 +14,9 @@ define("UPLOADS_DIR", "/" . UPLOADS_DIRNAME);
 
 define("HOST_BASE_API", "https://ambatitastyfoods.com");
 define("LIB_BASE_API", HOST_BASE_API . "/lib");
-//define("SEND_BASE_API", "http://localhost:64");
+define("REMOTE_SERVER_API_ENDPOINT", "https://ambatitastyfoods.com/v2/lib");
+define("REMOTE_SERVER_ITEMS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/items.php");
+define("REMOTE_SERVER_CUSTOMERS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/customers.php");
 
 //fields config
 $fields_defination = json_decode(file_get_contents('./fields_defination.json'), true);

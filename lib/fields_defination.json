@@ -15,7 +15,7 @@
 		"type": "name",
 		"validation": [
 			{
-				"maxlength": 8
+				"maxlength": 20
 			}
 		]
 	},
@@ -384,6 +384,32 @@
 		"variable": "IMAGE",
 		"name": "image",
 		"type": "image",
+		"accept_null": true
+	},
+	{
+		"variable": "NAME",
+		"name": "name",
+		"type": "name",
+		"validation": [
+			{
+				"maxlength": 50
+			}
+		]
+	},
+	{
+		"variable": "MOBILE_NUMBER",
+		"name": "mobile_number",
+		"type": "digits",
+		"validation": [
+			{
+				"length": 10
+			}
+		]
+	},
+	{
+		"variable": "ADDRESS",
+		"name": "address",
+		"type": "name",
 		"accept_null": true
 	}
 ]
