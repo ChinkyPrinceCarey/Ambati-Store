@@ -4,6 +4,24 @@ let default_cookie_option = {expires: 100, secure: true};
 var target = new EventTarget();
 target.addListener("onApiReady", onCustomReady);
 
+function setDefaultInputValues(){
+  if(Cookies.get('name') !== undefined){
+    $('input#name').val(Cookies.get('name'));
+  }
+
+  if(Cookies.get('name') !== undefined){
+    $('input#name').val(Cookies.get('name'));
+  }
+
+  if(Cookies.get('mobile_number') !== undefined){
+    $('input#mobile_number').val(Cookies.get('mobile_number'));
+  }
+  
+  if(Cookies.get('address') !== undefined){
+    $('textarea#address').val(Cookies.get('address'));
+  }
+}
+
 function onCustomReady(){
   var offset = $(".sticky-items").offset();
 
@@ -13,23 +31,7 @@ function onCustomReady(){
 
   getLogin();
 
-  //----------------------BEGIN: sets modal field input values----------------------//
-    if(Cookies.get('name') !== undefined){
-      $('input#name').val(Cookies.get('name'));
-    }
-
-    if(Cookies.get('name') !== undefined){
-      $('input#name').val(Cookies.get('name'));
-    }
-
-    if(Cookies.get('mobile_number') !== undefined){
-      $('input#mobile_number').val(Cookies.get('mobile_number'));
-    }
-    
-    if(Cookies.get('address') !== undefined){
-      $('textarea#address').val(Cookies.get('address'));
-    }
-  //----------------------END: sets modal field input values----------------------//
+  setDefaultInputValues();
 
   //----------------------BEGIN: searching methods----------------------//
     $("input[name=search]").on("keyup", function(){
@@ -53,51 +55,67 @@ function onCustomReady(){
     });
   //----------------------END: searching methods----------------------//
 
-
-
   //----------------------BEGIN: order methods----------------------//
-    $('#order-form').submit(function(event){
-      event.preventDefault();
-      let name = $('input#name:valid').val();
-      let mobile_number = $('input#mobile_number:valid').val();
-      let address = $('textarea#address:valid').val();
-      
-      if(name !== undefined && mobile_number !== undefined && address !== undefined){
-        Cookies.set('name', name, default_cookie_option);
-        Cookies.set('mobile_number', mobile_number, default_cookie_option);
-        Cookies.set('address', address, default_cookie_option);
+  $('#order-form').submit(function(event){
+    event.preventDefault();
+    let name = $('input#name:valid').val();
+    let mobile_number = $('input#mobile_number:valid').val();
+    let address = $('textarea#address:valid').val();
+    
+    if(name !== undefined && mobile_number !== undefined && address !== undefined){
+      Cookies.set('name', name, default_cookie_option);
+      Cookies.set('mobile_number', mobile_number, default_cookie_option);
+      Cookies.set('address', address, default_cookie_option);
 
-        let order_summary = generateOrderSummaryText(name, mobile_number, address);
+      //manageModal(false);
 
-        let WhatsAppNumber = "91" + $('#mobile_number').text();
-        
-        //erase order
-        $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
-        manageModal(false);
+      let total_items = cart_obj.reduce((n, {quantity}) => n + quantity, 0);
+      let gross_total = cart_obj.reduce((n, {total_cost}) => n + total_cost, 0);
 
-        //window.location.href = "https://wa.me/"+ WhatsAppNumber +"?text=" + encodeURI(order_summary);
+      let data = {
+                  summary: cart_obj, 
+                  billing: {sub_total: gross_total, total: gross_total, offer_percentage: 0, offer_amount: 0}
+                };
 
-        let gross_total = $('.footer-element #total').text();
-        console.log(`gross_total: ${gross_total}`)
+      let order_obj = {
+                        action: "create",
+                        username: Cookies.get('username'),
+                        name: name,
+                        mobile_number: mobile_number,
+                        address: address,
+                        total_items: total_items,
+                        data: JSON.stringify(data),
+                      };
 
-        ajaxPostCall("api/order.php", {mobile_number: mobile_number, gross_total: gross_total}, function(response){
-          let alert_obj = [
-            {
-              type: "update",
-              selector: "#alert .wrapper .title",
-              text: "Order Confirmation!"
-            },
-            {
-              type: "update",
-              selector: "#alert .wrapper .body",
-              html: `Your order placed successfully, you will receive your order by evening!</br><strong>Order Id: 1</br>Amount: ${gross_total}</strong>`
-            }
-          ];
-          manageModal(true, alert_obj);
-        });
+      ajaxPostCall("lib/orders.php", order_obj, function(response){
 
-      }
-    });
+        let alert_body = "";
+        if(response.status){
+          alert_body = `Ooops, unable to place your order at the moment!`;
+        }else if(response.result){
+          alert_body = `Your order placed successfully, you will receive your order by evening!</br><strong>Order Id: ${response.order_id}</br>Amount: ${gross_total}</strong>`;
+        }else{
+          alert_body = `Ooops, your order is not placed!`;
+        }
+
+        let alert_obj = [
+          {
+            type: "update",
+            selector: "#alert .wrapper .title",
+            text: "Order Confirmation"
+          },
+          {
+            type: "update",
+            selector: "#alert .wrapper .body",
+            html: alert_body
+          }
+        ];
+        manageModal(true, alert_obj);
+      });
+    }else{
+      //empty input fields
+    }
+  });
   //----------------------END: order methods----------------------//
 
   $('#register_btn').click(function(){
@@ -149,6 +167,7 @@ function onCustomReady(){
   });
 
   $('#modal-close, #modal-okay').click(function(){
+    $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
     manageModal(false);
   });
 
@@ -299,6 +318,8 @@ function onCustomReady(){
     initUpdateCart(this, true);
   });
 
+
+  /* BEGIN: image_preview */
   $('#previewClose').click(function(){
     $('#imgPreviewWrapper')
       .removeClass('animate-zoom-in')
@@ -327,6 +348,8 @@ function onCustomReady(){
       }, 300);
     }
   });
+  /* END: image_preview */
+
 
   $('.login-conatiner').click(function(e){
     if($(e.target).hasClass("login-conatiner")){
@@ -399,6 +422,7 @@ function generateOrderSummaryText(name, mobile_number, address){
   text += "\nAddress:\n" + address + "\n\n";
   text += "Orders: \n";
   let slno = 1;
+
   cart_obj.forEach(obj => {
     //1. Khara(KHARA)(1x200) = 200
     text += "\n";
@@ -415,6 +439,7 @@ function generateOrderSummaryText(name, mobile_number, address){
 }
 
 function manageModal(shouldVisible, arrayOfObj, orderArrayOfObj){
+  console.log(`caller:${(new Error()).stack?.split('\n')[2].trim().split(' ')[1]}`);
   if(arrayOfObj !== undefined){
     $('#order-confirmation').addClass('d-none');
     $('#alert').removeClass('d-none');
