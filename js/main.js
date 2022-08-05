@@ -11,84 +11,94 @@ function onCustomReady(){
   
   managePreloader(false);
 
-  if(Cookies.get('name') !== undefined){
-    $('input#name').val(Cookies.get('name'));
-  }
+  getLogin();
 
-  if(Cookies.get('name') !== undefined){
-    $('input#name').val(Cookies.get('name'));
-  }
+  //----------------------BEGIN: sets modal field input values----------------------//
+    if(Cookies.get('name') !== undefined){
+      $('input#name').val(Cookies.get('name'));
+    }
 
-  if(Cookies.get('mobile_number') !== undefined){
-    $('input#mobile_number').val(Cookies.get('mobile_number'));
-  }
-  
-  if(Cookies.get('address') !== undefined){
-    $('textarea#address').val(Cookies.get('address'));
-  }
+    if(Cookies.get('name') !== undefined){
+      $('input#name').val(Cookies.get('name'));
+    }
 
-  $("input[name=search]").on("keyup", function(){
-    $('.catalogue').addClass('loading-background');
-    $('.catalogue-item').addClass('d-none');
-    $('.catalogue-item.d-grid').removeClass('d-grid');
-  
-    var search_text = $(this).val().toLowerCase();
-    $(".catalogue-item").filter(function(){
-      let isShow = $(this).find('.name').text().toLowerCase().indexOf(search_text) > -1;
-      $(this).toggle(isShow);
-      if(isShow){
-        $(this).addClass("d-grid");
+    if(Cookies.get('mobile_number') !== undefined){
+      $('input#mobile_number').val(Cookies.get('mobile_number'));
+    }
+    
+    if(Cookies.get('address') !== undefined){
+      $('textarea#address').val(Cookies.get('address'));
+    }
+  //----------------------END: sets modal field input values----------------------//
+
+  //----------------------BEGIN: searching methods----------------------//
+    $("input[name=search]").on("keyup", function(){
+      $('.catalogue').addClass('loading-background');
+      $('.catalogue-item').addClass('d-none');
+      $('.catalogue-item.d-grid').removeClass('d-grid');
+    
+      var search_text = $(this).val().toLowerCase();
+      $(".catalogue-item").filter(function(){
+        let isShow = $(this).find('.name').text().toLowerCase().indexOf(search_text) > -1;
+        $(this).toggle(isShow);
+        if(isShow){
+          $(this).addClass("d-grid");
+        }
+      });
+    
+      $('.catalogue').removeClass('loading-background');
+      $('.catalogue-item').removeClass('d-none');
+    
+      window.scrollTo(offset.left, offset.top + 34);
+    });
+  //----------------------END: searching methods----------------------//
+
+
+
+  //----------------------BEGIN: order methods----------------------//
+    $('#order-form').submit(function(event){
+      event.preventDefault();
+      let name = $('input#name:valid').val();
+      let mobile_number = $('input#mobile_number:valid').val();
+      let address = $('textarea#address:valid').val();
+      
+      if(name !== undefined && mobile_number !== undefined && address !== undefined){
+        Cookies.set('name', name, default_cookie_option);
+        Cookies.set('mobile_number', mobile_number, default_cookie_option);
+        Cookies.set('address', address, default_cookie_option);
+
+        let order_summary = generateOrderSummaryText(name, mobile_number, address);
+
+        let WhatsAppNumber = "91" + $('#mobile_number').text();
+        
+        //erase order
+        $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
+        manageModal(false);
+
+        //window.location.href = "https://wa.me/"+ WhatsAppNumber +"?text=" + encodeURI(order_summary);
+
+        let gross_total = $('.footer-element #total').text();
+        console.log(`gross_total: ${gross_total}`)
+
+        ajaxPostCall("api/order.php", {mobile_number: mobile_number, gross_total: gross_total}, function(response){
+          let alert_obj = [
+            {
+              type: "update",
+              selector: "#alert .wrapper .title",
+              text: "Order Confirmation!"
+            },
+            {
+              type: "update",
+              selector: "#alert .wrapper .body",
+              html: `Your order placed successfully, you will receive your order by evening!</br><strong>Order Id: 1</br>Amount: ${gross_total}</strong>`
+            }
+          ];
+          manageModal(true, alert_obj);
+        });
+
       }
     });
-  
-    $('.catalogue').removeClass('loading-background');
-    $('.catalogue-item').removeClass('d-none');
-	
-    window.scrollTo(offset.left, offset.top + 34);
-  });
-
-  $('#order-form').submit(function(event){
-    event.preventDefault();
-    let name = $('input#name:valid').val();
-    let mobile_number = $('input#mobile_number:valid').val();
-    let address = $('textarea#address:valid').val();
-    
-    if(name !== undefined && mobile_number !== undefined && address !== undefined){
-      Cookies.set('name', name, default_cookie_option);
-      Cookies.set('mobile_number', mobile_number, default_cookie_option);
-      Cookies.set('address', address, default_cookie_option);
-
-      let order_summary = generateOrderSummaryText(name, mobile_number, address);
-
-      let WhatsAppNumber = "91" + $('#mobile_number').text();
-      
-      //erase order
-      $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
-      manageModal(false);
-
-      //window.location.href = "https://wa.me/"+ WhatsAppNumber +"?text=" + encodeURI(order_summary);
-
-      let gross_total = $('.footer-element #total').text();
-      console.log(`gross_total: ${gross_total}`)
-
-      ajaxPostCall("api/order.php", {mobile_number: mobile_number, gross_total: gross_total}, function(response){
-        let alert_obj = [
-          {
-            type: "update",
-            selector: "#alert .wrapper .title",
-            text: "Order Confirmation!"
-          },
-          {
-            type: "update",
-            selector: "#alert .wrapper .body",
-            html: `Your order placed successfully, you will receive your order by evening!</br><strong>Order Id: 1</br>Amount: ${gross_total}</strong>`
-          }
-        ];
-        manageModal(true, alert_obj);
-      });
-
-    }
-  });
+  //----------------------END: order methods----------------------//
 
   $('#register_btn').click(function(){
       let WhatsAppNumber = "91" + $('#mobile_number').text();
@@ -105,7 +115,7 @@ function onCustomReady(){
     let username = $('#username').val();
     let password = $('#password').val();
 
-    ajaxPostCall('lib/customers.php', {action: "fetch_specified", data: {username: username, passwrod: password}}, function(response){
+    ajaxPostCall('lib/customers.php', {action: "fetch_specified", data: {username: username, password: password}}, function(response){
       if(response.status){
         updateLoginStatus("Error from Server", false);
       }else if(response.result){
@@ -143,9 +153,7 @@ function onCustomReady(){
   });
 
   $('.place-order #order-btn').click(function(){
-    if((Cookies.get('username') == "8686068182")
-    && (Cookies.get('password') == "admin")){
-      //proceed to order-form
+    if(isUserLogged()){
       manageModal(true, undefined, cart_obj);
     }else{
       //show login-form
@@ -332,6 +340,43 @@ function onCustomReady(){
       }, 800);
     }
   });
+}
+
+function isUserLogged(){
+  return (
+          (Cookies.get('username') !== undefined)
+      &&  (Cookies.get('password') !== undefined)
+  );
+}
+
+function getLogin(){
+  if(isUserLogged()){
+    let username = Cookies.get('username');
+    let password = Cookies.get('password');
+
+    ajaxPostCall('lib/customers.php', {action: "fetch_specified", data: {username: username, password: password}}, function(response){
+      if(response.status){
+
+      }else if(response.result){
+        let user = response.data[0];
+        Cookies.set('name', user.name, default_cookie_option);
+        Cookies.set('mobile_number', user.mobile_number, default_cookie_option);
+        Cookies.set('address', user.address, default_cookie_option);
+      }else{
+        Cookies.remove('username');
+        Cookies.remove('password');
+        Cookies.remove('name');
+        Cookies.remove('mobile_number');
+        Cookies.remove('address');
+      }
+    })
+  }else{
+    Cookies.remove('username');
+    Cookies.remove('password');
+    Cookies.remove('name');
+    Cookies.remove('mobile_number');
+    Cookies.remove('address');
+  }
 }
 
 /*
