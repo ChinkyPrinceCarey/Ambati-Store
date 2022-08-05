@@ -189,7 +189,7 @@ $(function(){
                 label: "In Stock?",
                 name: "in_stock",
                 type: "select",
-                options: [{ label: "Yes", value: "1"},{label: "No", value: "0"}],
+                options: [{ label: "Yes", value: "1"},{label: "Out of Stock", value: "2"}, {label: "No", value: "0"}],
                 attr: {
                     name: 'level'
                 }
