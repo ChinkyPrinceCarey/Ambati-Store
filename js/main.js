@@ -105,27 +105,35 @@ function onCustomReady(){
     let username = $('#username').val();
     let password = $('#password').val();
 
-    if(username == "8686068182" && password == "admin"){
-      updateLoginStatus("Login successful!", true);
+    ajaxPostCall('lib/customers.php', {action: "fetch_specified", data: {username: username, passwrod: password}}, function(response){
+      if(response.status){
+        updateLoginStatus("Error from Server", false);
+      }else if(response.result){
+        updateLoginStatus("Login successful!", true);
 
-      //set cookies
-      Cookies.set('username', username, default_cookie_option);
-      Cookies.set('password', password, default_cookie_option);
+        let user = response.data[0];
 
-      //hide login-form
-      $('.login-conatiner')
-      .removeClass('animate-open-top')
-      .addClass('animate-close-top');
-      setTimeout(function(){
-        $('.login-conatiner').addClass('d-none');
-      }, 800);
-
-      //proceed to order-form
-      manageModal(true, undefined, cart_obj);
-
-    }else{
-      updateLoginStatus("Invalid credentials", false);
-    }
+        //set cookies
+        Cookies.set('username', user.username, default_cookie_option);
+        Cookies.set('password', user.password, default_cookie_option);
+        Cookies.set('name', user.name, default_cookie_option);
+        Cookies.set('mobile_number', user.mobile_number, default_cookie_option);
+        Cookies.set('address', user.address, default_cookie_option);
+  
+        //hide login-form
+        $('.login-conatiner')
+        .removeClass('animate-open-top')
+        .addClass('animate-close-top');
+        setTimeout(function(){
+          $('.login-conatiner').addClass('d-none');
+        }, 800);
+  
+        //proceed to order-form
+        manageModal(true, undefined, cart_obj);
+      }else{
+        updateLoginStatus("Invalid credentials", false);
+      }
+    });
 
     updateLoadingState(false);
   });
