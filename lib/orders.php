@@ -215,95 +215,28 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             }else{
                 $return['info'] .= "invalid data " . $fields_data['info'];
             }
-        }elseif($action == "remove"){
-            $data = $_POST['data'];
-
-            $query_where = array();
-            foreach($data as $iter_data){
-                //'cause we delete multiple rows at once
-                $query_where[] = "id=" . $iter_data['id'];
-            }
-            
-            $query_type = "delete_or_clause";
-            //$query_table defined earlier
-            $query_column = array("id"); //just not to keep empty 
-            //$query_where defined just above
-
-            $delete_query = get_query($query_type, $query_table, $query_column, $query_where);
-            $return['query'] = $delete_query; //for debugging
-
-            $delete_result = null;
-
+        }elseif($action == "fetch_all"){
+            $fetched_all_records = null;
             if($_SERVER['HTTP_HOST'] == "localhost"){
-                //request on localhost,
-                //so have to queue update on localhost
-                //then call & update on remote server
-                $transaction_connection = begin_transaction();
-                $delete_result = delete_query($delete_query, $transaction_connection);
-                if($delete_result['result']){
-                    $delete_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $_POST);
-                    if($delete_result['result']){
-                        if(
-                                array_key_exists("result", $delete_result['data'])
-                            &&  $delete_result['data']['result']
-                        ){
-                            $delete_result = commit_transaction($transaction_connection);
-                        }else{
-                            $delete_result['result'] = false;
-                            $delete_result['info'] = "error from remote server: " . $delete_result['data']['info'];
-                            $delete_result['additional_information'] = "error from remote server: " . $delete_result['data']['additional_info'];
-                        }
+                $fetched_all_records = curl_request(REMOTE_SERVER_ORDERS_API_ENDPOINT, $_POST);
+
+                if($fetched_all_records['result']){
+                    if($fetched_all_records['data']['result']){
+                        $return['result'] = true;
+                        $return['data'] = $fetched_all_records['data']['data'];
                     }else{
-                        $delete_result['info'] = "error connecting to remote server: " . $delete_result['info'];
-                        $delete_result['additional_information'] = "error connecting to remote server: " . $delete_result['info'];
+                        $return['info'] .= $fetched_all_records['data']['info'];
                     }
+                }else{
+                    $return['data'] = array();
+                    $return['info'] .= $fetched_all_records['info'];
+                    $return['additional_info'] .= $fetched_all_records['additional_info'];
                 }
             }else{
-                //request on remote server,
-                //just update on remote server
-                $delete_result = delete_query($delete_query);
-            }
-            
-            if($delete_result['result']){
-                $return['result'] = true;
-                $return['info'] .= count($query_where) . "record(s) deleted ";
-                $return['data'] = array();
-            }else{
-                $return['info'] .= "error deleting the record ";
-                $return['additional_info'] .= $delete_result['additional_information'];
+                $extra_columns = array("no_of_items", "no_of_units", "making_cost", "sub_total", "total_price", "offer_percentage", "offer_amount", "is_confirmed", "is_paid");
+                $fetched_all_records = fetchRecord($query_table, $extra_columns);
 
-                //debug
-                $return['query'] = $delete_query;
-            }
-        }elseif($action == "fetch_all"){
-            set_mysql_values($query_table, 'SET @slno=0');
-            $query_type = "custom";
-            //$query_table defined earlier
-            $query_text = 
-            "
-            SELECT @slno:=@slno+1 AS `slno`, `items`.*, `t1`.*, `t2`.* FROM `items`
-
-            LEFT JOIN (SELECT `shortcode` AS `t1_shortcode`,`making_cost`, `retailer_cost` FROM `stock` WHERE `id` IN (SELECT MAX(`id`) FROM `stock` GROUP BY `shortcode`)) t1 
-            ON `items`.`shortcode` = `t1`.`t1_shortcode`
-
-            LEFT JOIN (SELECT `shortcode` AS `t2_shortcode`, COUNT(`id`) AS `available_stock` FROM `stock` GROUP BY `shortcode`) t2
-            ON `items`.`shortcode` = `t2`.`t2_shortcode`  
-
-            ORDER BY `items`.`id`  ASC
-            ";
-
-            $select_query = get_query($query_type, $query_table, $query_text);
-            $select_result = select_query($select_query);
-
-            if($select_result['result']){
-                $return['result'] = true;
-                $return['info'] .= "fetched all records ";
-                $return['data'] = $select_result['additional_data'];
-            }else{
-                $return['result'] = true;
-                $return['data'] = array();
-                $return['info'] .= $select_result['info'];
-                //$return['additional_info'] .= $select_result['additional_info'];
+                $return = $fetched_all_records;
             }
         }elseif($action == "fetch_for_app"){
             $query_type = "custom";

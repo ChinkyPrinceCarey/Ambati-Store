@@ -100,7 +100,7 @@ $(function(){
             ]
         },
         "ajax": {
-            "url": "lib/sale_reports.php",
+            "url": "lib/orders.php",
             "type": "POST",
             "data": function(d){
                 d.action = "fetch_all";
@@ -161,19 +161,12 @@ $(function(){
         columns: [
             { data: "slno", "width": "2%" },
             { data: "date", "width": "9%" },
-            { data: "invoice_id" },
+            { data: "order_id" },
             { data: "sale_type" },
-            { data: "seller_name", 
-              render: function(data, type, row){
-                  return row.custom_name ? `${row.seller_name}(${row.custom_name})[${row.seller_id}(${row.custom_id})]` : row.seller_name;
-              }  
-            },
-            {
-                data: "vehicle_id"
-            },
-            {
-                data: "vehicle_name"
-            },
+            { data: "username"},
+            { data: "name"},
+            { data: "mobile_number"},
+            { data: "address"},
             { data: "no_of_items" },
             { data: "no_of_units" },
             { data: "making_cost" },
@@ -187,18 +180,18 @@ $(function(){
             { data: "offer_percentage" },
             { data: "offer_amount" },
             {
-                data: "is_sold",
+                data: "is_confirmed",
                 render: function(data, type, row){
                     let color = data == 0 ? "red" : "green";
-                    let text = data == 0 ? "hold" : "sold";
+                    let text = data == 0 ? "not confirmed" : "confirmed";
                     return `<div class="ui ${color} horizontal label">${text}</div>`;
                 }
             },
             { 
                 data: null,
-                className: "dt-center print-invoice",
+                className: "dt-center cart arrow down",
                 render: function (data, type, row){
-                    return `<i row_id="${row.id}" invoice_id="${row.invoice_id}" class="print icon"></i>`;
+                    return `<i row_id="${row.id}" order_id="${row.order_id}" class="print icon"></i>`;
                 },
                 orderable: false
             }
