@@ -15,7 +15,7 @@
 		"type": "name",
 		"validation": [
 			{
-				"maxlength": 8
+				"maxlength": 20
 			}
 		]
 	},
@@ -409,6 +409,7 @@
 	{
 		"variable": "ADDRESS",
 		"name": "address",
-		"type": "name"
+		"type": "name",
+		"accept_null": true
 	}
 ]

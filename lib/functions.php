@@ -435,6 +435,15 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			return $columns;
 		break;
 
+		case 'customers':
+			$columns[]  = "username";
+			$columns[]  = "name";
+			$columns[]  = "mobile_number";
+			$columns[]  = "address";
+			$columns[]  = "is_allowed";
+			return $columns;
+		break;
+
 		default:
 			return $columns;
 	}

@@ -126,6 +126,25 @@
 		]
 	},
 	{
+		"header": "app",
+		"access": ["admin", "seller"],
+		"link": null,
+		"items":[
+			{
+				"icon": "icon clipboard list",
+				"title": "orders",
+				"link": "orders.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon uniregistry",
+				"title": "customers",
+				"link": "customers.html",
+				"access": ["admin", "seller", "operator"]
+			}
+		]
+	},
+	{
 		"header": "sales",
 		"access": ["admin", "seller"],
 		"link": null,
