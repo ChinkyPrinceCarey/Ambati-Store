@@ -267,13 +267,15 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             }
         }elseif($action == "fetch_specified"){
             $data = $_POST['data'];
+            
+            $manual_columns = array("password"); 
             $query_where = array(
                             "username=" . $data['username'] , 
                             "password=". $data['password'], 
                             "is_allowed=1"
                         );
 
-            $fetched_all_records = fetchRecord($query_table, null, $query_where);
+            $fetched_all_records = fetchRecord($query_table, $manual_columns, $query_where);
 
             //echo "<pre>"; print_r($fetched_all_records); echo "</pre>";
 
@@ -283,7 +285,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['data'] = $fetched_all_records['data'];
             }else{
                 $return['info'] .= $fetched_all_records['info'];
-                $return['fetched'] = $fetched_all_records;
+                //$return['fetched'] = $fetched_all_records;
                 //$return['additional_info'] .= $fetched_all_records['additional_info'];
             }
         }else{
