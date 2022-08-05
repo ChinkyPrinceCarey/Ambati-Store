@@ -444,6 +444,17 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			return $columns;
 		break;
 
+		case 'orders':
+			$columns[]  = "date";
+			$columns[]  = "sale_type";
+			$columns[]  = "order_id";
+			$columns[]  = "username";
+			$columns[]  = "name";
+			$columns[]  = "mobile_number";
+			$columns[]  = "address";
+			return $columns;
+		break;
+
 		default:
 			return $columns;
 	}
@@ -559,6 +570,28 @@ function get_date($type, $format = "default"){
 	}
 
 	return $date;
+}
+
+function getOrderId(){
+	$return = array();
+	$return['result'] = false;
+	$return['info'] = "getOrderId(): ";
+	$return['data'] = array();
+
+	$last_record = fetchRecord('orders', null, "1 ORDER BY `order_id` DESC LIMIT 1", false, false, true);
+	if($last_record['result']){
+		$last_record = count($last_record['data']) ? $last_record['data'][0] : array("order_id" => 0);
+		$last_order_id = $last_record['order_id'];
+
+		$return['result'] = true;
+		$return['info'] .= "fetched order_id";
+		$return['data'] = generateInvoiceId($last_order_id);
+	}else{
+		$return['info'] .= "error fetching last order_id";
+		$return['last_record'] = $last_record;
+	}
+
+	return $return;
 }
 
 function sale_stock($_fields_data, $_is_vehicle_shift){
