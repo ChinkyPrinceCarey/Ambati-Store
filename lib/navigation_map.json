@@ -18,6 +18,12 @@
 			},
 			{
 				"icon": "icon uniregistry",
+				"title": "material",
+				"link": "material.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon uniregistry",
 				"title": "units",
 				"link": "units.html",
 				"access": ["admin", "seller", "operator"]

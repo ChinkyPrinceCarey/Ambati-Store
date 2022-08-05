@@ -303,6 +303,11 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			return $columns;
 		break;
 		
+		case 'material':
+			$columns[]  = "material";
+			return $columns;
+		break;
+		
 		case 'units':
 			$columns[]  = "unit";
 			return $columns;

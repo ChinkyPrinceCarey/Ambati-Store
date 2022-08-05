@@ -51,7 +51,6 @@ $(function(){
                 label: "Material",
                 name: "material",
                 type: "select",
-                options: [{label: "manufactured", value: "manufactured"},{label: "confectury", value: "confectury"},{ label: "raw", value: "raw"}],
                 attr: {
                     required: true,
                     name: 'material'
@@ -516,6 +515,7 @@ $(function(){
     });
 
     table.on('init.dt', function(){
+        setSelectOpts('lib/material.php', 'material');
         setSelectOpts('lib/units.php', 'unit');
         setSelectOpts('lib/types.php', 'type');
 
@@ -741,10 +741,22 @@ function setSelectOpts(url, fieldName){
             modal_body = response.content;
         }else if(response.result){
             $.each(response.data, function(i){
-                selectOptsArr.push({
-                    value: this.type ? this.type : this.unit,
-                    label: this.type ? this.type : this.unit
-                });
+                if(this.type){
+                    selectOptsArr.push({
+                        value: this.type,
+                        label: this.type
+                    });
+                }else if(this.unit){
+                    selectOptsArr.push({
+                        value: this.unit,
+                        label: this.unit
+                    });
+                }else{
+                    selectOptsArr.push({
+                        value: this.material,
+                        label: this.material
+                    });
+                }
             });
             editor.field(fieldName).update(selectOptsArr);
             selectOptsArr = [];
