@@ -105,11 +105,7 @@ function generate_quotes($quote_type, $array, $break_type="comma"){
 function add_filter_where($__query_type, $__table_name, $__where_values){
 	if($__query_type != "insert"){
 		if(is_array($__where_values)){
-			if($__table_name == "customers"){
-				if(!in_array("deleted=1", $__where_values)){
-					$__where_values[] = "deleted=0";
-				}
-			}elseif($__table_name == "emi_payments"){
+			if($__table_name == "emi_payments"){
 				if(!in_array("cancelled=1", $__where_values)){
 					$__where_values[] = "cancelled=0";
 				}
