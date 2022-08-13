@@ -32,6 +32,8 @@ let generate_stock_btn;
 let edit_stock_btn;
 let add_stock_btn;
 
+let inProcess;
+
 $(function(){
 	$("span#date").text(getCurrentDate("dmy"));
 
@@ -290,99 +292,101 @@ $(function(){
 					}
 			);
 		}else if(parseInt(field_no_of_items.val()) == barcodes.length){
-			
-			data_param = {
-				action: "stock_entry",
-				data: "random_data",
-				date: getCurrentDate(),
-				generate_id: getCurrentDate("dmt"),
-				material: dropdown_material.dropdown('get value'),
-				type: selected_type,
-				item: selected_item_name,
-				shortcode: selected_item_shortcode,
-				unit: field_unit.val(),
-				quantity: field_quantity.val(),
-				making_cost: field_making_cost.val(),
-				retailer_cost: dropdown_material.dropdown('get value') == "raw" ? field_making_cost.val() : field_retailer_cost.val(),
-				wholesale_cost: dropdown_material.dropdown('get value') == "raw" ? field_making_cost.val() : field_wholesale_cost.val(),
-				current_item_no: field_current_item_no.val(),
-				barcodes: barcodes,
-                custom_data: getCustomData()
-			};
-			
-			ajaxPostCall('lib/warehouse_stock_entry.php', data_param, function(response){
-                let modal_body; let modal_title = "Parsing Item Data Error";
-                if(response.status){
-                    modal_body = response.status + ": " + response.statusText;
-                }else if(response.title){
-                    modal_title = response.title;
-                    modal_body = response.content;
-                }else if(response.result){
-                    //let item_data = response.data;
-					//console.log(response.data);
-					
-					smallModal(
-                        "Stock Added Successfully", 
-                        `${field_no_of_items.val()} stock items of ${selected_item_name}[${selected_item_shortcode}] are added successfully, click on print to print labels or notedown generated_id to print labels later</br><h2>GENERATED_ID: <b>${data_param.generate_id}</b></h2>`, 
-                        [
+			if(typeof inProcess == "undefined"){
+                inProcess = true;
+                data_param = {
+                    action: "stock_entry",
+                    data: "random_data",
+                    date: getCurrentDate(),
+                    generate_id: getCurrentDate("dmt"),
+                    material: dropdown_material.dropdown('get value'),
+                    type: selected_type,
+                    item: selected_item_name,
+                    shortcode: selected_item_shortcode,
+                    unit: field_unit.val(),
+                    quantity: field_quantity.val(),
+                    making_cost: field_making_cost.val(),
+                    retailer_cost: dropdown_material.dropdown('get value') == "raw" ? field_making_cost.val() : field_retailer_cost.val(),
+                    wholesale_cost: dropdown_material.dropdown('get value') == "raw" ? field_making_cost.val() : field_wholesale_cost.val(),
+                    current_item_no: field_current_item_no.val(),
+                    barcodes: barcodes,
+                    custom_data: getCustomData()
+                };
+                
+                ajaxPostCall('lib/warehouse_stock_entry.php', data_param, function(response){
+                    let modal_body; let modal_title = "Parsing Item Data Error";
+                    if(response.status){
+                        modal_body = response.status + ": " + response.statusText;
+                    }else if(response.title){
+                        modal_title = response.title;
+                        modal_body = response.content;
+                    }else if(response.result){
+                        //let item_data = response.data;
+                        //console.log(response.data);
+                        
+                        smallModal(
+                            "Stock Added Successfully", 
+                            `${field_no_of_items.val()} stock items of ${selected_item_name}[${selected_item_shortcode}] are added successfully, click on print to print labels or notedown generated_id to print labels later</br><h2>GENERATED_ID: <b>${data_param.generate_id}</b></h2>`, 
+                            [
+                                {
+                                    "node": "button",
+                                    "class": "ui positive approve medium button focusbgblack",
+                                    "id": "modalPrintBtn",
+                                    "text": "Print",
+                                },
+                                {
+                                    "node": "button",
+                                    "class": "ui negative deny button focusbgblack",
+                                    "id": "modalCloseBtn",
+                                    "text": "Close",
+                                }
+                            ], 
                             {
-                                "node": "button",
-                                "class": "ui positive approve medium button focusbgblack",
-                                "id": "modalPrintBtn",
-                                "text": "Print",
-                            },
-							{
-                                "node": "button",
-                                "class": "ui negative deny button focusbgblack",
-                                "id": "modalCloseBtn",
-                                "text": "Close",
+                                closable: false,
+                                onApprove: function(){
+                                    $("#modalPrintBtn").addClass("loading");
+                                    printLabels(function(isCompleted){
+                                        $("#modalPrintBtn").removeClass("loading");
+                                    });
+                                    return false;
+                                },
+                                onDeny: function(){
+                                    $("#modalCloseBtn").addClass("loading");
+                                    window.location.replace(getCurrentPage());
+                                    return false;
+                                }
                             }
-                        ], 
-                        {
-                            closable: false,
-                            onApprove: function(){
-                                $("#modalPrintBtn").addClass("loading");
-                                printLabels(function(isCompleted){
-                                    $("#modalPrintBtn").removeClass("loading");
-                                });
-                                return false;
-                            },
-							onDeny: function(){
-								$("#modalCloseBtn").addClass("loading");
-								window.location.replace(getCurrentPage());
-								return false;
-							}
-                        }
-                    );
-					
-                    setTimeout(function(){
-                        $("#modalPrintBtn").focus();
-                    }, 100)
-                }else{
-                    modal_body = response.info;
-                }
+                        );
+                        
+                        setTimeout(function(){
+                            $("#modalPrintBtn").focus();
+                        }, 100)
+                    }else{
+                        modal_body = response.info;
+                    }
 
-                if(modal_body){
-                    smallModal(
-                        modal_title, 
-                        modal_body, 
-                        [
+                    if(modal_body){
+                        smallModal(
+                            modal_title, 
+                            modal_body, 
+                            [
+                                {
+                                    "class": "ui positive approve button",
+                                    "id": "",
+                                    "text": "Reload",
+                                }
+                            ], 
                             {
-                                "class": "ui positive approve button",
-                                "id": "",
-                                "text": "Reload",
+                                closable: false,
+                                onApprove: function(){
+                                    window.location.replace(getCurrentPage());
+                                    return false;
+                                }
                             }
-                        ], 
-                        {
-                            closable: false,
-                            onApprove: function(){
-                                window.location.replace(getCurrentPage());
-                                return false;
-                            }
-                        }
-                    );
-                }
-            });
+                        );
+                    }
+                });
+            }
 		}else{
 			smallModal(
             "Something is wrong", 
