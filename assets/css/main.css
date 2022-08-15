@@ -269,7 +269,7 @@ main{
     width: calc(100% - 250px);
 	height: calc(100% - 103px);
     overflow-y: auto;
-    max-height: 802px;
+    /*max-height: 802px;*/
     margin-top: 51px;
 }
 
