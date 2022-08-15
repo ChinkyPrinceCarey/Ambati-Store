@@ -31,106 +31,103 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
         $fields_def = array(
                         USERNAME, NAME, MOBILE_NUMBER, ADDRESS
-                    	);
+                    );
         $_post_data = is_numeric($id) ? $_POST['data'][$id] : null ;
 
         if($action == "create"){
             $fields_data = validate_fields($_POST, $fields_def);
             if($fields_data['result']){
+                $order_id = getOrderId();
+                if($order_id['result']){
+                    $order_id = $order_id['data'];
 
-							$order_id = getOrderId();
-							if($order_id['result']){
-								$order_id = $order_id['data'];
+                    $fields_data = $fields_data['data'];
 
-								$fields_data = $fields_data['data'];
+                    $items_data = $fields_data['data'];
+                    $items_data = json_decode($items_data, true);
 
-								$items_data = $fields_data['data'];
-								$items_data = json_decode($items_data, true);
+                    if(json_last_error() === JSON_ERROR_NONE){
+                        if(count($items_data)){
+                            $sale_type = "order";
+                            $username = $fields_data['username'];
+                            $name = $fields_data['name'];
+                            $mobile_number = $fields_data['mobile_number'];
+                            $address = $fields_data['address'];
 
-								if(json_last_error() === JSON_ERROR_NONE){
-									if(count($items_data)){
-										$sale_type = "order";
-										$username = $fields_data['username'];
-										$name = $fields_data['name'];
-										$mobile_number = $fields_data['mobile_number'];
-										$address = $fields_data['address'];
+                            $no_of_items = $fields_data['total_items'];
+                            $no_of_units = count($items_data['summary']);
+                            
+                            $making_cost = 0;
+                            $sub_total = $items_data['billing']['sub_total'];
+                            $total_price = $items_data['billing']['total'];
+                            $offer_percentage = $items_data['billing']['offer_percentage'];
+                            $offer_amount = $items_data['billing']['offer_amount'];
 
-										$no_of_items = $fields_data['total_items'];
-										$no_of_units = count($items_data['summary']);
-										
-										$making_cost = 0;
-										$sub_total = $items_data['billing']['sub_total'];
-										$total_price = $items_data['billing']['total'];
-										$offer_percentage = $items_data['billing']['offer_percentage'];
-										$offer_amount = $items_data['billing']['offer_amount'];
+                            $query_type = "insert";
+                            $query_columns = array(
+                                                    "order_id",
+                                                    "sale_type",
+                                                    "username",
+                                                    "name",
+                                                    "mobile_number",
+                                                    "address",
+                                                    "no_of_items",
+                                                    "no_of_units",
+                                                    "making_cost",
+                                                    "sub_total",
+                                                    "total_price",
+                                                    "offer_percentage",
+                                                    "offer_amount",
+                                                    "items_details"
+                                                );
+                            $query_values =	array(
+                                                $order_id,
+                                                $sale_type,
+                                                $username,
+                                                $name,
+                                                $mobile_number,
+                                                $address,
+                                                $no_of_items,
+                                                $no_of_units,
+                                                $making_cost,
+                                                $sub_total,
+                                                $total_price,
+                                                $offer_percentage,
+                                                $offer_amount,
+                                                json_encode($items_data)
+                                            );
 
-										$query_type = "insert";
-										$query_columns = array(
-																			"order_id",
-																			"sale_type",
-																			"username",
-																			"name",
-																			"mobile_number",
-																			"address",
-																			"no_of_items",
-																			"no_of_units",
-																			"making_cost",
-																			"sub_total",
-																			"total_price",
-																			"offer_percentage",
-																			"offer_amount",
-																			"items_details"
-																		);
-										$query_values =	array(
-																			$order_id,
-																			$sale_type,
-																			$username,
-																			$name,
-																			$mobile_number,
-																			$address,
-																			$no_of_items,
-																			$no_of_units,
-																			$making_cost,
-																			$sub_total,
-																			$total_price,
-																			$offer_percentage,
-																			$offer_amount,
-																			json_encode($items_data)
-																		);
-
-										$insert_query = get_query($query_type, $query_table, $query_columns, $query_values);
-                		//$return['insert_query'] = $insert_query;
-
-                    //$_SERVER['HTTP_HOST'] != "localhost"
-										if(true){
-											$insert_result = insert_query($insert_query);
-											if($insert_result['result']){
-												$return['result'] = true;
-                        $return['info'] .= "order created";
-                        $return['order_id'] = $order_id;
-											}else{
-												$return['info'] .= "error creating order: database error";
-											}
-										}else{
-											//requesting on local_server
-											$return['info'] .= "error creating order: Requesting on local_server";
-										}
-									}else{
-										//no items in order
-										$return['info'] .= "error creating order: No Items in Order";
-									}
-								}else{
-									//error parsing orders
-									$return['info'] .= "error creating order: parsing orders";
-								}
-							}else{
-								//error creating order
-								$return['info'] .= "error creating order: fetching order_id";
-							}
+                            $insert_query = get_query($query_type, $query_table, $query_columns, $query_values);
+            
+                            if(true){
+                                $insert_result = insert_query($insert_query);
+                                if($insert_result['result']){
+                                    $return['result'] = true;
+                                    $return['info'] .= "order created";
+                                    $return['order_id'] = $order_id;
+                                }else{
+                                    $return['info'] .= "error creating order: database error";
+                                }
+                            }else{
+                                //requesting on local_server
+                                $return['info'] .= "error creating order: Requesting on local_server";
+                            }
+                        }else{
+                            //no items in order
+                            $return['info'] .= "error creating order: No Items in Order";
+                        }
+                    }else{
+                        //error parsing orders
+                        $return['info'] .= "error creating order: parsing orders";
+                    }
+                }else{
+                    //error creating order
+                    $return['info'] .= "error creating order: fetching order_id";
+                }
             }else{
                 $return['info'] .= "error creating order: " . $fields_data['info'];
             }
-        	}elseif($action == "edit"){
+        }elseif($action == "edit"){
             $data = $_POST['data'];
 
             $fields_data = validate_fields($_post_data, $fields_def);
@@ -219,8 +216,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $fetched_all_records = null;
             if($_SERVER['HTTP_HOST'] == "localhost"){
                 $fetched_all_records = curl_request(REMOTE_SERVER_ORDERS_API_ENDPOINT, $_POST);
-
-                if($fetched_all_records['result']){
+				if($fetched_all_records['result']){
                     if($fetched_all_records['data']['result']){
                         $return['result'] = true;
                         $return['data'] = $fetched_all_records['data']['data'];
@@ -234,139 +230,355 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 }
             }else{
                 $extra_columns = array("no_of_items", "no_of_units", "making_cost", "sub_total", "total_price", "offer_percentage", "offer_amount", "is_confirmed", "is_paid");
-                $fetched_all_records = fetchRecord($query_table, $extra_columns);
-
-                $return = $fetched_all_records;
+                $where_clause = array("is_cancelled=0");
+                $fetched_all_records = fetchRecord($query_table, $extra_columns, $where_clause);
+				$return = $fetched_all_records;
             }
-        }elseif($action == "fetch_for_app"){
-            $query_type = "custom";
-            //$query_table defined earlier
-            $categories_query_text = 
-            "
-            SELECT DISTINCT `type` FROM `items`
-            ";
-			
-            $categories_query = get_query($query_type, $query_table, $categories_query_text);
-            $categories_result = select_query($categories_query);
-			
-			$query_text = 
-            "
-            SELECT * FROM (
-                SELECT * FROM (
-                    SELECT * FROM `items` WHERE `priority` != 'default' AND `material` != 'raw' AND `in_stock` = 1 ORDER BY `datetime` DESC
-                ) AS `t1` 
-            ORDER BY FIELD(`priority`, 'top', 'new', 'offer')
-            ) `t2`
-            
-            UNION
-            
-            SELECT * FROM (SELECT * FROM `items` WHERE `priority` = 'default' AND `material` != 'raw' AND `in_stock` = 1 ORDER BY rand()) `t3`
-            ";
-			
-            $select_query = get_query($query_type, $query_table, $query_text);
-            $select_result = select_query($select_query);
-			
-			//$return['query'] = $select_query;
-
-            if($categories_result['result'] && $select_result['result']){
+        }elseif($action == "fetch_order"){
+            $order_id = $_POST['data'];
+            $extra_column = array("items_details");
+            $where_clause = "`order_id` LIKE '$order_id' AND `is_cancelled`='0'";
+            $fetched_all_records = fetchRecord($query_table, $extra_column, $where_clause);
+            if($fetched_all_records['result']){
                 $return['result'] = true;
                 $return['info'] .= "fetched all records ";
-				$return['header'] = array(
-										"header_1" => "Ambati Tasty Foods - Laxmiravulapalle, Telangana",
-										"header_2" => "Online store for Keerana Vendors",
-										"app_button" => "App Coming Soon",
-										"mobile_number" => "8096031765"
-									);
-                $return['categories'] = $categories_result['additional_data'];
-                $return['items'] = $select_result['additional_data'];
-            }else{
-                $return['result'] = true;
-                $return['items'] = array();
-                $return['info'] .= $select_result['info'];
-                //$return['additional_info'] .= $select_result['additional_info'];
-            }
-        }elseif($action == "fetch_specified"){
-            $query_type = "select";
-            //$query_table defined earlier
-            $query_columns = $_POST['required_fields'];
-            $query_where = $_POST['rules'];            
-            $suffix_query = array_key_exists('suffix_query', $_POST) ? $_POST['suffix_query'] : null;
-
-            $select_query = get_query($query_type, $query_table, $query_columns, $query_where, $suffix_query);
-            $return['query'] = $select_query['query'];
-
-            $select_result = select_query($select_query);
-
-            if($select_result['result']){
-                $return['result'] = true;
-                $return['info'] .= "fetched all records ";
-                $return['data'] = $select_result['additional_data'];
+                $return['data'] = $fetched_all_records['data'];
             }else{
                 $return['result'] = true;
                 $return['data'] = array();
-                $return['info'] .= $select_result['info'];
-                //$return['additional_info'] .= $select_result['additional_info'];
+                $return['info'] .= $fetched_all_records['info'];
+                $return['additional_info'] .= $fetched_all_records['additional_info'];
             }
-        }elseif($action == "fetch_item_data"){
-            $shortcode = $_POST['shortcode'];
+        }elseif($action == "sale_order"){
+            if($_SERVER['HTTP_HOST'] == "localhost"){
 
-            $query_type = "custom";
-            //$query_table defined earlier
-            $query_text = 
-            "
-            SELECT 
-                `items`.`material`, `items`.`item`, `items`.`shortcode`, `items`.`unit`, `items`.`type`, 
-                `stock_and_stock_nouse`.`making_cost`, `stock_and_stock_nouse`.`retailer_cost`, `stock_and_stock_nouse`.`wholesale_cost`, `stock_and_stock_nouse`.`item_number`, `stock_and_stock_nouse`.`date`
-            FROM `items`
+                $scanned_data = json_decode($_POST['data'], true);
 
-            LEFT JOIN (
-            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock` WHERE `shortcode`= '$shortcode'
-            UNION
-            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_nouse` WHERE `shortcode`= '$shortcode'
-            UNION
-            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_deleted` WHERE `shortcode`= '$shortcode'
-            ) AS `stock_and_stock_nouse`
-            ON `items`.`shortcode` = `stock_and_stock_nouse`.`shortcode`
+                if($scanned_data){
+                    /* OPERATIONS:
+                        ==>insert the row in `stock_nouse`
+                        ==>delete the row in `stock`
+                    */
 
-            WHERE `items`.`shortcode` = '$shortcode'
+                    $transaction_connection = begin_transaction();
+                    $is_transaction_success = true;
 
-            ORDER BY `stock_and_stock_nouse`.`date` DESC, `stock_and_stock_nouse`.`item_number` DESC LIMIT 1
-            ";
+                    $items_list = $scanned_data['list'];
 
-            $select_query = get_query($query_type, $query_table, $query_text);
-            $select_result = select_query($select_query);
-            if($select_result['result']){
-                $return['result'] = true;
-                $return['info'] .= "fetched all records ";
-                $return['data'] = $select_result['additional_data'];
+                    $where_data = array();
+                    foreach($items_list as $item){
+                        $where_data[] = "`barcode`='" . $item['barcode'] . "'";
+                    }
+
+                    $stock_nouse_query_type = "custom";
+                    $stock_nouse_table = "stock_nouse";
+                    $stock_nouse_query_text = 
+                    "
+                    INSERT INTO `stock_nouse` SELECT NULL AS `row_id`, `stock`.* FROM `stock` WHERE ". implode(" OR ",$where_data) .";
+                    ";
+
+                    $stock_nouse_query = get_query($stock_nouse_query_type, $stock_nouse_table, $stock_nouse_query_text);
+                    $stock_nouse_result = insert_query($stock_nouse_query, $transaction_connection);
+                    if(!$stock_nouse_result['result']){
+                        $is_transaction_success = false;
+                        $return['info'] .= "stock_nouse: " . $stock_nouse_result['additional_information'];
+                    }else{
+                        $stock_query_type = "custom";
+                        $stock_table = "stock";
+                        $stock_query_text = 
+                        "
+                        DELETE FROM `stock` WHERE ". implode(" OR ",$where_data) .";
+                        ";
+
+                        $stock_query = get_query($stock_query_type, $stock_table, $stock_query_text);
+                        $stock_delete_result = delete_query($stock_query, $transaction_connection);
+                        
+                        if(!$stock_delete_result['result']){
+                            $is_transaction_success = false;
+                            $return['info'] .= "stock_delete: " . $stock_delete_result['additional_information'];
+                        }
+                    }
+                    
+                    if($is_transaction_success){
+                        $server_result = curl_request(REMOTE_SERVER_ORDERS_API_ENDPOINT, $_POST);
+                        if($server_result['result'] && $server_result['data']['result']){
+                            $return = commit_transaction($transaction_connection);
+                            $return['order_id'] = $server_result['data']['order_id'];
+                        }else{
+                            if(count($server_result['data'])){
+                                $return = $server_result['data'];
+                            }else{
+                                $return = $server_result;
+                            }
+                        }
+                    }
+                }else{
+                    $return['info'] .= "error parsing scanned data";
+                }
             }else{
-                $return['result'] = true;
-                $return['data'] = array();
-                //$return['info'] .= $select_result['info'];
-                //$return['additional_info'] .= $select_result['additional_info'];
-                $return['select_result'] = $select_result;
+                $order_id = $_POST['order_id'];
+                $order_data = $_POST['order_data'];
+                $unscanned_data = json_decode($_POST['unscanned_data'], true);
+                $scanned_data = json_decode($_POST['data'], true);
+                
+                if($unscanned_data && $scanned_data){
+                    $transaction_queries = array();
+                    $new_order_id = null;
+                    
+                    if(count($unscanned_data['summary'])){
+                        $new_order_id = generateInvoiceId($order_data['order_id'], true);
+
+                        $insert_query_type = "insert";
+                        $insert_query_columns = array(
+                            "order_id",
+                            "sale_type",
+                            "username",
+                            "name",
+                            "mobile_number",
+                            "address",
+                            "no_of_items",
+                            "no_of_units",
+                            "making_cost",
+                            "sub_total",
+                            "total_price",
+                            "offer_percentage",
+                            "offer_amount",
+                            "items_details"
+                        );
+
+                        $insert_query_values =	array(
+                                            $new_order_id,
+                                            $order_data['sale_type'],
+                                            $order_data['username'],
+                                            $order_data['name'],
+                                            $order_data['mobile_number'],
+                                            $order_data['address'],
+                                            count($unscanned_data['summary']),
+                                            array_sum(array_column($unscanned_data['summary'], 'quantity')),
+                                            0,
+                                            $unscanned_data['billing']['sub_total'],
+                                            $unscanned_data['billing']['total'],
+                                            0,
+                                            0,
+                                            json_encode($unscanned_data)
+                                        );
+
+                        $insert_query = get_query($insert_query_type, $query_table, $insert_query_columns, $insert_query_values);
+                        $transaction_queries[] = array("insert" => $insert_query);
+                    }
+
+                    if(count($scanned_data['summary'])){
+                        $update_query_type = "update";
+                        $update_column_set = array(
+                                                "no_of_items=" . count($scanned_data['summary']),
+                                                "no_of_units=" . array_sum(array_column($scanned_data['summary'], 'quantity')),
+                                                "making_cost=" . $scanned_data['billing']['making_cost'],
+                                                "sub_total=" . $scanned_data['billing']['sub_total'],
+                                                "total_price=" . $scanned_data['billing']['total'],
+                                                "is_confirmed=1",
+                                                "items_details=" . json_encode($scanned_data),
+                                            );
+                        $update_column_where = "`order_id` LIKE '$order_id'";
+
+                        $update_query = get_query($update_query_type, $query_table, $update_column_set, $update_column_where);
+                        $transaction_queries[] = array("update" => $update_query);
+                    }
+
+                    if(count($transaction_queries)){
+                        $trasaction_result = execute_transactions($transaction_queries);
+                
+                        $return['queries'] = $transaction_queries;
+                
+                        if($trasaction_result['result']){
+                            $return['result'] = true;
+                            $return['info'] .= "order sale successful ";
+                            $return['order_id'] = $order_id;
+                            if(count($unscanned_data['summary'])){
+                                $return['info'] .= "and creating new order successful ";
+                                $return['new_order_id'] = $new_order_id;
+                            }
+                        }else{
+                            $return['info'] .= "order sale unsuccessful"; 
+                            $return['trasaction_result'] = $trasaction_result;  
+                        }
+                    }else{
+                        $return['info'] .= "error generating queries for the database";    
+                    }
+                }else{
+                    $return['info'] .= "error parsing scanned or unscanned data";
+                }
             }
-        }elseif($action == "fetch_distinct_column"){
-            $distinct_column = $_POST['data'];
-
-            $query_type = "custom";
-            //$query_table defined earlier
-            $query_text = 
-            "
-                SELECT DISTINCT `$distinct_column` AS `$distinct_column` FROM `$query_table` WHERE `$distinct_column` IS NOT NULL;
-            ";
-
-            $select_query = get_query($query_type, $query_table, $query_text);
-            $select_result = select_query($select_query);
-
-            if($select_result['result']){
+        }elseif($action == "order_payment"){
+            $order_id = $_POST['data'];
+            
+            $update_query_type = "update";
+            $update_column_set = array("is_paid=1");
+            $update_column_where = "`order_id` LIKE '$order_id' AND `is_cancelled`='0'";
+            $update_query = get_query($update_query_type, $query_table, $update_column_set, $update_column_where);
+            
+            $update_result = update_query($update_query);
+            if($update_result['result']){
                 $return['result'] = true;
-                $return['info'] .= "fetched all records ";
-                $return['data'] = $select_result['additional_data'];
+                $return['info'] .= "amount paid ";
             }else{
                 $return['result'] = false;
-                $return['data'] = array();
-                $return['info'] = $select_result;
+                $return['info'] .= $update_result['additional_info'];
+                $return['additional_info'] .= $update_result['additional_info'];
+            }
+        }elseif($action == "order_return"){
+            if($_SERVER['HTTP_HOST'] == "localhost"){
+                if(
+                    array_key_exists('cancelled_invoice', $_POST)
+                ){
+                    $cancelled_invoice = $_POST['cancelled_invoice'];
+
+                    $transaction_connection = begin_transaction();
+                    $is_transaction_success = true;
+
+                    $queries_to_execute = array();
+
+                    $stock_insert_type = "insert";
+                    $stock_insert_table = "stock";
+                    $stock_insert_columns = array(
+                        "generate_id",
+                        "date",
+                        "material",
+                        "item",
+                        "shortcode",
+                        "type",
+                        "unit",
+                        "quantity",
+                        "making_cost",
+                        "retailer_cost",
+                        "wholesale_cost",
+                        "item_number",
+                        "barcode",
+                        "custom_data"
+                    );
+                    
+                    foreach($cancelled_invoice['list'] as $cancelled_item){
+                        $stock_insert_values =	array(
+                            $cancelled_item['generate_id'],
+                            $cancelled_item['date'],
+                            $cancelled_item['material'],
+                            $cancelled_item['item'],
+                            $cancelled_item['shortcode'],
+                            $cancelled_item['type'],
+                            $cancelled_item['unit'],
+                            $cancelled_item['quantity'],
+                            $cancelled_item['making_cost'],
+                            $cancelled_item['retailer_cost'],
+                            $cancelled_item['wholesale_cost'],
+                            $cancelled_item['item_number'],
+                            $cancelled_item['barcode'],
+                            $cancelled_item['custom_data']
+                        );
+
+                        $stock_insert_query = get_query($stock_insert_type, $stock_insert_table, $stock_insert_columns, $stock_insert_values);
+                        $insert_result = insert_query($stock_insert_query, $transaction_connection);
+                        if(!$insert_result['result']){
+                            $is_transaction_success = false;
+                            break;
+                        }
+                    }
+
+                    if($is_transaction_success){
+                        $server_result = curl_request(REMOTE_SERVER_ORDERS_API_ENDPOINT, $_POST);
+                        if($server_result['result'] && $server_result['data']['result']){
+                            $return = commit_transaction($transaction_connection);
+
+                            if($return['result']){
+                                $return['success_title'] = $server_result['data']['success_title'];
+                                $return['success_content'] = $server_result['data']['success_content'];
+                            }
+                        }else{
+                            $return = $server_result;
+                        }
+                    }
+                }
+            }else{
+                $order_details = $_POST['data'];
+                $order_id = $order_details['order_id'];
+                
+                if(
+                    array_key_exists('current_invoice', $_POST)
+                    && count($_POST['current_invoice']['list'])
+                ){
+                    $update_query_type = "update";
+                    $update_column_set = array("is_cancelled=1");
+                    $update_column_where = "`order_id` LIKE '$order_id'";
+
+                    $update_query = get_query($update_query_type, $query_table, $update_column_set, $update_column_where);
+                    
+                    /* --------- */
+
+                    $insert_query_type = "insert";
+                    $insert_query_columns = array(
+                        "order_id",
+                        "sale_type",
+                        "username",
+                        "name",
+                        "mobile_number",
+                        "address",
+                        "no_of_items",
+                        "no_of_units",
+                        "making_cost",
+                        "sub_total",
+                        "total_price",
+                        "offer_percentage",
+                        "offer_amount",
+                        "items_details",
+                        "is_confirmed"
+                    );
+                    $insert_query_values =	array(
+                                    generateInvoiceId($order_id, true),
+                                    $order_details['sale_type'],
+                                    $order_details['username'],
+                                    $order_details['name'],
+                                    $order_details['mobile_number'],
+                                    $order_details['address'],
+                                    $order_details['no_of_items'],
+                                    $order_details['no_of_units'],
+                                    $order_details['making_cost'],
+                                    $order_details['sub_total'],
+                                    $order_details['total_price'],
+                                    $order_details['offer_percentage'],
+                                    $order_details['offer_amount'],
+                                    json_encode($_POST['current_invoice']),
+                                    1
+                                );
+
+                    $insert_query = get_query($insert_query_type, $query_table, $insert_query_columns, $insert_query_values);
+
+                    $transaction_queries = array(array("update" => $update_query), array("insert" => $insert_query));
+
+                    $transactions_result = execute_transactions($transaction_queries);
+                    if($transactions_result['result']){
+                        $return['result'] = true;
+                        $return['info'] .= "Order cancelled and Order created";
+
+                        $return['success_title'] = "Items returned in the Order";
+                        $return['success_content'] = "Items returned in the Order";
+                    }else{
+                        $return['info'] .= $transactions_result['additional_information'];
+                    }
+                }else{
+                    $update_query_type = "update";
+                    $update_column_set = array("is_cancelled=1");
+                    $update_column_where = "`order_id` LIKE '$order_id'";
+
+                    $update_query = get_query($update_query_type, $query_table, $update_column_set, $update_column_where);
+                    $update_result = update_query($update_query);
+                    if($update_result['result']){
+                        $return['result'] = true;
+                        $return['info'] .= "Order cancelled";
+
+                        $return['success_title'] = "Complete Order Cancelled";
+                        $return['success_content'] = "Complete Order Cancelled";
+                    }else{
+                        $return['info'] .= $update_result['additional_information'];
+                    }
+                }
             }
         }else{
             $return['info'] .= "action: $action does not exist";

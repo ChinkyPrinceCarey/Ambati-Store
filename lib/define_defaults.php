@@ -3,16 +3,16 @@
 define("DB_SERVER", "103.117.212.217");
 define("DB_USERNAME", "sanketma_mickey");
 define("DB_PASSWORD", "1@Passwordtrue");
-define("DB_DBNAME", "sanketma_ambati"); //ambati_sms_v2
+define("DB_DBNAME", "sanketma_ambati_v2"); //ambati_sms_v2
 
 //## default directories ## //
-define("BASE_DIR", "/home/sanketma/public_html/ambatitastyfoods.com");
+define("BASE_DIR", "/home/sanketma/public_html/ambatitastyfoods.com/v2");
 define("LIB_DIR", BASE_DIR . "/lib");
 define("NAVIGATION_FILE", LIB_DIR . "/navigation_map.json");
 define("UPLOADS_DIRNAME", "uploads");
 define("UPLOADS_DIR", "/" . UPLOADS_DIRNAME);
 
-define("HOST_BASE_API", "https://ambatitastyfoods.com");
+define("HOST_BASE_API", "https://ambatitastyfoods.com/v2");
 define("LIB_BASE_API", HOST_BASE_API . "/lib");
 define("REMOTE_SERVER_API_ENDPOINT", "https://ambatitastyfoods.com/v2/lib");
 define("REMOTE_SERVER_ITEMS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/items.php");

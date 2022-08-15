@@ -9,10 +9,6 @@ function setDefaultInputValues(){
     $('input#name').val(Cookies.get('name'));
   }
 
-  if(Cookies.get('name') !== undefined){
-    $('input#name').val(Cookies.get('name'));
-  }
-
   if(Cookies.get('mobile_number') !== undefined){
     $('input#mobile_number').val(Cookies.get('mobile_number'));
   }
@@ -70,7 +66,7 @@ function onCustomReady(){
       //manageModal(false);
 
       let total_items = cart_obj.reduce((n, {quantity}) => n + quantity, 0);
-      let gross_total = cart_obj.reduce((n, {total_cost}) => n + total_cost, 0);
+      let gross_total = cart_obj.reduce((n, {total_price}) => n + total_price, 0);
 
       let data = {
                   summary: cart_obj, 
@@ -414,10 +410,10 @@ function getLogin(){
   }
 ]
 */
-function generateOrderSummaryText(name, mobile_number, address){
+function generateOrderSummaryText(item, mobile_number, address){
   let text = "";
 
-  text += "Name:\n" + name + "\n";
+  text += "Name:\n" + item + "\n";
   text += "\nMobile Number:\n" + mobile_number + "\n";
   text += "\nAddress:\n" + address + "\n\n";
   text += "Orders: \n";
@@ -426,7 +422,7 @@ function generateOrderSummaryText(name, mobile_number, address){
   cart_obj.forEach(obj => {
     //1. Khara(KHARA)(1x200) = 200
     text += "\n";
-    text += slno + ". " + obj.name + "(" + obj.item_code + ")" + "(" + obj.quantity + "x" + obj.cost + ")\t = " + obj.total_cost;
+    text += slno + ". " + obj.item + "(" + obj.shortcode + ")" + "(" + obj.quantity + "x" + obj.unit_price + ")\t = " + obj.total_price;
     text += "\n";
     slno++;
   });
@@ -478,14 +474,14 @@ function manageModal(shouldVisible, arrayOfObj, orderArrayOfObj){
       $('table#order-summary tbody').append(
         '<tr>'
         +'<td>'+ slno +'</td>'
-        +'<td>'+ obj.name +'('+ obj.item_code +')</td>'
+        +'<td>'+ obj.item +'('+ obj.shortcode +')</td>'
         +'<td>'+ obj.quantity +'</td>'
-        +'<td>'+ obj.cost +'</td>'
-        +'<td class="right-align bold">'+ obj.total_cost +'</td>'
+        +'<td>'+ obj.unit_price +'</td>'
+        +'<td class="right-align bold">'+ obj.total_price +'</td>'
         +'</tr>'
       );
       slno++;
-      sub_total += obj.total_cost;
+      sub_total += obj.total_price;
     });
     
     let total = sub_total; //(sub_total * 1.18);
@@ -526,14 +522,14 @@ function initUpdateCart(this_, isIntital){
     catalogue_item = $(this_).parent().parent().parent().parent();
   }
 
-  let name = $(catalogue_item).find(".name").text();
-  let item_code = $(catalogue_item).find(".code #item_code").text();
-  let cost = $(catalogue_item).find(".footer .price #cost").text();
+  let item = $(catalogue_item).find(".name").text();
+  let shortcode = $(catalogue_item).find(".code #item_code").text();
+  let unit_price = $(catalogue_item).find(".footer .price #cost").text();
   let item_count = $(catalogue_item).find(".footer .add-container .post-initial input").val();
   
   if(isIntital === undefined){
     //have to remove item from cart
-    if(removeFromCart(item_code)){
+    if(removeFromCart(shortcode)){
       $(catalogue_item).removeClass("in-cart");
       if($('.categories #cart').is(".active")){
         $(catalogue_item).addClass("d-none");
@@ -555,7 +551,7 @@ function initUpdateCart(this_, isIntital){
       manageModal(true, alert_obj);
     }
   }else if(isIntital){
-    if(addToCart(name, item_code, cost)){
+    if(addToCart(item, shortcode, unit_price)){
       $(catalogue_item).addClass("in-cart");
       refreshUICart();
     }else{
@@ -574,7 +570,7 @@ function initUpdateCart(this_, isIntital){
       manageModal(true, alert_obj);
     }
   }else{
-    if(updateCart(item_code, cost, item_count)){
+    if(updateCart(shortcode, unit_price, item_count)){
       refreshUICart();
     }else{
       let alert_obj = [
@@ -597,11 +593,11 @@ function initUpdateCart(this_, isIntital){
 
 /*Currently this doesn't have any usage */
 /*
-function addToCartFromObj(item_code, quantity){
-  //data-item-code={{item_code}}
+function addToCartFromObj(shortcode, quantity){
+  //data-item-code={{shortcode}}
   //add above attribute when working on `previous-cart`
 
-  let catalogue_item = $('.catalogue-item[data-item-code="'+ item_code +'"');
+  let catalogue_item = $('.catalogue-item[data-item-code="'+ shortcode +'"');
   if(catalogue_item !== undefined && catalogue_item.length){
     console.log("catalogue_item", catalogue_item);
     if(catalogue_item.children('.footer .add-container:not(.no-stock)')){
@@ -615,35 +611,35 @@ function addToCartFromObj(item_code, quantity){
 }
 */
 
-function addToCart(name, item_code, cost){
+function addToCart(item, shortcode, unit_price){
   return cart_obj.push(
     {
-      "name": name,
-      "item_code": item_code,
-      "cost": parseFloat(cost),
+      "item": item,
+      "shortcode": shortcode,
+      "unit_price": parseFloat(unit_price),
       "quantity": 1,
-      "total_cost": parseFloat(cost)
+      "total_price": parseFloat(unit_price)
     }
   );
 }
 
-function removeFromCart(item_code){
-  const findIndex = cart_obj.findIndex(a => a.item_code === item_code);
+function removeFromCart(shortcode){
+  const findIndex = cart_obj.findIndex(a => a.shortcode === shortcode);
   if(findIndex != -1){
     return cart_obj.splice(findIndex, 1);
   }
   return false;
 }
 
-function updateCart(item_code, cost, quantity){
+function updateCart(shortcode, unit_price, quantity){
   quantity = parseInt(quantity);
-  cost = parseFloat(cost);
+  unit_price = parseFloat(unit_price);
   
   let found_obj = cart_obj.find((obj, iter) => {
-    if (obj.item_code == item_code) {      
-      obj.cost = cost;
+    if (obj.shortcode == shortcode) {      
+      obj.unit_price = unit_price;
       obj.quantity = quantity;
-      obj.total_cost = (cost * quantity);
+      obj.total_price = (unit_price * quantity);
       
       //cart_obj[iter] = {};
       return true;
@@ -654,7 +650,7 @@ function updateCart(item_code, cost, quantity){
 
 function refreshUICart(){
   let total_items = cart_obj.reduce((n, {quantity}) => n + quantity, 0);
-  let gross_total = cart_obj.reduce((n, {total_cost}) => n + total_cost, 0);
+  let gross_total = cart_obj.reduce((n, {total_price}) => n + total_price, 0);
 
   $('.cart-summary .items-summary .items').text(total_items + " items");
   $('.cart-summary .items-summary #amount span').text(gross_total);
