@@ -129,7 +129,8 @@ $(function(){
         update_data_table: update_data_table,
         update_summary: update_summary,
         update_billing: update_billing,
-        isItemExist: isItemExist
+        isItemExist: isItemExist,
+        includeMakingCostInSummary: false
     }
 
     sale_obj_methods = {
@@ -227,7 +228,8 @@ $(function(){
         update_summary: update_summary,
         update_billing: update_billing,
         isItemExist: isItemExist,
-        isCookieEnabled: true
+        isCookieEnabled: true,
+        includeMakingCostInSummary: false
     }
 
     success_notification = $("#success_notification")[0];
@@ -341,11 +343,29 @@ function update_summary(_action, _item){
         if(typeof this.summary != "object") this.summary = [];
         if(scanner_state.isEnabled){
             let table_body = this.summary_table.children('tbody');
+
+            let item_index;
+            if(this.includeMakingCostInSummary){
+                item_index = this.summary.findIndex(item => 
+                                    (item.shortcode == _item.shortcode)
+                                &&  (item.unit_price == _item.unit_price)
+                                &&  (item.making_cost == _item.making_cost)
+                            );
+            }else{
+                item_index = this.summary.findIndex(item => 
+                                    (item.shortcode == _item.shortcode)
+                                &&  (item.unit_price == _item.unit_price)
+                            );
+            }
+            
+            let data_item = `${_item.shortcode}_${_item.unit_price}`;
+            if(this.includeMakingCostInSummary){
+                data_item += `_${_item.making_cost}`;
+            }
+
             if(_action == "add"){
-                let item_index = this.summary.findIndex(item => (item.shortcode == _item.shortcode) && (item.unit_price == _item.unit_price));
-    
                 if(item_index >= 0){
-                    let item_table_row = table_body.children(`tr[data-item=${_item.shortcode}_${_item.unit_price}]`);
+                    let item_table_row = table_body.children(`tr[data-item=${data_item}]`);
                     if(item_table_row){
     
                         let updated_quantity = parseInt(this.summary[item_index].quantity) + 1;
@@ -361,7 +381,6 @@ function update_summary(_action, _item){
                         scanner_state.isEnabled = false;
                         scanner_state.reason = 'Error at updateSummary(..): Unable to find current item row in Sale Summary Table';
                     }
-            
                 }else{
                     this.summary.push(
                         {
@@ -376,7 +395,7 @@ function update_summary(_action, _item){
                     );
             
                     table_body.append(`
-                        <tr data-item="${_item.shortcode}_${_item.unit_price}">
+                        <tr data-item="${data_item}">
                             <td class="slno collapsing"></td>
                             <td class="item_shortcode">${_item.item}[${_item.shortcode}]</td>
                             <td class="quantity right aligned collapsing">1</td>
@@ -387,10 +406,8 @@ function update_summary(_action, _item){
                 }
             }else{
                 /* --------------- ACTION_REMOVE --------------- */
-                let item_index = this.summary.findIndex(item => (item.shortcode == _item.shortcode) && (item.unit_price == _item.unit_price));
-    
                 if(item_index >= 0){
-                    let sale_summary_item_table_row = table_body.children(`tr[data-item=${_item.shortcode}_${_item.unit_price}]`);
+                    let sale_summary_item_table_row = table_body.children(`tr[data-item=${data_item}]`);
                     if(sale_summary_item_table_row){
                         if(this.summary[item_index].quantity > 1){
                             this.summary[item_index].quantity = this.summary[item_index].quantity - 1;
@@ -443,8 +460,24 @@ function update_billing(_action, _item){
             this.billing.tax = 0;
             this.billing.total = parseFloat((this.billing.sub_total + this.billing.tax).toFixed(2));
 
-            let table_foot =    this.data_table.children('tfoot')
-                                .add(this.summary_table.children('tfoot'));
+            let table_foot;
+            
+            if(this.data_table){
+                if(table_foot){
+                    table_foot.add(this.data_table.children('tfoot'));
+                }else{
+                    table_foot = this.data_table.children('tfoot');
+
+                }
+            }
+            
+            if(this.summary_table){
+                if(table_foot){
+                    table_foot.add(this.summary_table.children('tfoot'));
+                }else{
+                    table_foot = this.summary_table.children('tfoot');
+                }
+            }
 
             if(table_foot.length){
                 table_foot.children("tr").children("#sub_total").text(this.billing.sub_total)
@@ -455,13 +488,18 @@ function update_billing(_action, _item){
     }
 }
 
-function isItemExist(_barcode, _show_message = true){
+function isItemExist(_barcode, _show_message = true, _searchBarcode = true){
     let modal_content = $(".ui.modal .content");
     let message_title = "Item not exist in Sale List";
     let message_content = "Item you're checking for is not exist in the sale list";
     let message_class = "negative";
-
-    let is_item_exist = this.data.find(item => item.barcode == _barcode);
+    
+    let is_item_exist = false;
+    if(_searchBarcode){
+        is_item_exist = this.data.find(item => item.barcode == _barcode);   
+    }else{
+        is_item_exist = this.summary.find(item => item.shortcode == _barcode);   
+    }
     
     if(is_item_exist){
         message_title = "Item Exist";
@@ -798,7 +836,7 @@ function evaluateOffer(offer_input_id, _sale_data){
 function offer_dialogue(
     callback, 
     _sale_data, 
-    _show_offer = true, 
+    _show_offer = true,
     _modal_data = {title: "Verify and Confirm Sale", desc: "Sale Items Overview", primary_btn_title: "Sale Stock"}
 ){
     let offer_dom = '';
