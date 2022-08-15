@@ -457,6 +457,16 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "name";
 			$columns[]  = "mobile_number";
 			$columns[]  = "address";
+			$columns[]  = "no_of_items";
+			$columns[]  = "no_of_units";
+			$columns[]  = "making_cost";
+			$columns[]  = "sub_total";
+			$columns[]  = "total_price";
+			$columns[]  = "offer_percentage";
+			$columns[]  = "offer_amount";
+			$columns[]  = "is_confirmed";
+			$columns[]  = "is_paid";
+			$columns[]  = "is_cancelled";
 			return $columns;
 		break;
 

@@ -20,6 +20,8 @@ let overview_datatable_options;
 let summary_datatable_options;
 let list_datatable_options;
 
+let API_ENDPOINT = "";
+API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
 $(function(){
 
     dropdown_reports_type = $('.ui.selection.dropdown.reports-type');
@@ -100,7 +102,7 @@ $(function(){
             ]
         },
         "ajax": {
-            "url": "lib/orders.php",
+            "url": API_ENDPOINT + "lib/orders.php",
             "type": "POST",
             "data": function(d){
                 d.action = "fetch_all";
@@ -187,11 +189,33 @@ $(function(){
                     return `<div class="ui ${color} horizontal label">${text}</div>`;
                 }
             },
+            {
+                data: "is_paid",
+                render: function(data, type, row){
+                    let color = data == 0 ? "red" : "green";
+                    let text = data == 0 ? "not paid" : "paid";
+                    return `<div class="ui ${color} horizontal label">${text}</div>`;
+                }
+            },
             { 
                 data: null,
                 className: "dt-center cart arrow down",
                 render: function (data, type, row){
-                    return `<i row_id="${row.id}" order_id="${row.order_id}" class="print icon"></i>`;
+                    let h = "";
+
+                    if(!parseInt(row.is_confirmed)){
+                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-sale-order truck icon"></i>`;
+                    }
+
+                    if(parseInt(row.is_confirmed) && !parseInt(row.is_paid)){
+                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-payment amazon pay icon"></i>`;
+                    }
+
+                    if(parseInt(row.is_confirmed)){
+                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-return backward icon"></i>`;
+                    }
+
+                    return h;
                 },
                 orderable: false
             }
@@ -199,15 +223,13 @@ $(function(){
         footerCallback: function( tfoot, data, start, end, display ) {
             var api = this.api();
 
-            updateSumOnFooter(api, 7, ""); //no of items
-            updateSumOnFooter(api, 8, ""); //no of units
-            updateSumOnFooter(api, 9); //making_cost
-            updateSumOnFooter(api, 10); //total_price
-            updateSumOnFooter(api, 11); //profit
-
+            updateSumOnFooter(api, 8, ""); //no of items
+            updateSumOnFooter(api, 9, ""); //no of units
+            updateSumOnFooter(api, 10); //making_cost
+            updateSumOnFooter(api, 11); //total_price
         },
         "drawCallback": function(settings){
-            updateProfitPercentage(11, 10)
+            //updateProfitPercentage(9, 10)
         },
         createdRow: function (row, data, dataIndex) {
             $(row).attr('data-id', data.Id);
@@ -316,18 +338,76 @@ $(function(){
 
     setTable();
 
-    $('#overview #example').on('click', 'td.print-invoice i', function (e) {
+    $('#overview #example').on('click', 'i.icon-sale-order', function (e) {
         e.preventDefault();
 
         $('#overview table#example').addClass('disable'); table.processing(true);
 
-        let invoice_id = $(this).attr("invoice_id");
+        let order_id = $(this).attr("order_id");
 
-        if(invoice_id){
-            window.location.replace(`print_invoice.html?invoice_id=${invoice_id}`);
+        if(order_id){
+            window.location.replace(`sale_order.html?order_id=${order_id}`);
         }else{
             smallModal(
-                "Error Getting Invoice Id for the Item", 
+                "Error Getting Order Id for the Order", 
+                "Reload the Page and Try", 
+                [
+                    {
+                        "class": "ui positive approve button",
+                        "id": "",
+                        "text": "Okay",
+                    }
+                ], 
+                {
+                    closable: true
+                }
+            );
+
+            $('#overview table#example').removeClass('disable'); table.processing(false);
+        }
+    });
+    
+    $('#overview #example').on('click', 'i.icon-order-payment', function (e) {
+        e.preventDefault();
+
+        $('#overview table#example').addClass('disable'); table.processing(true);
+
+        let order_id = $(this).attr("order_id");
+
+        if(order_id){
+            window.location.replace(`order_payment.html?order_id=${order_id}`);
+        }else{
+            smallModal(
+                "Error Getting Order Id for the Order", 
+                "Reload the Page and Try", 
+                [
+                    {
+                        "class": "ui positive approve button",
+                        "id": "",
+                        "text": "Okay",
+                    }
+                ], 
+                {
+                    closable: true
+                }
+            );
+
+            $('#overview table#example').removeClass('disable'); table.processing(false);
+        }
+    });
+    
+    $('#overview #example').on('click', 'i.icon-order-return', function (e) {
+        e.preventDefault();
+
+        $('#overview table#example').addClass('disable'); table.processing(true);
+
+        let order_id = $(this).attr("order_id");
+
+        if(order_id){
+            window.location.replace(`order_return.html?order_id=${order_id}`);
+        }else{
+            smallModal(
+                "Error Getting Order Id for the Order", 
                 "Reload the Page and Try", 
                 [
                     {

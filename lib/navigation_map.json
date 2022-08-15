@@ -143,6 +143,24 @@
 				"access": ["admin", "seller", "operator"]
 			},
 			{
+				"icon": "icon clipboard list",
+				"title": "Sale Order",
+				"link": "sale_order.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon clipboard list",
+				"title": "Order Payment",
+				"link": "order_payment.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
+				"icon": "icon clipboard list",
+				"title": "Order Return",
+				"link": "order_return.html",
+				"access": ["admin", "seller", "operator"]
+			},
+			{
 				"icon": "icon uniregistry",
 				"title": "customers",
 				"link": "customers.html",

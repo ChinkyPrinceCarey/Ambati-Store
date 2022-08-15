@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmbatiSMS</title>
+
+    <!--Begin: Main Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="assets/font/montserrat/font.css">
+    <link rel="stylesheet" type="text/css" href="assets/library/semantic/2.4.2/semantic_mod.css">
+    <link rel="stylesheet" type="text/css" href="assets/library/perfect-scrollbar/perfect-scrollbar.min.css">
+    <!--End: Main Stylesheets-->
+
+    <!-- Begin: Semantic DataTable Stylesheets -->
+    <link rel="stylesheet" href="assets/library/DataTables/DataTables-1.11.1/css/dataTables.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/buttons/2.0.0/css/buttons.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/select/1.3.3/css/select.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/datetime/1.1.1/css/dataTables.dateTime.min.css">
+    <link rel="stylesheet" href="assets/library/data-tables-editor/css/editor.semanticui.min.css">
+    <!--End: Semantic DataTable Stylesheets -->
+
+    <link rel="stylesheet" type="text/css" href="assets/css/utility.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/sale_stock.css">
+	
+	
+	<script type="text/javascript">
+		let isIframeLoaded = false;
+		function iframeLoaded(){
+			isIframeLoaded = true;
+		}
+	</script>
+</head>
+<body>
+
+    <div id="preloader" class="ui segment">
+        <div class="ui active dimmer">
+          <div class="ui indeterminate text loader" id="title">Preparing Files</div>
+        </div>
+        <p></p>
+    </div>
+
+    <header>
+        <div class="breadcrumb-container"></div>
+        <div class="profile">
+            <div class="avatar">
+                <span>A</span>
+            </div>
+            <span class="name"></span>
+        </div>
+    </header>
+
+    <div class="window-controls">
+        <i id="min-btn" class="window minimize icon"></i>
+        <i id="max-btn" class="window maximize icon"></i>
+        <!--<i class="window restore icon"></i>-->
+        <i id="close-btn" class="window close icon"></i>
+    </div>
+
+    <!--BEGIN: SideNav-->
+    <aside class="sidenav gradient-45deg-deep-purple-blue">
+        <div class="brand">
+            <img src="assets/images/brand_logo.svg" alt="Brand Logo">
+            <span class="text">AmbatiSMS</span>
+        </div>
+        <nav></nav>
+    </aside>
+    <!--END: SideNav-->
+
+    <main>
+        <div class="card" id="details">
+            <div class="wrapper">
+                <h5 class="ui dividing header right aligned date">DATE: <span id="date"></span></h5>
+                <form class="ui form" id="search_form">
+                    <div class="right aligned three fields">
+                        <div class="field opacity-1">
+                            <label>Order Id#</label>
+                            <input type="text" id="order_id" placeholder="Order Id#">
+                        </div>
+                        <div class="field">
+                            <label>.</label>
+                            <button type="submit" class="ui primary button" id="search_order_btn">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                    <div class="four fields" id="order_fields">
+                        <div class="field disabled opacity-1">
+                            <label>Username</label>
+                            <input type="text" id="username" placeholder="username">
+                        </div>
+                        <div class="field disabled opacity-1">
+                            <label>Name</label>
+                            <input type="text" id="name" placeholder="name">
+                        </div>
+                        <div class="field disabled opacity-1">
+                            <label>Mobile Number</label>
+                            <input type="text" id="mobile_number" placeholder="mobile_number">
+                        </div>
+                        <div class="field disabled opacity-1">
+                            <label>Address</label>
+                            <input type="text" id="address" placeholder="address">
+                        </div>
+                    </div>
+                    <button type="button" class="ui violet labeled icon button" id="save_details_btn">
+                        <i class="save icon large"></i>
+                        SAVE ORDER
+                    </button>
+                    <button type="button" class="ui pink labeled icon button" id="edit_details_btn">
+                        <i class="edit icon large"></i>
+                        EDIT ORDER
+                    </button>
+                    <button type="button" class="ui purple labeled icon button" id="order_payment_btn">
+                        <i class="shipping fast icon large"></i>
+                        <span>ORDER PAYMENT</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card" id="order_items_list">
+            <div class="wrapper">
+                <h4 class="ui dividing header center pink">Items List</h4>
+                <input type="checkbox" name="items_list_toggle" id="items_list_toggle">
+                <label for="items_list_toggle"></label>
+                <div class="table_container">
+                    <table id="items-list" class="ui celled striped violet table dsc-serial-counter">
+                        <thead>
+                          <tr>
+                              <th>Slno</th>
+                              <th>Item[Shortcode]</th>
+                              <th>Barcode</th>
+                              <th>Unit Price</th>
+                              <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2">Sub Total</th>
+                                <th id="sub_total" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
+                                <th id="tax" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2">Total</th>
+                                <th id="total" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th id="offer_percentage" class="right aligned" colspan="2">Offer(%)</th>
+                                <th id="offer_amount" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="order_items_summary">
+            <div class="wrapper">
+                <h4 class="ui dividing header center violet">Items Summary</h4>
+                <input type="checkbox" name="items_summary_toggle" id="items_summary_toggle">
+                <label for="items_summary_toggle"></label>
+                <div class="table_container">
+                    <table id="items-summary" class="ui celled striped pink table asc-serial-counter">
+                        <thead>
+                          <tr>
+                              <th>Slno</th>
+                              <th>Item[Shortcode]</th>
+                              <th>Quantity</th>
+                              <th>Unit Price</th>
+                              <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3">Sub Total</th>
+                                <th id="sub_total" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
+                                <th id="tax" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3">Total</th>
+                                <th id="total" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
+                                <th id="offer_amount" class="right aligned">0</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+	</main>
+	
+	<iframe class="my-iframe d-none" id="myframe" src="invoice_sample.html" onload="iframeLoaded()"></iframe>
+
+    <footer>
+        <div class="copyright">
+            ©2022 <strong>AMBATI PRODUCTS</strong> All rights reserved.
+        </div>
+        <div class="credits">
+            Design and Developed by <strong>SKONLINE DEALS</strong>
+        </div>
+    </footer>
+    
+    <div class="ui modal small">
+        <div class="header"></div>
+        <div class="content">
+          <p></p>
+        </div>
+        <div class="actions"></div>
+    </div>
+
+    <audio id="success_notification" src="assets/sounds/success_adding_item.mp3"></audio>
+    <audio id="error_notification" src="assets/sounds/error_adding_item.mp3"></audio>
+	
+    
+    <!--Begin: Main Scripts-->
+    <script type="text/javascript" src="assets/library/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/library/semantic/2.4.2/semantic.min.js"></script>
+    <script type="text/javascript" src="assets/library/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="assets/library/js-cookie/js.cookie.min.js"></script>
+    <!--End: Main Scripts-->
+
+    <!--Begin: DataTables-->
+    <script type="text/javascript" src="assets/library/DataTables/DataTables-1.11.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/DataTables-1.11.1/js/dataTables.semanticui.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/buttons.semanticui.min.js"></script>
+    <!--<script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/select.semanticui.min.js"></script>-->
+    <script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/dataTables.select.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/DateTime/1.1.1/js/dataTables.dateTime.min.js"></script>
+    <script type="text/javascript" src="assets/library/data-tables-editor/js/dataTables.editor.js"></script>
+    <script type="text/javascript" src="assets/library/data-tables-editor/js/editor.semanticui.min.js"></script>
+    <!--End: DataTables-->
+    
+    <script type="text/javascript" src="assets/library/jsbarcode/3.11.0/JsBarcode.all.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <script type="text/javascript" src="assets/js/order_payment.js"></script>
+</body>
+</html>
