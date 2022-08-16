@@ -215,20 +215,21 @@ $(function(){
             },
             { 
                 data: null,
-                className: "dt-center cart arrow down",
+                className: "dt-center cart arrow down order-actions",
+                width: "9%",
                 render: function (data, type, row){
                     let h = "";
 
                     if(!parseInt(row.is_confirmed)){
-                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-sale-order truck icon"></i>`;
+                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-sale-order truck icon" data-content="Sale Order"></i>`;
                     }
 
                     if(parseInt(row.is_confirmed) && !parseInt(row.is_paid)){
-                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-payment amazon pay icon"></i>`;
+                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-payment amazon pay icon" data-content="Order Payment"></i>`;
                     }
 
                     if(parseInt(row.is_confirmed)){
-                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-return backward icon"></i>`;
+                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-return backward icon" data-content="Order Return"></i>`;
                     }
 
                     return h;
@@ -246,6 +247,7 @@ $(function(){
         },
         "drawCallback": function(settings){
             //updateProfitPercentage(9, 10)
+            $('.order-actions i').popup();
         },
         createdRow: function (row, data, dataIndex) {
             $(row).attr('data-id', data.Id);

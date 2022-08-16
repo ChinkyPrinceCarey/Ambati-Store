@@ -36,3 +36,16 @@ main .card .wrapper .calendar-container{
 .calendar-container .two.fields .field button{
     width: 100%;
 }
+
+.order-actions i{
+    font-size: 23px;
+    border: 1px solid;
+    border-radius: 100px;
+    padding: 10px;
+    color: #6435C9;
+}
+
+.order-actions i:hover{
+    background: black;
+    color: white;
+}
