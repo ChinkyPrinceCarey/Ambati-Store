@@ -210,7 +210,6 @@ $(function(){
                 render: function(data, type, row){
                     let color = data == 0 ? "orange" : "green";
                     let text = data == 0 ? "pending" : "confirmed";
-                    row.is_confirmed = text;
                     return `<div class="ui ${color} horizontal label">${text}</div>`;
                 }
             },
@@ -218,7 +217,7 @@ $(function(){
                 data: "is_paid",
                 render: function(data, type, row){
                     let color = data == 0 ? "red" : "green";
-                    let text = data == 0 ? "not paid" : "paid";
+                    let text = data == 0 ? "pending" : "paid";
                     return `<div class="ui ${color} horizontal label">${text}</div>`;
                 }
             },
