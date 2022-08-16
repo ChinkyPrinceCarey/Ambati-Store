@@ -326,7 +326,6 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "type";
 			$columns[]  = "counting";
 			$columns[]  = "sub_name";
-			$columns[]  = "desc_2";
 			$columns[]  = "company_name";
 			$columns[]  = "flavour";
 			$columns[]  = "denomination";

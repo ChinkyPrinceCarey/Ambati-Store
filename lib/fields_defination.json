@@ -351,12 +351,6 @@
 		"accept_null": true
 	},
 	{
-		"variable": "DESC_2",
-		"name": "desc_2",
-		"type": "name",
-		"accept_null": true
-	},
-	{
 		"variable": "ACTUAL_COST",
 		"name": "actual_cost",
 		"type": "name",
