@@ -191,8 +191,16 @@ $(function(){
             { data: "total_price" },
             { data: "profit",
               render: function(data, type, row){
-                return `${row.profit} 
-                ${calculateProfit(row.profit, row.total_price)}`;
+                if(parseInt(row.is_confirmed)){
+                    let total_price = parseInt(row.total_price);
+                    let making_cost = parseInt(row.making_cost);
+                    let profit =  total_price - making_cost;
+                    row.profit = profit;
+                    return `${profit}(${calculateProfitPercentage(profit, total_price)})`;
+                }else{
+                    row.profit = 0;
+                    return 0;
+                }
               }
             },
             { data: "offer_percentage" },
@@ -244,9 +252,10 @@ $(function(){
             updateSumOnFooter(api, 9, ""); //no of units
             updateSumOnFooter(api, 10); //making_cost
             updateSumOnFooter(api, 11); //total_price
+            updateSumOnFooter(api, 12); //profit
         },
         "drawCallback": function(settings){
-            //updateProfitPercentage(9, 10)
+            updateProfitPercentage(12, 11);
             $('.order-actions i').popup();
         },
         createdRow: function (row, data, dataIndex) {
@@ -473,13 +482,14 @@ function updateProfitPercentage(profit_index, total_price_index){
     }, 2000);
 }
 
-function calculateProfit(_profit, _total_price){
-    return `(${((_profit/_total_price) * 100).toFixed(2)}%)`;
+function calculateProfitPercentage(_profit, _total_price){
+    return `${((_profit/_total_price) * 100).toFixed(2)}%`;
 }
 
 function updateSumOnFooter(api, column_index, prefix = "₹"){
     let total_sum = 0;
     if(api.column(column_index, { search:'applied' }).data().length){
+        console.log(api);
         total_sum = api
            .column(column_index, { search:'applied' } )
            .data()
