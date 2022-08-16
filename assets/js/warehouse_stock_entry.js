@@ -37,6 +37,8 @@ let inProcess;
 $(function(){
 	$("span#date").text(getCurrentDate("dmy"));
 
+    loadMaterial();
+
     let searchParams = new URLSearchParams(window.location.search)
     let preRequestedShortcode = searchParams.get('shortcode')
     if(preRequestedShortcode){
@@ -409,6 +411,46 @@ $(function(){
 	});
 })
 
+function loadMaterial(){
+    ajaxPostCall('lib/material.php', {action: "fetch_all", data: "random_data"}, function(response){
+
+        let modal_title = "error fetching `material`";
+        let modal_body = null;
+
+        if(response.status){
+            modal_body = response.status + ": " + response.statusText;
+        }else if(response.title){
+            modal_title = response.title;
+            modal_body = response.content;
+        }else if(response.result){
+            $.each(response.data, function(i){
+                $('select[name="material"]').append(
+                    `<option value="${this.material}">${this.material}</option>`
+                );
+            });
+            $('select[name="material"]').dropdown();
+        }else{
+            modal_body = "Something went wrong on backend connection";
+        }
+
+        if(modal_body){
+            smallModal(
+                modal_title, 
+                modal_body, 
+                [
+                    {
+                        "class": "ui positive approve button",
+                        "id": "",
+                        "text": "Okay",
+                    }
+                ], 
+                {
+                    closable: true
+                }
+            );    
+        }
+    });
+}
 
 function generateBarcodes(data){
 	//append a svg element with id
