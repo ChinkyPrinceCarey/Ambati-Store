@@ -58,10 +58,15 @@ $(function(){
                 name: "address"
             },
             {
+                label: "Password",
+                name: "password",
+                type: "password"
+            },
+            {
                 label: "Allowed?",
                 name: "is_allowed",
                 type: "select",
-                options: [{label: "Allowed", value: "1"},{label: "Not Allowed", value: "0"}],
+                options: [{label: "Allow", value: "1"},{label: "Block", value: "0"}],
                 attr: {
                     required: true,
                     name: 'is_allowed'
@@ -100,11 +105,12 @@ $(function(){
         //if(action == "create"){} //for future improvements commenting as of now group_name to focus for any fields
         editor.field('id').hide();
         editor.field('slno').hide();
+        editor.field('password').hide();
         
         if(action == "create"){
-          editor.field('username')
-          .hide();
+          editor.field('username').hide();
         }
+        editor.field('name').focus();
     });
 
     editor.on('preSubmit', function(e, data, action){
@@ -159,6 +165,9 @@ $(function(){
             buttons: [
                 {
                     extend: 'create', editor: editor, className: "positive ui button"
+                },
+                {
+                    extend: 'edit', editor: editor, className: "purple ui button"
                 },
                 {
                     extend: 'remove', editor: editor, className: "negative ui button"
@@ -224,7 +233,7 @@ $(function(){
             { data: "is_allowed",
               render: function(data, type, row){
               color = parseInt(data) ? "green" : "red" ;
-              text = parseInt(data) ? "Allowed" : "Not Allowed" ;
+              text = parseInt(data) ? "Allowed" : "Blocked" ;
               return `<a class="ui ${color} label">${text}</a>`;
           }
             }

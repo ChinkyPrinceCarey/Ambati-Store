@@ -61,37 +61,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                 $insert_query = get_query($query_type, $query_table, $query_columns, $query_values);
 
-                $insert_result = null;
-
-                if($_SERVER['HTTP_HOST'] == "localhost"){
-                    //request on localhost,
-                    //so have to queue update on localhost
-                    //then call & update on remote server
-                    $transaction_connection = begin_transaction();
-                    $insert_result = insert_query($insert_query, $transaction_connection);
-                    if($insert_result['result']){
-                        $insert_result = curl_request(REMOTE_SERVER_CUSTOMERS_API_ENDPOINT, $_POST);
-                        if($insert_result['result']){
-                            if(
-                                    array_key_exists("result", $insert_result['data'])
-                                &&  $insert_result['data']['result']
-                            ){
-                                $insert_result = commit_transaction($transaction_connection);
-                            }else{
-                                $insert_result['result'] = false;
-                                $insert_result['info'] = "error from remote server: " . $insert_result['data']['info'];
-                                $insert_result['additional_information'] = "error from remote server: " . $insert_result['data']['additional_info'];
-                            }
-                        }else{
-                            $insert_result['info'] = "error connecting to remote server: " . $insert_result['info'];
-                            $insert_result['additional_information'] = "error connecting to remote server: " . $insert_result['info'];
-                        }
-                    }
-                }else{
-                    //request on remote server,
-                    //just update on remote server
-                    $insert_result = insert_query($insert_query);
-                }
+                $insert_result = insert_query($insert_query);
                 
                 if($insert_result['result']){
                     $inserted_record = fetchRecord($query_table, null, $default_where, "count_slno");
@@ -119,7 +89,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
             $slno = $data[$id]['slno'];
             
-            $fields_def = array(UNIT);
+            $fields_def = array(USERNAME, PASSWORD, NAME, MOBILE_NUMBER, ADDRESS);
             $fields_data = validate_fields($data[$id], $fields_def);
             if($fields_data['result']){
                 $query_set = array();
@@ -130,45 +100,11 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 }
                 
                 $query_type = "update";
-                //$query_table defined earlier
-                //$query_set defined just above
-                //$default_where will be used;
-
+                
                 $update_query = get_query($query_type, $query_table, $query_set, $default_where);
                 $return['query'] = $update_query; //for debugging
 
-                $update_result = null;
-
-                if($_SERVER['HTTP_HOST'] == "localhost"){
-                    //request on localhost,
-                    //so have to queue update on localhost
-                    //then call & update on remote server
-                    $transaction_connection = begin_transaction();
-
-                    $update_result = update_query($update_query, $transaction_connection);
-                    if($update_result['result']){
-                        $update_result = curl_request(REMOTE_SERVER_CUSTOMERS_API_ENDPOINT, $_POST);
-                        if($update_result['result']){
-                            if(
-                                    array_key_exists("result", $update_result['data'])
-                                &&  $update_result['data']['result']
-                            ){
-                                $update_result = commit_transaction($transaction_connection);
-                            }else{
-                                $update_result['result'] = false;
-                                $update_result['info'] = "error from remote server: " . $update_result['data']['info'];
-                                $update_result['additional_information'] = "error from remote server: " . $update_result['data']['additional_info'];
-                            }
-                        }else{
-                            $update_result['info'] = "error connecting to remote server: " . $update_result['info'];
-                            $update_result['additional_information'] = "error connecting to remote server: " . $update_result['info'];
-                        }
-                    }
-                }else{
-                    //request on remote server,
-                    //just update on remote server
-                    $update_result = update_query($update_query);
-                }
+                $update_result = update_query($update_query);
 
                 if($update_result['result']){
                     $updated_record = fetchRecord($query_table, null, $default_where, $slno);
@@ -208,37 +144,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $delete_query = get_query($query_type, $query_table, $query_column, $query_where);
             $return['query'] = $delete_query; //for debugging
 
-            $delete_result = null;
-
-            if($_SERVER['HTTP_HOST'] == "localhost"){
-                //request on localhost,
-                //so have to queue update on localhost
-                //then call & update on remote server
-                $transaction_connection = begin_transaction();
-                $delete_result = delete_query($delete_query, $transaction_connection);
-                if($delete_result['result']){
-                    $delete_result = curl_request(REMOTE_SERVER_CUSTOMERS_API_ENDPOINT, $_POST);
-                    if($delete_result['result']){
-                        if(
-                                array_key_exists("result", $delete_result['data'])
-                            &&  $delete_result['data']['result']
-                        ){
-                            $delete_result = commit_transaction($transaction_connection);
-                        }else{
-                            $delete_result['result'] = false;
-                            $delete_result['info'] = "error from remote server: " . $delete_result['data']['info'];
-                            $delete_result['additional_information'] = "error from remote server: " . $delete_result['data']['additional_info'];
-                        }
-                    }else{
-                        $delete_result['info'] = "error connecting to remote server: " . $delete_result['info'];
-                        $delete_result['additional_information'] = "error connecting to remote server: " . $delete_result['info'];
-                    }
-                }
-            }else{
-                //request on remote server,
-                //just update on remote server
-                $delete_result = delete_query($delete_query);
-            }
+            $delete_result = delete_query($delete_query);
 
             if($delete_result['result']){
                 $return['result'] = true;
@@ -253,8 +159,6 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             }
         }elseif($action == "fetch_all"){
             $fetched_all_records = fetchRecord($query_table);
-
-            //echo "<pre>"; print_r($fetched_all_records); echo "</pre>";
 
             if($fetched_all_records['result']){
                 $return['result'] = true;
@@ -277,16 +181,12 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
             $fetched_all_records = fetchRecord($query_table, $manual_columns, $query_where);
 
-            //echo "<pre>"; print_r($fetched_all_records); echo "</pre>";
-
             if($fetched_all_records['result']){
                 $return['result'] = true;
                 $return['info'] .= "fetched record ";
                 $return['data'] = $fetched_all_records['data'];
             }else{
                 $return['info'] .= $fetched_all_records['info'];
-                //$return['fetched'] = $fetched_all_records;
-                //$return['additional_info'] .= $fetched_all_records['additional_info'];
             }
         }else{
             $return['info'] .= "action: $action does not exist";
@@ -299,6 +199,5 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 }
 
 $json_return = json_encode($return);
-//echo "hello";
 print_r($json_return);
 ?>
