@@ -208,8 +208,9 @@ $(function(){
             {
                 data: "is_confirmed",
                 render: function(data, type, row){
-                    let color = data == 0 ? "red" : "green";
-                    let text = data == 0 ? "not confirmed" : "confirmed";
+                    let color = data == 0 ? "orange" : "green";
+                    let text = data == 0 ? "pending" : "confirmed";
+                    row.is_confirmed = text;
                     return `<div class="ui ${color} horizontal label">${text}</div>`;
                 }
             },
@@ -489,7 +490,6 @@ function calculateProfitPercentage(_profit, _total_price){
 function updateSumOnFooter(api, column_index, prefix = "₹"){
     let total_sum = 0;
     if(api.column(column_index, { search:'applied' }).data().length){
-        console.log(api);
         total_sum = api
            .column(column_index, { search:'applied' } )
            .data()
