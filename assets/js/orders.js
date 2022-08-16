@@ -120,12 +120,20 @@ $(function(){
                             {
                                 "class": "ui positive approve button",
                                 "id": "",
+                                "text": "Okay",
+                            },
+                            {
+                                "class": "ui negative deny button",
+                                "id": "",
                                 "text": "Reload",
                             }
                         ], 
                         {
                             closable: false,
                             onApprove: function(){
+                                return true;
+                            },
+                            onDeny: function(){
                                 window.location.replace(getCurrentPage());
                                 return false;
                             }
@@ -143,12 +151,20 @@ $(function(){
                         {
                             "class": "ui positive approve button",
                             "id": "",
+                            "text": "Okay",
+                        },
+                        {
+                            "class": "ui negative deny button",
+                            "id": "",
                             "text": "Reload",
                         }
                     ], 
                     {
                         closable: false,
                         onApprove: function(){
+                            return true;
+                        },
+                        onDeny: function(){
                             window.location.replace(getCurrentPage());
                             return false;
                         }
