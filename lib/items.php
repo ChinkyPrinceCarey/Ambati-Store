@@ -31,7 +31,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
         $fields_def = array(
                         MATERIAL, ITEM, SHORTCODE, 
-                        UNIT, TYPE, DESC_1, DESC_2, 
+                        UNIT, TYPE, COUNTING, DESC_1, DESC_2, 
                         ACTUAL_COST, COST, LEVEL, 
                         IN_STOCK, PRIORITY, IMAGE
                     );

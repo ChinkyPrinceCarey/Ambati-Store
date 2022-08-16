@@ -94,7 +94,14 @@ $(function(){
                 }
             },
             {
-                label: "Description (counting)",
+                label: "Counting",
+                name: "counting",
+                attr: {
+                    name: 'counting'
+                }
+            },
+            {
+                label: "Description 1",
                 name: "desc_1",
                 attr: {
                     name: 'desc_1'
@@ -410,6 +417,7 @@ $(function(){
             { data: "unit" },
             { data: "item" },
             { data: "shortcode" },
+            { data: "counting" },
             { data: "desc_1" },
             { data: "desc_2" },
             { data: "company_name" },
@@ -469,7 +477,7 @@ $(function(){
     });
 
     editor.field('material').input().on( 'change', function (e) {
-        fields = ['desc_1', 'desc_2', 'actual_cost', 'cost', 'level', 'in_stock', 'priority']
+        fields = ['counting', 'desc_1', 'desc_2', 'actual_cost', 'cost', 'level', 'in_stock', 'priority']
         if(this.value == "raw"){
             $.each(fields, function(){
                 editor.field(this).hide();

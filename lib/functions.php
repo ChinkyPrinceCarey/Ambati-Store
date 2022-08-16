@@ -324,6 +324,7 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "shortcode";
 			$columns[]  = "unit";
 			$columns[]  = "type";
+			$columns[]  = "counting";
 			$columns[]  = "desc_1";
 			$columns[]  = "desc_2";
 			$columns[]  = "company_name";
