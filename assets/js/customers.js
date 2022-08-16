@@ -1,6 +1,9 @@
 var table;
 var editor;
 var tableDom;
+
+let API_ENDPOINT = "";
+//API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
 $(function(){
 
     tableDom = 
@@ -76,7 +79,7 @@ $(function(){
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  "lib/customers.php",
+                url:  API_ENDPOINT + "lib/customers.php",
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -175,7 +178,7 @@ $(function(){
             ],
         },
         "ajax": {
-            "url": "lib/customers.php",
+            "url": API_ENDPOINT + "lib/customers.php",
             "type": "POST",
             "data" : {"action": "fetch_all", "data": "random_data"},
             "dataType": 'json',
