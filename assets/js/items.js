@@ -94,13 +94,6 @@ $(function(){
                 }
             },
             {
-                label: "Counting",
-                name: "counting",
-                attr: {
-                    name: 'counting'
-                }
-            },
-            {
                 label: "Sub Name",
                 name: "sub_name",
                 attr: {
@@ -133,6 +126,13 @@ $(function(){
                     name: 'denomination',
                     placeholder: 'Search denomination...',
                     showSearchIcon: false
+                }
+            },
+            {
+                label: "Counting",
+                name: "counting",
+                attr: {
+                    name: 'counting'
                 }
             },
             {
@@ -410,11 +410,11 @@ $(function(){
             { data: "unit" },
             { data: "item" },
             { data: "shortcode" },
-            { data: "counting" },
             { data: "sub_name" },
             { data: "company_name" },
             { data: "flavour" },
             { data: "denomination" },
+            { data: "counting" },
             { data: "making_cost" },
             { data: "retailer_cost" },
             { data: "available_stock",
