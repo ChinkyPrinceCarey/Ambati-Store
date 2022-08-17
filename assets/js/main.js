@@ -1,5 +1,4 @@
-let BASE_API = "http://localhost/ambati_sms/v2";
-let API_ENDPOINT = "https://ambatitastyfoods.com/"; //for remote server
+let API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
 
 $(function(){
     console.log(`hello`)
