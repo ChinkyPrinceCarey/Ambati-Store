@@ -3,7 +3,7 @@
 define("DB_SERVER", "103.117.212.217");
 define("DB_USERNAME", "sanketma_mickey");
 define("DB_PASSWORD", "1@Passwordtrue");
-define("DB_DBNAME", "sanketma_ambati"); //ambati_sms_v2
+define("DB_DBNAME", "sanketma_ambati_v2"); //ambati_sms
 
 //## default directories ## //
 define("BASE_DIR", "/home/sanketma/public_html/ambatitastyfoods.com/v2");
