@@ -320,14 +320,14 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             "
             SELECT * FROM (
                 SELECT * FROM (
-                    SELECT * FROM `items` WHERE `priority` != 'default' AND `material` != 'raw' AND `in_stock` = 1 ORDER BY `datetime` DESC
+                    SELECT * FROM `items` WHERE `priority` != 'default' AND `material` != 'raw' AND `in_stock` != 0 ORDER BY `datetime` DESC
                 ) AS `t1` 
             ORDER BY FIELD(`priority`, 'top', 'new', 'offer')
             ) `t2`
             
             UNION
             
-            SELECT * FROM (SELECT * FROM `items` WHERE `priority` = 'default' AND `material` != 'raw' AND `in_stock` = 1 ORDER BY rand()) `t3`
+            SELECT * FROM (SELECT * FROM `items` WHERE `priority` = 'default' AND `material` != 'raw' AND `in_stock` != 0 ORDER BY rand()) `t3`
             ";
 			
             $select_query = get_query($query_type, $query_table, $query_text);
