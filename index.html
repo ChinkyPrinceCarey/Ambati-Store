@@ -100,6 +100,10 @@
                     {{/js_if}}
                     <div class="section-1">
                         <div class="img">
+                            {{#js_if "this.in_stock == '2'"}}
+                                <div class="out-of-stock">Out of Stock</div>
+                            {{/js_if}}
+                            
                             <img class="lazy" 
                                 {{#if image[0].thumb}}
                                     data-src="https://www.ambatitastyfoods.com/{{image[0].thumb}}"

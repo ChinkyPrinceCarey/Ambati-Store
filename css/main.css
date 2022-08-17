@@ -421,6 +421,11 @@ font-size: 11px;
 color: #636675;
 }
 
+.catalogue .catalogue-item .out-of-stock{
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
 .catalogue .catalogue-item.highlight .section-1 .img{
   width: 130px;
   height: 130px;
