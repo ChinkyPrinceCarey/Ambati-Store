@@ -199,7 +199,7 @@ function onCustomReady(){
     manageModal(false);
   });
   
-  $('#modal-close').click(function(){
+  $('#modal-close, .footer #modal-close').click(function(){
     manageModal(false);
   });
 
