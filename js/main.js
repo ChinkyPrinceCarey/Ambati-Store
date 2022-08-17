@@ -63,6 +63,7 @@ function onCustomReady(){
       $('.catalogue').addClass('loading-background');
       $('.catalogue-item').addClass('d-none');
       $('.catalogue-item.d-grid').removeClass('d-grid');
+      $(".catalogue-item.last-item").removeClass('last-item');
     
       var search_text = $(this).val().toLowerCase();
       $(".catalogue-item").filter(function(){
@@ -72,6 +73,8 @@ function onCustomReady(){
           $(this).addClass("d-grid");
         }
       });
+      
+      $('.catalogue-item.d-grid:last').addClass('last-item');
     
       $('.catalogue').removeClass('loading-background');
       $('.catalogue-item').removeClass('d-none');
@@ -223,6 +226,9 @@ function onCustomReady(){
     let isActive = $(this).hasClass("active");
     let category_type = $(this).text();
     $(".categories .tag.active").removeClass('active');
+
+    $(".catalogue-item.last-item").removeClass('last-item');
+
     if(category_type == "In Cart"){
       if(isActive){
         $('.catalogue-item.d-none')
@@ -258,6 +264,9 @@ function onCustomReady(){
       }
     }
     window.scrollTo(offset.left, offset.top + 34);
+
+    $('.catalogue .catalogue-item:not(.d-none):last').addClass('last-item');
+
     $(this).focusout();
     $(".lbl-toggle").click();
   });

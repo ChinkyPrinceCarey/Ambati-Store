@@ -1144,7 +1144,8 @@ background-color: rgba(0,0,0,0.4);
   }
 
   .catalogue .catalogue-item:last-child,
-  .catalogue .catalogue-item.d-grid:last-child{
+  .catalogue .catalogue-item.d-grid:last-child,
+  .catalogue .catalogue-item.last-item{
       margin-bottom: 30px;
       padding-bottom: 87px;
   }
