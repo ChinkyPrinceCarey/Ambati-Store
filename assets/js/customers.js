@@ -3,7 +3,7 @@ var editor;
 var tableDom;
 
 let API_ENDPOINT = "";
-//API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
+API_ENDPOINT = "https://ambatitastyfoods.com/"; //for remote server
 $(function(){
 
     tableDom = 
@@ -192,12 +192,20 @@ $(function(){
                                 "class": "ui positive approve button",
                                 "id": "",
                                 "text": "Reload",
+                            },
+                            {
+                                "class": "ui negative deny button",
+                                "id": "",
+                                "text": "Okay",
                             }
                         ], 
                         {
                             closable: false,
                             onApprove: function(){
-                                //window.location.replace(getCurrentPage());
+                                window.location.replace(getCurrentPage());
+                                return true;
+                            },
+                            onDeny: function(){
                                 return true;
                             }
                         }
@@ -215,6 +223,11 @@ $(function(){
                             "class": "ui positive approve button",
                             "id": "",
                             "text": "Reload",
+                        },
+                        {
+                            "class": "ui negative deny button",
+                            "id": "",
+                            "text": "Okay",
                         }
                     ], 
                     {
@@ -222,6 +235,9 @@ $(function(){
                         onApprove: function(){
                             window.location.replace(getCurrentPage());
                             return false;
+                        },
+                        onDeny: function(){
+                            return true;
                         }
                     }
                 );

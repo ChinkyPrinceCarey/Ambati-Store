@@ -120,22 +120,22 @@ $(function(){
                             {
                                 "class": "ui positive approve button",
                                 "id": "",
-                                "text": "Okay",
+                                "text": "Reload",
                             },
                             {
                                 "class": "ui negative deny button",
                                 "id": "",
-                                "text": "Reload",
+                                "text": "Okay",
                             }
                         ], 
                         {
                             closable: false,
                             onApprove: function(){
+                                window.location.replace(getCurrentPage());
                                 return true;
                             },
                             onDeny: function(){
-                                window.location.replace(getCurrentPage());
-                                return false;
+                                return true;
                             }
                         }
                     );
@@ -151,22 +151,22 @@ $(function(){
                         {
                             "class": "ui positive approve button",
                             "id": "",
-                            "text": "Okay",
+                            "text": "Reload",
                         },
                         {
                             "class": "ui negative deny button",
                             "id": "",
-                            "text": "Reload",
+                            "text": "Okay",
                         }
                     ], 
                     {
                         closable: false,
                         onApprove: function(){
+                            window.location.replace(getCurrentPage());
                             return true;
                         },
                         onDeny: function(){
-                            window.location.replace(getCurrentPage());
-                            return false;
+                            return true;
                         }
                     }
                 );
