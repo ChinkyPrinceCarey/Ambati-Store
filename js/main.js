@@ -173,6 +173,8 @@ function onCustomReady(){
         Cookies.set('name', user.name, default_cookie_option);
         Cookies.set('mobile_number', user.mobile_number, default_cookie_option);
         Cookies.set('address', user.address, default_cookie_option);
+
+        setDefaultInputValues();
   
         //hide login-form
         $('.login-conatiner')
