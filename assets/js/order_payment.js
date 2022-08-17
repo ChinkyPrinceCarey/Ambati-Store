@@ -20,8 +20,6 @@ let order_summary_after;
 let table_items_list;
 let table_items_summary;
 
-let API_ENDPOINT = "";
-API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
 $(function(){
 
     $("span#date").text(getCurrentDate("dmy"));

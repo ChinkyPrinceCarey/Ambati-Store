@@ -20,8 +20,6 @@ let overview_datatable_options;
 let summary_datatable_options;
 let list_datatable_options;
 
-let API_ENDPOINT = "";
-API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
 $(function(){
 
     dropdown_reports_type = $('.ui.selection.dropdown.reports-type');

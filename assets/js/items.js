@@ -6,10 +6,9 @@ var selectOptsArr = [{value: '', label: '', disabled: true}];
 let cropper;
 let cropperDom;
 
-let API_ENDPOINT = "";
-//API_ENDPOINT = "https://ambatitastyfoods.com/sms/"; //for remote server
-
 $(function(){
+
+    API_ENDPOINT = ""; //that reset the api to local server
 
     cropperDom = $(".crop-container");
     cropperDom.hide();

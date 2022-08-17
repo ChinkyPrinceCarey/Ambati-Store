@@ -2,8 +2,6 @@ var table;
 var editor;
 var tableDom;
 
-let API_ENDPOINT = "";
-API_ENDPOINT = "https://ambatitastyfoods.com/"; //for remote server
 $(function(){
 
     tableDom = 

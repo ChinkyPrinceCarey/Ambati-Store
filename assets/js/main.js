@@ -1,7 +1,9 @@
 let BASE_API = "http://localhost/ambati_sms/v2";
+let API_ENDPOINT = "https://ambatitastyfoods.com/"; //for remote server
 
 $(function(){
     console.log(`hello`)
+
     if(typeof loginPage === "undefined"){
         preloader("Validating Authentication");
         /* Begin: Check User */

@@ -28,8 +28,6 @@ let current_sale_summary_table;
 let current_sale_list_table;
 let current_sale_billing_table;
 
-let API_ENDPOINT = "";
-API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
 $(function(){
     $("span#date").text(getCurrentDate("dmy"));
 
