@@ -88,10 +88,6 @@ function onCustomReady(){
     let address = $('textarea#address:valid').val();
     
     if(name !== undefined && mobile_number !== undefined && address !== undefined){
-      Cookies.set('name', name, default_cookie_option);
-      Cookies.set('mobile_number', mobile_number, default_cookie_option);
-      Cookies.set('address', address, default_cookie_option);
-
       //manageModal(false);
 
       let total_items = cart_obj.reduce((n, {quantity}) => n + quantity, 0);
@@ -120,6 +116,10 @@ function onCustomReady(){
         }else if(response.result){
           Cookies.set('cart', '[]', default_cookie_option);
           alert_body = `Your order placed successfully, you will receive your order by evening!</br><strong>Order Id: ${response.order_id}</br>Amount: ${gross_total}</strong>`;
+
+          Cookies.set('name', name, default_cookie_option);
+          Cookies.set('mobile_number', mobile_number, default_cookie_option);
+          Cookies.set('address', address, default_cookie_option);
         }else{
           alert_body = `Ooops, your order is not placed!`;
         }

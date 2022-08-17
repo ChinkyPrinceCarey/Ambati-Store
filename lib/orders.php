@@ -37,6 +37,11 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         if($action == "create"){
             $fields_data = validate_fields($_POST, $fields_def);
             if($fields_data['result']){
+
+                $customer_update = updateCustomerData($_COOKIE, $fields_data['data']);
+
+                //$return['customer_update'] = $customer_update;
+
                 $order_id = getOrderId();
                 if($order_id['result']){
                     $order_id = $order_id['data'];
