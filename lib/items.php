@@ -31,7 +31,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
         $fields_def = array(
                         MATERIAL, ITEM, SHORTCODE, 
-                        UNIT, TYPE, DESC_1, DESC_2, 
+                        UNIT, TYPE, COUNTING, SUB_NAME, 
                         ACTUAL_COST, COST, LEVEL, 
                         IN_STOCK, PRIORITY, IMAGE
                     );
@@ -79,7 +79,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                     $transaction_connection = begin_transaction();
                     $insert_result = insert_query($insert_query, $transaction_connection);
                     if($insert_result['result']){
-                        $insert_result = curl_request("https://ambatitastyfoods.com/sms/lib/items.php", $_POST);
+                        $insert_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $_POST);
                         if($insert_result['result']){
                             if(
                                     array_key_exists("result", $insert_result['data'])
@@ -167,7 +167,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                     $update_result = update_query($update_query, $transaction_connection);
                     if($update_result['result']){
-                        $update_result = curl_request("https://ambatitastyfoods.com/sms/lib/items.php", $_POST);
+                        $update_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $_POST);
                         if($update_result['result']){
                             if(
                                     array_key_exists("result", $update_result['data'])
@@ -241,7 +241,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $transaction_connection = begin_transaction();
                 $delete_result = delete_query($delete_query, $transaction_connection);
                 if($delete_result['result']){
-                    $delete_result = curl_request("https://ambatitastyfoods.com/sms/lib/items.php", $_POST);
+                    $delete_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $_POST);
                     if($delete_result['result']){
                         if(
                                 array_key_exists("result", $delete_result['data'])
@@ -327,7 +327,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             
             UNION
             
-            SELECT * FROM (SELECT * FROM `items` WHERE `priority` = 'default' AND `material` != 'raw' AND `in_stock` != 0 ORDER BY rand()) `t3`            
+            SELECT * FROM (SELECT * FROM `items` WHERE `priority` = 'default' AND `material` != 'raw' AND `in_stock` != 0 ORDER BY rand()) `t3`
             ";
 			
             $select_query = get_query($query_type, $query_table, $query_text);

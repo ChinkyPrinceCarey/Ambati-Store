@@ -324,8 +324,8 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "shortcode";
 			$columns[]  = "unit";
 			$columns[]  = "type";
-			$columns[]  = "desc_1";
-			$columns[]  = "desc_2";
+			$columns[]  = "counting";
+			$columns[]  = "sub_name";
 			$columns[]  = "company_name";
 			$columns[]  = "flavour";
 			$columns[]  = "denomination";
@@ -445,6 +445,7 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "name";
 			$columns[]  = "mobile_number";
 			$columns[]  = "address";
+			$columns[]  = "password";
 			$columns[]  = "is_allowed";
 			return $columns;
 		break;
@@ -894,6 +895,8 @@ function curl_request($url, $data){
 	$headers[] = 'Pragma: no-cache';
 	$headers[] = 'Cache-Control: no-cache';
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
 	$result = curl_exec($ch);
 	if(curl_errno($ch)){

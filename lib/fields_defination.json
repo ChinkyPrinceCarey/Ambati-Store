@@ -339,14 +339,14 @@
 		]
 	},
 	{
-		"variable": "DESC_1",
-		"name": "desc_1",
+		"variable": "COUNTING",
+		"name": "counting",
 		"type": "name",
 		"accept_null": true
 	},
 	{
-		"variable": "DESC_2",
-		"name": "desc_2",
+		"variable": "SUB_NAME",
+		"name": "sub_name",
 		"type": "name",
 		"accept_null": true
 	},
