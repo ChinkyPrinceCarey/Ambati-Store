@@ -76,7 +76,7 @@
                         </div>
                     </div>
                     <div class="wrap-collapsible">
-                        <input type="checkbox" id="collapsible" class="toggle" checked>
+                        <input type="checkbox" id="collapsible" class="toggle">
                         <label for="collapsible" class="lbl-toggle">Categories</label>
                         <div class="collapsible-content">
                             <div class="content-inner">
@@ -94,7 +94,7 @@
             <div class="catalogue" id="catalogueItems">
             {{#if items}}
             {{#each items}}
-                <div class="catalogue-item {{ js 'isItemHighlight(this.priority, "forClass")'}}" data-category={{type}}>
+                <div class="catalogue-item {{ js 'isItemHighlight(this.priority, "forClass")'}}" data-category="{{type}}" data-shortcode="{{shortcode}}">
                     {{#js_if "isItemHighlight(this.priority, 'forRibbon') "}}
                         <div class="ribbon"><span>{{priority}}</span></div>
                     {{/js_if}}
@@ -152,6 +152,11 @@
                 <div class="place-order">
                     <div class="img"><div class="count" id="shortItemCount"></div><img src="./imgs/buy-icon.svg"></div>
                     <div class="text" id="order-btn">Checkout</div>
+                </div>
+                <div class="v-line"></div>
+                <di class="clear-cart">
+                    <div class="img"><div class="count" id="shortItemCount"></div><img src="./imgs/clear-cart.svg"></div>
+                    <div class="text" id="clear-btn">CLEAR</div>
                 </div>
             </div>
 
