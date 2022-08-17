@@ -208,7 +208,7 @@ function onCustomReady(){
 
   $('.clear-cart #clear-btn').click(function(){
     $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
-    Cookies.set('cart', '[]', default_cookie_option);
+    Cookies.remove('cart');
   });
 
   $('.place-order #order-btn').click(function(){
