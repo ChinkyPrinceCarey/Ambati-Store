@@ -465,18 +465,21 @@ background-position: center;
 }
 
 .catalogue .catalogue-item .desc, 
+.catalogue .catalogue-item .company_name, 
 .catalogue .catalogue-item .desc2 
 {
   margin-top: 3px;
 }
 
 .catalogue .catalogue-item .desc,
+.catalogue .catalogue-item .company_name,
 .catalogue .catalogue-item .desc2
 {
   font-size: 14px;
 }
 
-.catalogue .catalogue-item:not(.highlight) .desc
+.catalogue .catalogue-item:not(.highlight) .desc,
+.catalogue .catalogue-item:not(.highlight) .company_name
 {
   color: #9198a7;
 }
@@ -491,8 +494,14 @@ background-position: center;
 }
 
 .catalogue .catalogue-item:not(.highlight) .desc span,
+.catalogue .catalogue-item:not(.highlight) .company_name span,
 .catalogue .catalogue-item:not(.highlight) .desc2 span{
   color: black;
+}
+
+.catalogue .catalogue-item:not(.highlight) .company_name span:first-child{
+  font-size: 10px;
+  color: #9198a7;
 }
 
 .catalogue .catalogue-item .footer{
@@ -1176,6 +1185,7 @@ background-color: rgba(0,0,0,0.4);
       "name sec1"
       "desc sec1"
       "desc2 sec1"
+      "company_name sec1"
       "footer sec1"
       ;
       align-items: center;
@@ -1207,6 +1217,10 @@ background-color: rgba(0,0,0,0.4);
 
   .catalogue .catalogue-item .desc{
       grid-area: desc;
+  }
+
+  .catalogue .catalogue-item .company_name{
+      grid-area: company_name;
   }
 
   .catalogue .catalogue-item .desc2{
