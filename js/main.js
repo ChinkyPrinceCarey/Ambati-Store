@@ -551,11 +551,12 @@ function manageModal(shouldVisible, arrayOfObj, orderArrayOfObj){
     orderArrayOfObj.forEach(obj => {
       $('table#order-summary tbody').append(
         '<tr>'
+        +'<td><i class="fa fa-times delete-item" aria-hidden="true" data-shortcode="'+ obj.shortcode +'"></i></td>'
         +'<td>'+ slno +'</td>'
         +'<td>'+ obj.item +'('+ obj.shortcode +')</td>'
         +'<td>'+ obj.quantity +'</td>'
         +'<td>'+ obj.unit_price +'</td>'
-        +'<td class="right-align bold">'+ obj.total_price +'</td>'
+        +'<td class="right-align bold total-price">'+ obj.total_price +'</td>'
         +'</tr>'
       );
       slno++;
@@ -584,6 +585,19 @@ function manageModal(shouldVisible, arrayOfObj, orderArrayOfObj){
     }, 800);
   }
 }
+
+$(document).on('click', '.delete-item', function(){
+  let total_item_price = $(this).parent().parent().find('.total-price').text();
+  if(get_gross_total() - parseInt(total_item_price) > 500){
+    let shortcode = $(this).data('shortcode');
+    
+    let item_container = $(`.catalogue-item[data-shortcode='${shortcode}']`);
+    let add_container = item_container.find(`.footer .add-container`);
+    add_container.find(`.post-initial input`).val('0').trigger('input'); 
+    
+    manageModal(true, undefined, cart_obj);
+  }
+})
 
 function updateCatalogueVisibility(onlyShowCart){
   if(onlyShowCart){
