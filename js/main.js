@@ -41,7 +41,6 @@ function initCart(){
       }
     });
   }else{
-    console.log('cart cookie empty')
   }
 }
 
@@ -95,8 +94,8 @@ function onCustomReady(){
     if(name !== undefined && mobile_number !== undefined && address !== undefined){
       //manageModal(false);
 
-      let total_items = cart_obj.reduce((n, {quantity}) => n + quantity, 0);
-      let gross_total = cart_obj.reduce((n, {total_price}) => n + total_price, 0);
+      let total_items = get_total_items();
+      let gross_total = get_gross_total();
 
       let data = {
                   summary: cart_obj, 
@@ -200,7 +199,9 @@ function onCustomReady(){
   });
 
   $('#modal-okay').click(function(){
-    $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
+    if($(this).parent().parent().children(".title").text().indexOf("₹500") <= 0){
+      $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
+    }
     manageModal(false);
   });
   
@@ -214,7 +215,22 @@ function onCustomReady(){
   });
 
   $('.place-order #order-btn').click(function(){
-    if(isUserLogged()){
+    if(get_gross_total() < 500){
+      let alert_obj = [
+        {
+          type: "update",
+          selector: "#alert .wrapper .title",
+          //when changing '₹500' make sure to update in '#modal-okay' click function
+          text: "Minimum Order checkout worth is ₹500"
+        },
+        {
+          type: "update",
+          selector: "#alert .wrapper .body",
+          html: "Please select ₹500 worth items to place the order!"
+        }
+      ];
+      manageModal(true, alert_obj);
+    }else if(isUserLogged()){
       manageModal(true, undefined, cart_obj);
     }else{
       //show login-form
@@ -414,6 +430,14 @@ function onCustomReady(){
   });
 }
 
+function get_gross_total(){
+  return cart_obj.reduce((n, {total_price}) => n + total_price, 0);
+}
+
+function get_total_items(){
+  return cart_obj.reduce((n, {quantity}) => n + quantity, 0);
+}
+
 function isUserLogged(){
   return (
           (Cookies.get('username') !== undefined)
@@ -488,7 +512,6 @@ function generateOrderSummaryText(item, mobile_number, address){
 }
 
 function manageModal(shouldVisible, arrayOfObj, orderArrayOfObj){
-  console.log(`caller:${(new Error()).stack?.split('\n')[2].trim().split(' ')[1]}`);
   if(arrayOfObj !== undefined){
     $('#order-confirmation').addClass('d-none');
     $('#alert').removeClass('d-none');
@@ -706,8 +729,8 @@ function updateCart(shortcode, unit_price, quantity){
 }
 
 function refreshUICart(){
-  let total_items = cart_obj.reduce((n, {quantity}) => n + quantity, 0);
-  let gross_total = cart_obj.reduce((n, {total_price}) => n + total_price, 0);
+  let total_items = get_total_items();
+  let gross_total = get_gross_total();
 
   $('.cart-summary .items-summary .items').text(total_items + " items");
   $('.cart-summary .items-summary #amount span').text(gross_total);
