@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- /Import Fonts Web [or] Local -->
 
-    <link rel="stylesheet" href="./css/main.css?v=5">
-    <link rel="stylesheet" href="./css/login.css?v=5">
+    <link rel="stylesheet" href="./css/main.css?v=7">
+    <link rel="stylesheet" href="./css/login.css?v=7">
 
     <!-- Content Render -->
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/template7/1.4.1/template7.min.js"></script>
@@ -125,8 +125,13 @@
                     <div class="desc">Desc: <span>{{counting}}</span></div>
                     <div class="desc2">{{sub_name}}</div>
                     <div class="footer">
+                        {{#if actual_cost}}
+                        <div class="actual_price">
+                            <span id="actual_cost">{{actual_cost}}</span>
+                        </div>
+                        {{/if}}
                         <div class="price">
-                            ₹ <span id="cost">{{cost}}</span>
+                            <span id="cost">{{cost}}</span>
                         </div>
                         <div class="add-container">
                         {{#js_if "this.in_stock == '1' && this.cost > '0'"}}
@@ -308,6 +313,6 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
     <script type="text/javascript" src="./js/custom_event.js"></script>
     <script type="text/javascript" src="./js/parse_data.js"></script>
-    <script type="text/javascript" src="./js/main.js?v=5"></script>
+    <script type="text/javascript" src="./js/main.js?v=7"></script>
 </body>
 </html>

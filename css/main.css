@@ -498,14 +498,44 @@ background-position: center;
 .catalogue .catalogue-item .footer{
   margin-top: 8px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-end;
   padding-right: 4px;
 }
 
-.catalogue .catalogue-item .footer .price{
+.catalogue .catalogue-item .footer .actual_price{
+  position: relative;
+  flex: 0 1 100%;
+}
+
+.catalogue .catalogue-item .footer .actual_price #actual_cost{
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.catalogue .catalogue-item .footer .actual_price #actual_cost::before,
+.catalogue .catalogue-item .footer .price #cost::before{
+  content: '₹';
+  font-size: 11px;
+  vertical-align: super;
+}
+
+.catalogue .catalogue-item .footer .price #cost::before{
+  font-size: 12px;
+}
+
+.catalogue .catalogue-item .footer .actual_price
+{
   font-size: 18px;
   font-weight: 500;
+  color: var(--color-primary-2);
+}
+
+.catalogue .catalogue-item .footer .price{
+  font-size: 24px;
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .catalogue .catalogue-item .footer .add-container{
