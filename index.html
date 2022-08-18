@@ -100,7 +100,7 @@
                     {{/js_if}}
                     <div class="section-1">
                         <div class="img">
-                            {{#js_if "this.in_stock == '2'"}}
+                            {{#js_if "this.in_stock == '2' || !(this.cost > '0')"}}
                                 <div class="out-of-stock">Out of Stock</div>
                             {{/js_if}}
                             
@@ -129,7 +129,7 @@
                             ₹ <span id="cost">{{cost}}</span>
                         </div>
                         <div class="add-container">
-                        {{#js_if "this.in_stock == '1'"}}
+                        {{#js_if "this.in_stock == '1' && this.cost > '0'"}}
                             <div class="initial">+ Add</div>
                         {{else}}
                             <div class="no-stock">No Stock</div>
