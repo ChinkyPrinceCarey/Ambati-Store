@@ -32,8 +32,10 @@ function initCart(){
       
       if(item_container.length){
         let add_container = item_container.find(`.footer .add-container`);
-        add_container.find('.initial').click()
-        add_container.find(`.post-initial input`).val(quantity).trigger('input');
+        add_container.find('.initial').click();
+        if(quantity > 1){
+          add_container.find(`.post-initial input`).val(quantity).trigger('input');
+        }
       }else{
         console.log(`item container not found`, item.shortcode)
       }
