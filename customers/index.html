@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customers</title>
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/select/1.4.0/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
+  <link rel="stylesheet" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
+
+  <style>
+    .ui.label{
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 5px;
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .ui.label.green{
+      background: #21BA45;
+    }
+
+    .ui.label.red{
+      background: red;
+    }
+
+    td{
+      padding: 16px 10px !important;
+    }
+  </style>
+</head>
+<body>
+  <table id="example" class="display" style="width:100%">
+    <thead>
+        <tr>
+          <th>Slno</th>
+          <th>Username</th>
+          <th>Name</th>
+          <th>Mobile Number</th>
+          <th>Address</th>
+          <th>Allowed?</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+          <th>Slno</th>
+          <th>Username</th>
+          <th>Name</th>
+          <th>Mobile Number</th>
+          <th>Address</th>
+          <th>Allowed?</th>
+        </tr>
+    </tfoot>
+  </table>
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/datetime/1.1.2/js/dataTables.dateTime.min.js"></script>
+  <script type="text/javascript" src="../js/dataTables.editor.js"></script>
+  <script type="text/javascript">
+    var editor; // use a global for the submit and return data rendering in the examples
+ 
+    $(document).ready(function() {
+
+      let API_ENDPOINT = "https://ambatitastyfoods.com/";
+
+      editor = new $.fn.dataTable.Editor({
+        table: "#example",
+        fields: [
+            {
+                label: "Id",
+                name: "id"
+            },
+            {
+                label: "Slno",
+                name: "slno"
+            },
+            {
+                label: "User Name",
+                name: "username"
+            },
+            {
+                label: "Name",
+                name: "name",
+                attr:{
+                  required: true,
+                  name: "name"
+                }
+            },
+            {
+                label: "Mobile Number",
+                name: "mobile_number",
+                attr:{
+                  required: true,
+                  length: 10,
+                  name: "mobile_number"
+                }
+            },
+            {
+                label: "Address",
+                name: "address"
+            },
+            {
+                label: "Password",
+                name: "password",
+                type: "password"
+            },
+            {
+                label: "Allowed?",
+                name: "is_allowed",
+                type: "select",
+                options: [{label: "Allow", value: "1"},{label: "Block", value: "0"}],
+                attr: {
+                    required: true,
+                    name: 'is_allowed'
+                }
+            }
+        ],
+        ajax: function(method, url, data, success, error){
+            $.ajax({
+                type: "POST",
+                url:  API_ENDPOINT + "lib/customers.php",
+                data: data,
+                dataType: "json",
+                success: function(json){
+                    if(!json.result){
+                        alert(json.info);
+                        error(json.info);
+                        return false;
+                    }
+                    success(json);
+                },
+                error: function(jqXHR, exception) {
+                    alert(exception);
+                    error(exception);
+                },
+            });
+        },
+        i18n: {
+            error: {
+                system: "Parsing error, please reload the page and report to the admin!"
+            }
+        },
+        idSrc: 'id',
+      });
+
+      editor.on('opened', function(a, b, action){
+        //if(action == "create"){} //for future improvements commenting as of now group_name to focus for any fields
+        editor.field('id').hide();
+        editor.field('slno').hide();
+        editor.field('password').hide();
+        
+        if(action == "create"){
+          editor.field('username').hide();
+        }
+        editor.field('name').focus();
+      });
+
+      editor.on('preSubmit', function(e, data, action){
+        if(action == "remove") return true;
+
+        return (function checkValidity(form, scope) {
+            var input
+            if (!form.checkValidity()) {
+              for (var i = 0; i < form.length; i++) {
+                // check for each field
+                input = form[i]
+                if (!input.checkValidity() && input.name) {
+                  scope.field(input.name).error(input.validationMessage)
+                }
+              }
+              return false
+            }
+            return true  
+        })(editor.dom.form, this);
+      });
+
+      editor.on('onSubmitError', function(e, xhr, err, thrown, data){
+        this.error("Parsing error, report to admin!");
+        return false;
+      });
+
+      editor.on('onSubmitComplete', function(e, xhr, err, thrown, data){
+        this.error(xhr);
+        return false;
+      });
+
+      table = $('#example').DataTable({
+        responsive: true,
+        processing: true,
+        serverSide: false,
+        autoWidth: true,
+        select: true,
+        dom: "Bfrtip",
+        buttons: [
+            { extend: "create", editor: editor },
+            { extend: "edit",   editor: editor },
+            { extend: "remove", editor: editor }
+        ],
+        "ajax": {
+            "url": API_ENDPOINT + "lib/customers.php",
+            "type": "POST",
+            "data" : {"action": "fetch_all", "data": "random_data"},
+            "dataType": 'json',
+            "dataSrc": function(json){
+                if(!json.result){
+                    alert(json.info);
+                }
+                return json.data;
+            },
+            "error": function(jqXHR, status, err){
+              console.log(jqXHR, status, err);
+              alert(status);
+            }
+        },
+        columns: [
+                { data: "slno", "width": "2%" },
+                { data: "username" },
+                { data: "name" },
+                { data: "mobile_number" },
+                { data: "address" },
+                { data: "is_allowed",
+                  render: function(data, type, row){
+                  color = parseInt(data) ? "green" : "red" ;
+                  text = parseInt(data) ? "Allowed" : "Blocked" ;
+                  return `<a class="ui ${color} label">${text}</a>`;
+                }
+                }
+        ],
+        rowId: 'id'
+      });
+
+    //to disable `edit` button on when multiple rows selected
+    table.on('select', function(e, f, g){
+        var buttons = table.buttons( ['.buttons-edit'] );
+        var data = table.rows( { selected: true } ).data();
+        if(data.length > 1){
+            buttons.disable();
+        }else{
+            buttons.enable();
+        }
+    });
+
+  });
+  </script>
+</body>
+</html>
