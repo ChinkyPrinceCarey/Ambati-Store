@@ -353,7 +353,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 				$return['header'] = array(
 										"header_1" => "Ambati Tasty Foods - Laxmiravulapalle, Telangana",
 										"header_2" => "Online store for Keerana Vendors",
-										"app_button" => "App Coming Soon",
+										"app_button" => "Download App",
 										"mobile_number" => "8096031765"
 									);
                 $return['categories'] = $categories_result['additional_data'];
