@@ -71,7 +71,7 @@ scroll-behavior: smooth;
 }
 
 .header .wrapper div.button-container button{
-  width: 148px;
+  min-width: 148px;
   height: 32px;
   background: var(--color-secondary);
   border-radius: 5px;

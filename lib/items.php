@@ -350,10 +350,24 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             if($categories_result['result'] && $select_result['result']){
                 $return['result'] = true;
                 $return['info'] .= "fetched all records ";
+
+                $is_app_request =   (   array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER)
+                                    &&  $_SERVER['HTTP_X_REQUESTED_WITH'] == "com.cpc.ambatistore"
+                                );
+
+                $app_button_text = "Download App";
+                $app_button_value = "https://ambatitastyfoods.com/Ambati_Store_v1.apk";
+
+                if($is_app_request){
+                    $app_button_text = "www.ambatitastyfoods.com";
+                    $app_button_value = "https://bit.ly/3ABTjf5";
+                }
+
 				$return['header'] = array(
 										"header_1" => "Ambati Tasty Foods - Laxmiravulapalle, Telangana",
 										"header_2" => "Online store for Keerana Vendors",
-										"app_button" => "Download App",
+										"app_button_text" => $app_button_text,
+										"app_button_value" => $app_button_value,
 										"mobile_number" => "8096031765"
 									);
                 $return['categories'] = $categories_result['additional_data'];

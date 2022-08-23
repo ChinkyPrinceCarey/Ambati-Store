@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- /Import Fonts Web [or] Local -->
 
-    <link rel="stylesheet" href="./css/main.css?v=15">
-    <link rel="stylesheet" href="./css/login.css?v=15">
+    <link rel="stylesheet" href="./css/main.css?v=18">
+    <link rel="stylesheet" href="./css/login.css?v=18">
 
     <!-- Content Render -->
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/template7/1.4.1/template7.min.js"></script>
@@ -36,7 +36,9 @@
                 <div id="name" class="bold clr-primary">{{header.header_1}}</div>
                 <div id="addr" class="dark-gray">{{header.header_2}}</div>
                 <div id="btn" class="button-container">
-                    <button class="bold">{{header.app_button}}</button>
+                    <a href="{{header.app_button_value}}" target="_blank">
+                        <button class="bold" data-value="{{header.app_button_value}}">{{header.app_button_text}}</button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -315,6 +317,6 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
     <script type="text/javascript" src="./js/custom_event.js"></script>
     <script type="text/javascript" src="./js/parse_data.js"></script>
-    <script type="text/javascript" src="./js/main.js?v=15"></script>
+    <script type="text/javascript" src="./js/main.js?v=18"></script>
 </body>
 </html>

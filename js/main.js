@@ -149,11 +149,6 @@ function onCustomReady(){
     }
   });
   //----------------------END: order methods----------------------//
-
-  $('.header .wrapper #btn button').click(function(){
-    window.location.href = "https://ambatitastyfoods.com/Ambati_Store_v1.apk";
-  })
-
   $('#register_btn').click(function(){
       let WhatsAppNumber = "91" + $('#mobile_number').text();
       let message = "I am contacting for an account in ```AMBATI TASTY FOODS```";
