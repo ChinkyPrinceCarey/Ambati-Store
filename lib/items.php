@@ -87,11 +87,15 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                             ){
                                 $insert_result = commit_transaction($transaction_connection);
                             }else{
+                                rollBack_transaction($transaction_connection);
+
                                 $insert_result['result'] = false;
                                 $insert_result['info'] = "error from remote server: " . $insert_result['data']['info'];
                                 $insert_result['additional_information'] = "error from remote server: " . $insert_result['data']['additional_info'];
                             }
                         }else{
+                            rollBack_transaction($transaction_connection);
+
                             $insert_result['info'] = "error connecting to remote server: " . $insert_result['info'];
                             $insert_result['additional_information'] = "error connecting to remote server: " . $insert_result['info'];
                         }
@@ -175,11 +179,15 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                             ){
                                 $update_result = commit_transaction($transaction_connection);
                             }else{
+                                rollBack_transaction($transaction_connection);
+
                                 $update_result['result'] = false;
                                 $update_result['info'] = "error from remote server: " . $update_result['data']['info'];
                                 $update_result['additional_information'] = "error from remote server: " . $update_result['data']['additional_info'];
                             }
                         }else{
+                            rollBack_transaction($transaction_connection);
+
                             $update_result['info'] = "error connecting to remote server: " . $update_result['info'];
                             $update_result['additional_information'] = "error connecting to remote server: " . $update_result['info'];
                         }
@@ -249,11 +257,15 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                         ){
                             $delete_result = commit_transaction($transaction_connection);
                         }else{
+                            rollBack_transaction($transaction_connection);
+
                             $delete_result['result'] = false;
                             $delete_result['info'] = "error from remote server: " . $delete_result['data']['info'];
                             $delete_result['additional_information'] = "error from remote server: " . $delete_result['data']['additional_info'];
                         }
                     }else{
+                        rollBack_transaction($transaction_connection);
+                        
                         $delete_result['info'] = "error connecting to remote server: " . $delete_result['info'];
                         $delete_result['additional_information'] = "error connecting to remote server: " . $delete_result['info'];
                     }

@@ -492,6 +492,10 @@ function commit_transaction($_transaction_conn){
 	}
 }
 
+function rollBack_transaction($_transaction_conn){
+	$_transaction_conn->rollBack();
+}
+
 //insert query
 function insert_query($_query, $_transaction_conn=null){
 	
