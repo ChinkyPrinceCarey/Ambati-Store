@@ -544,13 +544,11 @@ function manageModal(shouldVisible, arrayOfObj, orderArrayOfObj){
     $('#alert').addClass('d-none');
     $('#order-confirmation').removeClass('d-none');
 
-    let table = $('.order-summary .table-container table');
-
-    table.children('tbody').empty();
+    $('table#order-summary tbody').empty();
     let slno = 1;
     let sub_total = 0;
     orderArrayOfObj.forEach(obj => {
-      table.children('tbody').append(
+      $('table#order-summary tbody').append(
         '<tr>'
         +'<td><i class="fa fa-times delete-item" aria-hidden="true" data-shortcode="'+ obj.shortcode +'"></i></td>'
         +'<td>'+ slno +'</td>'

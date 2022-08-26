@@ -828,8 +828,7 @@ input[name=itemCount] {
 }
 
 .modal .modal-wrapper{
-  margin: 2% 2%;
-  max-height: 95%;
+  margin: 5% 10%;
   background-color: white;
   border-radius: 10px;
   padding: 1px;
@@ -941,7 +940,7 @@ border: unset !important;
 }
 
 #order-confirmation .body .element label{
-  font-weight: 600;
+  font-weight: 500;
 }
 
 input:focus:invalid,
@@ -961,22 +960,8 @@ textarea:focus:invalid{
   min-height: 21px;
 }
 
-#order-confirmation .body .element textarea{
-  resize: none;
-}
-
 .order-summary{
-  width: 100%;
-}
-
-.order-summary .table-container{
-  height: 270px;
-  overflow-y: auto;
-}
-
-.order-summary .table-container table th{
-  position: sticky;
-  top: 0;
+  overflow: scroll;
 }
 
 .order-summary h4{
@@ -984,17 +969,17 @@ textarea:focus:invalid{
   margin-bottom: 4px;
 }
 
-.order-summary .table-container table {
-  width: 100%;
+#order-summary {
   border-collapse: collapse;
+  min-width: 50%;
 }
 
-.order-summary .table-container table td, .order-summary .table-container table th {
+#order-summary td, #order-summary th {
   border: 1px solid #ddd;
-  padding: 6px;
+  padding: 8px;
 }
 
-.order-summary .table-container table tr:nth-child(even){
+#order-summary tr:nth-child(even){
   background-color: #f2f2f2;
 }
 
@@ -1007,13 +992,13 @@ textarea:focus:invalid{
   font-size: 18px;
 }
 
-.order-summary .table-container table tr:hover {
+#order-summary tr:hover {
   background-color: #ddd;
 }
 
-.order-summary .table-container table th {
-  padding-top: 6px;
-  padding-bottom: 6px;
+#order-summary th {
+  padding-top: 12px;
+  padding-bottom: 12px;
   text-align: left;
   background-color: var(--color-primary);
   color: white;
@@ -1347,18 +1332,14 @@ left: 0;
 }
 
 .preloader .logo-svg{
-  position: relative;
-  left:50%;
-  top:50%;
-  margin: -75px 0px 0px -75px;
-  width: 150px;
-  z-index: 1001;
+position: relative;
+left:50%;
+top:50%;
+margin: -75px 0px 0px -75px;
+width: 150px;
+z-index: 1001;
 }
 /*End: Preloader*/
 .fa{
   cursor: pointer;
-}
-
-.overflow-hidden{
-  overflow: hidden;
 }
