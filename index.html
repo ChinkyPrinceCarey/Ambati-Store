@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- /Import Fonts Web [or] Local -->
 
-    <link rel="stylesheet" href="./css/main.css?v=18">
-    <link rel="stylesheet" href="./css/login.css?v=18">
+    <link rel="stylesheet" href="./css/main.css?v=19">
+    <link rel="stylesheet" href="./css/login.css?v=19">
 
     <!-- Content Render -->
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/template7/1.4.1/template7.min.js"></script>
@@ -191,86 +191,82 @@
 
         </div>
 
-        <div class="modal d-none">
-            <div class="modal-wrapper animate-open-top">
-                <div class="close-icon" id="modal-close">x</div>
-                <div class="alert d-none" id="alert">
-                    <div class="wrapper">
-                        <div class="title">
-                            Alert Title
-                        </div>
-                        <div class="body">
-                            Alert Body
-                        </div>
-                        <div class="footer">
-                            <button class="primary" id="modal-okay">Okay!</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="alert" id="order-confirmation">
-                    <div class="wrapper">
-                        <div class="title">
-                            Order Confirmation
-                        </div>
-                        <form id="order-form">
-                        <div class="body">
-                            <div class="element">
-                                <label for="name">Name</label>
-                                <input type="text" name="name" id="name" minlength="4" required>
-                            </div>
-                            <div class="element">
-                                <label for="name">Mobile Number</label>
-                                <input type="text" name="mobile_number" id="mobile_number" maxlength="10" minlength="10" required apattern="^\d*$" title="Enter your valid mobile number">
-                            </div>
-                            <div class="element">
-                                <label for="name">Address</label>
-                                <textarea name="address" id="address" cols="30" rows="5" required minlength="3"></textarea>
-                            </div>
-                            <div class="order-summary">
-                                <h4>Order Summary</h4>
-                                <table id="order-summary">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Slno</th>
-                                            <th>Item Name</th>
-                                            <th>Qty</th>
-                                            <th>Price</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot>
-                                        <tr class="footer-element">
-                                            <td class="right-align" colspan="5">Sub Total</td>
-                                            <td class="right-align bold" id="sub_total"></td>
-                                        </tr>
-                                        <tr class="footer-element">
-                                            <td class="right-align" colspan="5">0% GST</td>
-                                            <td class="right-align bold" id="gst"></td>
-                                        </tr>
-                                        <tr class="footer-element" id="total">
-                                            <td class="right-align"  colspan="5">Total</td>
-                                            <td class="right-align bold" id="total"></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>                          
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <button class="primary" id="modal-order">Order</button>
-                            <button type="button" class="primary-2" id="modal-close">Cancel</button>
-                            <a class="d-none" id="anchor_whatsapp" target="_self">Self Send WhatsApp</a>
-                        </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
     </noscript>
     <!-- -/Content Loader -->
   
     <div id="content-rendered"></div>
+
+    <div class="modal d-none" id="order-preview">
+        <div class="wrapper animate-open-top">
+            <i class="close-icon fa fa-times" aria-hidden="true"></i>
+
+            <div class="title">Order Confirmation</div>
+            
+            <form action="">
+                <div class="body">
+                    <div class="element">
+                        <label for="name">Name</label>
+                        <input type="text" name="name" id="name" minlength="4" required>
+                    </div>
+                    <div class="element">
+                        <label for="name">Mobile Number</label>
+                        <input type="text" name="mobile_number" id="mobile_number" maxlength="10" minlength="10" required apattern="^\d*$" title="Enter your valid mobile number">
+                    </div>
+                    <div class="element">
+                        <label for="name">Address</label>
+                        <textarea name="address" id="address" cols="30" rows="5" required minlength="3"></textarea>
+                    </div>
+                    <div class="order-summary">
+                        <h4>Order Summary</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Slno</th>
+                                    <th>Item Name</th>
+                                    <th>Qty</th>
+                                    <th>Price</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr class="footer-element">
+                                    <td class="right-align" colspan="5">Sub Total</td>
+                                    <td class="right-align bold" id="sub_total"></td>
+                                </tr>
+                                <tr class="footer-element">
+                                    <td class="right-align" colspan="5">0% GST</td>
+                                    <td class="right-align bold" id="gst"></td>
+                                </tr>
+                                <tr class="footer-element">
+                                    <td class="right-align" colspan="5">Total</td>
+                                    <td class="right-align bold" id="total"></td>
+                                </tr>
+                            </tfoot>
+                        </table>                          
+                    </div>
+                </div>
+                <div class="footer">
+                    <button class="primary" id="modal-order">Order</button>
+                    <button type="button" class="primary-2" id="modal-close">Cancel</button>
+                    <a class="d-none" id="anchor_whatsapp" target="_self">Self Send WhatsApp</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal d-none" id="basic-alert">
+        <div class="wrapper animate-open-top">
+            <i class="close-icon fa fa-times" aria-hidden="true"></i>
+
+            <div class="title">sometitle</div>
+            <div class="body">somebody</div>
+            <div class="footer">
+                <button class="primary" id="modal-okay">Okay</button>
+            </div>
+        </div>
+    </div>
 
     <div class="login-conatiner d-none">
         <div class="center-container">
@@ -317,6 +313,6 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
     <script type="text/javascript" src="./js/custom_event.js"></script>
     <script type="text/javascript" src="./js/parse_data.js"></script>
-    <script type="text/javascript" src="./js/main.js?v=18"></script>
+    <script type="text/javascript" src="./js/main.js?v=19"></script>
 </body>
 </html>

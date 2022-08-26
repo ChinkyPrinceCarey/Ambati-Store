@@ -94,8 +94,6 @@ function onCustomReady(){
     let address = $('textarea#address:valid').val();
     
     if(name !== undefined && mobile_number !== undefined && address !== undefined){
-      //manageModal(false);
-
       let total_items = get_total_items();
       let gross_total = get_gross_total();
 
@@ -116,6 +114,7 @@ function onCustomReady(){
 
       ajaxPostCall("lib/orders.php", order_obj, function(response){
 
+        let alert_title = "Order Confirmation";
         let alert_body = "";
         if(response.status){
           alert_body = `Ooops, unable to place your order at the moment!`;
@@ -130,19 +129,7 @@ function onCustomReady(){
           alert_body = `Ooops, your order is not placed!`;
         }
 
-        let alert_obj = [
-          {
-            type: "update",
-            selector: "#alert .wrapper .title",
-            text: "Order Confirmation"
-          },
-          {
-            type: "update",
-            selector: "#alert .wrapper .body",
-            html: alert_body
-          }
-        ];
-        manageModal(true, alert_obj);
+        basicModal(alert_title, alert_body);
       });
     }else{
       //empty input fields
@@ -189,8 +176,7 @@ function onCustomReady(){
           $('.login-conatiner').addClass('d-none');
         }, 800);
   
-        //proceed to order-form
-        manageModal(true, undefined, cart_obj);
+        orderModal();
       }else{
         updateLoginStatus("Invalid credentials", false);
       }
@@ -203,11 +189,21 @@ function onCustomReady(){
     if($(this).parent().parent().children(".title").text().indexOf("₹500") <= 0){
       $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
     }
-    manageModal(false);
+    basicModal(false);
+  });
+
+  $('#modal-close').click(function(){
+    orderModal(false);
   });
   
-  $('#modal-close, .footer #modal-close').click(function(){
-    manageModal(false);
+  $('.close-icon').click(function(){
+    let modal_id = $(this).parent().parent().attr('id');
+
+    if(modal_id == "basic-alert"){
+      basicModal(false);
+    }else if(modal_id == "order-preview"){
+      orderModal(false);
+    }
   });
 
   $('.clear-cart #clear-btn').click(function(){
@@ -217,22 +213,13 @@ function onCustomReady(){
 
   $('.place-order #order-btn').click(function(){
     if(get_gross_total() < 500){
-      let alert_obj = [
-        {
-          type: "update",
-          selector: "#alert .wrapper .title",
-          //when changing '₹500' make sure to update in '#modal-okay' click function
-          text: "Minimum Order checkout worth is ₹500"
-        },
-        {
-          type: "update",
-          selector: "#alert .wrapper .body",
-          html: "Please select ₹500 worth items to place the order!"
-        }
-      ];
-      manageModal(true, alert_obj);
+      //when changing the modal_title 
+      //'₹500' make sure to update in '#modal-okay' click function
+      let modal_title = "Minimum Order checkout worth is ₹500";
+      let modal_body = "Please select ₹500 worth items to place the order!";
+      basicModal(modal_title, modal_body)
     }else if(isUserLogged()){
-      manageModal(true, undefined, cart_obj);
+      orderModal();
     }else{
       //show login-form
       $(".login-conatiner")
@@ -300,19 +287,10 @@ function onCustomReady(){
       }else{
         inputTag.val(inputTag.attr('max'));
         initUpdateCart(this, false);
-        let alert_obj = [
-          {
-            type: "update",
-            selector: "#alert .wrapper .title",
-            text: "Maximum Quantity!"
-          },
-          {
-            type: "update",
-            selector: "#alert .wrapper .body",
-            text: "Maximum Quantity has reached, cannot add more quantity for this item!"
-          }
-        ];
-        manageModal(true, alert_obj);
+        
+        let modal_title = "Maximum Quantity";
+        let modal_body = "Maximum Quantity has reached, cannot add more quantity for this item";
+        basicModal(modal_title, modal_body);
       }
     }else{
       let add_container = $(this).parent().parent();
@@ -335,19 +313,11 @@ function onCustomReady(){
     }else{
       inputTag.val(inputTag.attr('max'));
       initUpdateCart(this, false);
-      let alert_obj = [
-        {
-          type: "update",
-          selector: "#alert .wrapper .title",
-          text: "Maximum Quantity!"
-        },
-        {
-          type: "update",
-          selector: "#alert .wrapper .body",
-          text: "Maximum Quantity has reached, cannot add more quantity for this item!"
-        }
-      ];
-      manageModal(true, alert_obj);
+      
+      let modal_title = "Maximum Quantity";
+      let modal_body = "Maximum Quantity has reached, cannot add more quantity for this item";
+      
+      basicModal(modal_title, modal_body);
     }
     return false;
   });
@@ -432,11 +402,11 @@ function onCustomReady(){
 }
 
 function get_gross_total(){
-  return cart_obj.reduce((n, {total_price}) => n + total_price, 0);
+  return parseFloat(cart_obj.reduce((n, {total_price}) => n + total_price, 0));
 }
 
 function get_total_items(){
-  return cart_obj.reduce((n, {quantity}) => n + quantity, 0);
+  return parseInt(cart_obj.reduce((n, {quantity}) => n + quantity, 0));
 }
 
 function isUserLogged(){
@@ -512,75 +482,164 @@ function generateOrderSummaryText(item, mobile_number, address){
   return text;
 }
 
-function manageModal(shouldVisible, arrayOfObj, orderArrayOfObj){
-  if(arrayOfObj !== undefined){
-    $('#order-confirmation').addClass('d-none');
-    $('#alert').removeClass('d-none');
+/**
+ * @param1 
+      * (boolean)modal-visibility
+**/
+function initModal(){
+  let should_modal_show = true;
 
-    arrayOfObj.forEach(obj => {
-      if(obj.type == "update"){
-        if(obj.text){
-          $(obj.selector).text(obj.text)
-        }
-        if(obj.val){
-          $(obj.selector).val(obj.val)
-        }
-        if(obj.html){
-          $(obj.selector).html(obj.html)
-        }
-        obj.shouldVisible || obj.shouldVisible === undefined ? 
-          $(obj.selector).show() : 
-          $(obj.selector).hide() ;
-      }else if(obj.type == "remove"){
-        $(obj.selector).remove();
-      }else if(obj.type == "append"){
-        $(obj.selector).append(obj.data);
-      }
-    });
+  if(arguments.length){
+    if(typeof arguments[0] == "boolean"){
+      should_modal_show = arguments[0];
+    }
   }
 
-  if(orderArrayOfObj !== undefined){
-    //order summary
-    $('#alert').addClass('d-none');
-    $('#order-confirmation').removeClass('d-none');
-
-    $('table#order-summary tbody').empty();
-    let slno = 1;
-    let sub_total = 0;
-    orderArrayOfObj.forEach(obj => {
-      $('table#order-summary tbody').append(
-        '<tr>'
-        +'<td><i class="fa fa-times delete-item" aria-hidden="true" data-shortcode="'+ obj.shortcode +'"></i></td>'
-        +'<td>'+ slno +'</td>'
-        +'<td>'+ obj.item +'('+ obj.shortcode +')</td>'
-        +'<td>'+ obj.quantity +'</td>'
-        +'<td>'+ obj.unit_price +'</td>'
-        +'<td class="right-align bold total-price">'+ obj.total_price +'</td>'
-        +'</tr>'
-      );
-      slno++;
-      sub_total += obj.total_price;
-    });
-    
-    let total = sub_total; //(sub_total * 1.18);
-    let gst = 0; //total - sub_total;
-
-    $('.footer-element #sub_total').text(sub_total.toFixed(2));
-    $('.footer-element #gst').text(gst.toFixed(2));
-    $('.footer-element #total').text(total.toFixed(2));
-  }
-
-  if(shouldVisible){
-    $('.modal-wrapper')
-      .removeClass('animate-close-top')
-      .addClass('animate-open-top');
-    $('.modal').removeClass('d-none');
+  if(should_modal_show){
+    $('body').addClass('overflow-hidden');
+    //$('#content-rendered').addClass('blur-4px');
   }else{
-    $('.modal-wrapper')
+    if(
+          !orderModal("is_visible")
+      &&  !basicModal("is_visible")
+    ){
+      $('body').removeClass('overflow-hidden');
+      //$('#content-rendered').removeClass('blur-4px');
+    }
+  }
+}
+
+/**
+ * @param1 
+      * (boolean)modal-visibility
+      ** (string)== "is_visible" ==> returns (boolean);
+      ** (string)modal-title
+      ** (default)true
+
+  * @param2 
+       (string)modal-body
+**/ 
+function basicModal(){
+  let should_modal_show = true;
+
+  let modal = $('.modal#basic-alert');
+  let modal_wrapper = modal.children('.wrapper');
+
+  let modal_title = "";
+  let modal_body = "";
+
+  if(arguments.length){
+    if(typeof arguments[0] == "boolean"){
+      should_modal_show = arguments[0];
+    }else if(arguments[0] == "is_visible"){
+      return !modal.hasClass("d-none");
+    }else{
+      modal_title = arguments[0];
+    }
+
+    if(arguments[1] != undefined){
+      modal_body = arguments[1];
+    }
+  }
+
+  modal_wrapper.children('.title').text(modal_title);
+  modal_wrapper.children('.body').text(modal_body);
+
+  if(should_modal_show){
+    modal_wrapper
+      .removeClass('animate-close-top')
+      .addClass('animate-open-top')
+    ;
+
+    modal.removeClass('d-none');
+
+    initModal();
+  }else{
+    modal_wrapper
       .removeClass('animate-open-top')
-      .addClass('animate-close-top');
+      .addClass('animate-close-top')
+    ;
+
     setTimeout(function(){
-      $('.modal').addClass('d-none');
+      modal.addClass('d-none');
+      initModal(false);
+    }, 800);
+  }
+}
+
+/**
+ * @param1 
+      * (boolean)modal-visibility  
+      ** (string)== "is_visible" ==> returns (boolean);  
+      ** (default)true
+**/
+function orderModal(){
+  let should_modal_show = true;
+  
+  let modal = $('.modal#order-preview');
+  let modal_wrapper = modal.children('.wrapper');
+
+  let table = modal_wrapper.find('table');
+  let tbody = table.children('tbody');
+  let tfoot = table.children('tfoot');
+  
+  if(arguments.length){
+    if(typeof arguments[0] == "boolean"){
+      should_modal_show = arguments[0];
+    }else if(arguments[0] == "is_visible"){
+      return !modal.hasClass("d-none");
+    }
+  }
+
+  if(should_modal_show){
+    /*BEGIN: table operation */
+      tbody.empty();
+
+      let slno = 1;
+      cart_obj.forEach(obj => {
+        tbody.append(
+          '<tr>'
+          +'<td><i class="fa fa-times delete-item" aria-hidden="true" data-shortcode="'+ obj.shortcode +'"></i></td>'
+          +'<td>'+ slno +'</td>'
+          +'<td>'+ obj.item +'('+ obj.shortcode +')</td>'
+          +'<td>'+ obj.quantity +'</td>'
+          +'<td>'+ obj.unit_price +'</td>'
+          +'<td class="right-align bold total-price">'+ obj.total_price +'</td>'
+          +'</tr>'
+        );
+
+        slno++;
+      });
+
+      let sub_total = parseFloat(get_gross_total().toFixed(2));
+      let gst = parseFloat((0).toFixed(2));
+      let total = sub_total + gst;
+
+      tfoot.find('#sub_total').text(sub_total);
+      tfoot.find('#gst').text(gst);
+      tfoot.find('#total').text(total);
+    /*END: table operation */
+
+    if(!basicModal("is_visible")){
+      modal_wrapper
+        .removeClass('animate-close-top')
+        .addClass('animate-open-top')
+      ;
+
+      modal.removeClass('d-none');
+      initModal();
+    }else{
+      console.log('basic modal is already showing; cannot show order modal');
+    }
+  }else{
+    modal_wrapper
+      .removeClass('animate-open-top')
+      .addClass('animate-close-top')
+    ;
+  
+    setTimeout(function(){
+      modal.addClass('d-none');
+      initModal(false);
     }, 800);
   }
 }
@@ -594,7 +653,7 @@ $(document).on('click', '.delete-item', function(){
     let add_container = item_container.find(`.footer .add-container`);
     add_container.find(`.post-initial input`).val('0').trigger('input'); 
     
-    manageModal(true, undefined, cart_obj);
+    orderModal();
   }
 })
 
@@ -627,56 +686,29 @@ function initUpdateCart(this_, isIntital, cart_cookie = true){
       }
       refreshUICart();
     }else{
-      let alert_obj = [
-        {
-          type: "update",
-          selector: "#alert .wrapper .title",
-          text: "Error removing item!"
-        },
-        {
-          type: "update",
-          selector: "#alert .wrapper .body",
-          text: "Unable to remove item, please contact administrator!"
-        }
-      ];
-      manageModal(true, alert_obj);
+      let modal_title = "Error removing item";
+      let modal_body = "Unable to remove item, please contact administrator!";
+      
+      basicModal(modal_title, modal_body);
     }
   }else if(isIntital){
     if(addToCart(item, shortcode, unit_price)){
       $(catalogue_item).addClass("in-cart");
       refreshUICart();
     }else{
-      let alert_obj = [
-        {
-          type: "update",
-          selector: "#alert .wrapper .title",
-          text: "Error updating cart!"
-        },
-        {
-          type: "update",
-          selector: "#alert .wrapper .body",
-          text: "Unable to add item to cart, please contact administrator!"
-        }
-      ];
-      manageModal(true, alert_obj);
+      let modal_title = "Error updating cart";
+      let modal_body = "Unable to add item to cart, please contact administrator!";
+      
+      basicModal(modal_title, modal_body);
     }
   }else{
     if(updateCart(shortcode, unit_price, item_count)){
       refreshUICart();
     }else{
-      let alert_obj = [
-        {
-          type: "update",
-          selector: "#alert .wrapper .title",
-          text: "Error updating cart!"
-        },
-        {
-          type: "update",
-          selector: "#alert .wrapper .body",
-          text: "Unable to update cart, please contact administrator!"
-        }
-      ];
-      manageModal(true, alert_obj);
+      let modal_title = "Error updating cart";
+      let modal_body = "Unable to update cart, please contact administrator";
+      
+      basicModal(modal_title, modal_body);
     }
   }
 
