@@ -129,6 +129,7 @@ function onCustomReady(){
           alert_body = `Ooops, your order is not placed!`;
         }
 
+        orderModal(false);
         basicModal(alert_title, alert_body);
       });
     }else{
@@ -200,6 +201,10 @@ function onCustomReady(){
     let modal_id = $(this).parent().parent().attr('id');
 
     if(modal_id == "basic-alert"){
+      if($(this).parent().parent().children(".title").text().indexOf("₹500") <= 0){
+        $(".in-cart .footer .add-container .post-initial input").val(0).trigger("input");
+      }
+      
       basicModal(false);
     }else if(modal_id == "order-preview"){
       orderModal(false);
@@ -543,7 +548,7 @@ function basicModal(){
   }
 
   modal_wrapper.children('.title').text(modal_title);
-  modal_wrapper.children('.body').text(modal_body);
+  modal_wrapper.children('.body').html(modal_body);
 
   if(should_modal_show){
     modal_wrapper
