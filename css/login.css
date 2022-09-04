@@ -127,6 +127,7 @@ body{
   background-repeat: no-repeat;
   background-size: contain;
   background-position: bottom;
+  cursor: no-drop;
 }
 
 .center-container .wrapper form .form-element.loading.btn-primary button > span{
@@ -147,7 +148,7 @@ body{
   text-transform: uppercase;
 }
 
-.center-container .wrapper form .form-element.btn-primary button:hover{
+.center-container .wrapper form .form-element.btn-primary:not(.loading) button:hover{
   background-color: var(--color-primary-2);
 }
 

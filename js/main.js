@@ -89,11 +89,14 @@ function onCustomReady(){
   //----------------------BEGIN: order methods----------------------//
   $('#order-form').submit(function(event){
     event.preventDefault();
+
     let name = $('input#name:valid').val();
     let mobile_number = $('input#mobile_number:valid').val();
     let address = $('textarea#address:valid').val();
     
     if(name !== undefined && mobile_number !== undefined && address !== undefined){
+      formLoader();
+      
       let total_items = get_total_items();
       let gross_total = get_gross_total();
 
@@ -111,9 +114,7 @@ function onCustomReady(){
                         total_items: total_items,
                         data: JSON.stringify(data),
                       };
-
       ajaxPostCall("lib/orders.php", order_obj, function(response){
-
         let alert_title = "Order Confirmation";
         let alert_body = "";
         if(response.status){
@@ -131,6 +132,7 @@ function onCustomReady(){
 
         orderModal(false);
         basicModal(alert_title, alert_body);
+        formLoader(false);
       });
     }else{
       //empty input fields
@@ -173,6 +175,7 @@ function onCustomReady(){
         $('.login-conatiner')
         .removeClass('animate-open-top')
         .addClass('animate-close-top');
+        $('body').removeClass('overflow-hidden');
         setTimeout(function(){
           $('.login-conatiner').addClass('d-none');
         }, 800);
@@ -181,9 +184,9 @@ function onCustomReady(){
       }else{
         updateLoginStatus("Invalid credentials", false);
       }
-    });
 
-    updateLoadingState(false);
+      updateLoadingState(false);
+    });
   });
 
   $('#modal-okay').click(function(){
@@ -230,6 +233,7 @@ function onCustomReady(){
       $(".login-conatiner")
         .addClass("animate-open-top")
         .removeClass("d-none");
+      $('body').addClass('overflow-hidden');
     }
   });
 
@@ -401,6 +405,8 @@ function onCustomReady(){
         $('.login-conatiner')
           .addClass('d-none')
           .removeClass('animate-close-top');
+
+          $('body').removeClass('overflow-hidden');
       }, 800);
     }
   });
@@ -485,6 +491,31 @@ function generateOrderSummaryText(item, mobile_number, address){
   text += "\nGST(0% GST)\t = " + $('.footer-element #gst').text();
   text += "\nTotal\t = " + $('.footer-element #total').text();
   return text;
+}
+
+/**
+ * @param1 
+      * (boolean)
+      * default: true
+**/
+function formLoader(){
+  let should_loader = true;
+
+  if(arguments.length){
+    if(typeof arguments[0] == "boolean"){
+      should_loader = arguments[0];
+    }
+  }
+
+  if(should_loader){
+    $("i.close-icon").addClass("disabled");
+    $("#modal-order").addClass("loading");
+    $(".element input, .element textarea, #modal-order, #modal-close").attr('disabled', true);
+  }else{
+    $("i.close-icon").removeClass("disabled");
+    $("#modal-order").removeClass("loading");
+    $(".element input, .element textarea, #modal-order, #modal-close").attr('disabled', false);
+  }
 }
 
 /**
@@ -659,6 +690,12 @@ $(document).on('click', '.delete-item', function(){
     add_container.find(`.post-initial input`).val('0').trigger('input'); 
     
     orderModal();
+  }else{
+      //when changing the modal_title 
+      //'₹500' make sure to update in '#modal-okay' click function
+      let modal_title = "Minimum Order checkout worth is ₹500";
+      let modal_body = "Item won't removed because checkout worth will be less than minimum worth of ₹500";
+      basicModal(modal_title, modal_body)
   }
 })
 
@@ -721,27 +758,6 @@ function initUpdateCart(this_, isIntital, cart_cookie = true){
     Cookies.set('cart', cart_obj, default_cookie_option);
   }
 }
-
-
-/*Currently this doesn't have any usage */
-/*
-function addToCartFromObj(shortcode, quantity){
-  //data-item-code={{shortcode}}
-  //add above attribute when working on `previous-cart`
-
-  let catalogue_item = $('.catalogue-item[data-item-code="'+ shortcode +'"');
-  if(catalogue_item !== undefined && catalogue_item.length){
-    console.log("catalogue_item", catalogue_item);
-    if(catalogue_item.children('.footer .add-container:not(.no-stock)')){
-      let item_quantity_input = catalogue_item.find('.footer .add-container .post-initial input');
-      console.log(item_quantity_input);
-      item_quantity_input.val(quantity);
-      item_quantity_input.trigger("input");
-      console.log(item_quantity_input.val());
-    }
-  } 
-}
-*/
 
 function addToCart(item, shortcode, unit_price){
   return cart_obj.push(
@@ -831,10 +847,13 @@ tl.add(
 /*Begin: Login Form Methods*/
 function updateLoadingState(status){
   let login_btn = $('#login_btn');
+  let form_elements = $("#loginForm").find(".form-element input, .form-element button");
   if(status){
     login_btn.addClass('loading');
+    form_elements.attr("disabled", true);
   }else{
     login_btn.removeClass('loading');
+    form_elements.attr("disabled", false);
   }
 }
 
