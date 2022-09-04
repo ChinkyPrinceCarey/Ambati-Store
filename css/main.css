@@ -623,6 +623,10 @@ background-position: center;
   color: white;
 }
 
+.catalogue .catalogue-item.highlight .footer .price{
+  color: white !important;
+}
+
 .catalogue .catalogue-item{
   position: relative;
 }
