@@ -53,6 +53,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                     if(json_last_error() === JSON_ERROR_NONE){
                         if(count($items_data)){
+                            $date = date('Y-m-d H:i:s');
                             $sale_type = "order";
                             $username = $fields_data['username'];
                             $name = $fields_data['name'];
@@ -70,6 +71,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                             $query_type = "insert";
                             $query_columns = array(
+                                                    "date",
                                                     "order_id",
                                                     "sale_type",
                                                     "username",
@@ -86,6 +88,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                                     "items_details"
                                                 );
                             $query_values =	array(
+                                                $date,
                                                 $order_id,
                                                 $sale_type,
                                                 $username,
