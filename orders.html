@@ -17,6 +17,7 @@
 
     <link rel="stylesheet" href="./css/main.css?v=25">
     <link rel="stylesheet" href="./css/login.css?v=25">
+    <link rel="stylesheet" href="./css/orders.css?v=25">
 
     <!-- Content Render -->
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/template7/1.4.1/template7.min.js"></script>
@@ -33,152 +34,48 @@
     <noscript id="content-template" type="text/template7">
         <div class="header">
             <div class="wrapper">
-                <div id="name" class="bold clr-primary">{{header.header_1}}</div>
-                <div id="addr" class="dark-gray">{{header.header_2}}</div>
-                <div id="btn" class="button-container">
-                    <a href="{{header.app_button_value}}" target="_blank">
-                        <button class="bold" data-value="{{header.app_button_value}}">{{header.app_button_text}}</button>
-                    </a>
-                </div>
+                <div id="name" class="bold clr-primary">Orders</div>
             </div>
         </div>
 
         <div class="main-content">
-            <div class="brand-info">
+            {{#if orders}}
+            <div class="orders-container">
                 <div class="wrapper">
-                    <div class="contact">
-                        <div class="name bold">AMBATI TASTY FOODS</div>
-                        <div class="tel">
-                            <div class="icon"><img src="./imgs/phone-3.svg"></div>
-                            <div class="text" id="mobile_number">{{header.mobile_number}}</div>
-                        </div>
-                        <div class="social">
-                            <div class="app call">
-                                <a href="tel:{{header.mobile_number}}"><img src="./imgs/phone.svg"><span>Ask Queries</span></a>
+                    {{#each orders}}
+                    <div class="order-container">
+                        <div class="order-wrapper">
+                            <div class="left">
+                                <div class="date">
+                                   Date: <span>{{date}}</span>
+                                </div>
+                                <div class="no-of-items">
+                                    No. of. Items: <span>{{no_of_units}}</span>
+                                </div>
+                                <div class="amount">Amount: <span>{{total_price}}</span></div>
                             </div>
-                            <div class="app whatsapp">
-                                <a href="https://wa.me/91{{header.mobile_number}}?text=Hello,%20I've%20few%20queries">
-                                    <img src="./imgs/whatsapp-new.svg"><span>Send Queries</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="logo">
-                        <img src="./imgs/logo.min.svg">
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="sticky-items">
-                <div class="wrapper">
-                    <div class="search">
-                        <div class="wrapper">
-                            <div class="icon"><img src="./imgs/search.svg"></div>
-                            <input type="text" name="search" class="" placeholder="Search for an item">
-                        </div>
-                    </div>
-                    <div class="wrap-collapsible">
-                        <input type="checkbox" id="collapsible" class="toggle">
-                        <label for="collapsible" class="lbl-toggle">Categories</label>
-                        <div class="collapsible-content">
-                            <div class="content-inner">
-                                <div class="categories">
-                                    <div class="tag c-primary" id="cart">In Cart</div>
-                                    {{#each categories}}
-                                        <div class="tag c-secondary">{{type}}</div>
-                                    {{/each}}
+                            <div class="right">
+                                <div class="order-number">
+                                    Order No.#: <span>{{order_id}}</span>
+                                </div>
+                                <div class="status color-{{js "getOrderStatus(this.is_cancelled, this.is_confirmed, this.is_paid, 'color')" }}">
+                                    {{js "getOrderStatus(this.is_cancelled, this.is_confirmed, this.is_paid, 'text')" }}
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {{/each}}
                 </div>
             </div>
-            <div class="catalogue" id="catalogueItems">
-            {{#if items}}
-            {{#each items}}
-                <div class="catalogue-item {{ js 'isItemHighlight(this.priority, "forClass")'}}" data-category="{{type}}" data-shortcode="{{shortcode}}">
-                    {{#js_if "isItemHighlight(this.priority, 'forRibbon') "}}
-                        <div class="ribbon"><span>{{priority}}</span></div>
-                    {{/js_if}}
-                    <div class="section-1">
-                        <div class="img">
-                            {{#js_if "this.in_stock == '2' || !(this.cost > '0')"}}
-                                <div class="out-of-stock">Out of Stock</div>
-                            {{/js_if}}
-                            
-                            <img class="lazy" 
-                                {{#if image[0].thumb}}
-                                    data-src="https://www.ambatitastyfoods.com/{{image[0].thumb}}"
-                                {{else}}
-                                    data-src="https://www.ambatitastyfoods.com/uploads/no-image.jpg" 
-                                {{/if}}
-                            >
-                            {{#if image[0].thumb}}
-                                <div class="d-none previews">
-                                    {{#each image}}
-                                        <img src="https://www.ambatitastyfoods.com/{{thumb}}">
-                                    {{/each}}
-                                </div>
-                            {{/if}}
-                        </div>
-                        <div class="code">Item Code: <span id="item_code">{{shortcode}}</span></div>
-                    </div>
-                    <div class="name">{{item}}</div>
-                    <div class="desc">Desc: <span>{{counting}}</span></div>
-                    <div class="desc2">{{sub_name}}</div>
-                    <div class="company_name"><span>Company: </span><span>{{company_name}}</span></div>
-                    <div class="footer">
-                        <div class="price">
-                            <span id="cost">{{cost}}</span>
-                        </div>
-                        <div class="add-container">
-                        {{#js_if "this.in_stock == '1' && this.cost > '0'"}}
-                            <div class="initial">+ Add</div>
-                        {{else}}
-                            <div class="no-stock">No Stock</div>
-                        {{/js_if}}
-                            <div class="post-initial d-none">
-                                <span id="add">+</span>
-                                <input type="number" name="itemCount" id="" value="1" min="1" max="999" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onpaste="return false" onwheel="return false;">
-                                <span id="remove">-</span>
-                            </div>
-                        </div>
-                        {{#if actual_cost}}
-                        <div class="actual_price">
-                            <span id="actual_cost">{{actual_cost}}</span>
-                        </div>
-                        {{/if}}
-                    </div>
-                </div>
-            {{/each}}
             {{/if}}
-            </div>
-
-            <div class="cart-summary d-none">
-                <div class="items-summary">
-                    <div class="items"></div>
-                    <div id="ellipse">.</div>
-                    <div id="amount">₹ <span></span></div>
-                </div>
-                <div class="v-line"></div>
-                <div class="place-order">
-                    <div class="img"><div class="count" id="shortItemCount"></div><img src="./imgs/buy-icon.svg"></div>
-                    <div class="text" id="order-btn">Checkout</div>
-                </div>
-                <div class="v-line"></div>
-                <di class="clear-cart">
-                    <div class="img"><div class="count" id="shortItemCount"></div><img src="./imgs/clear-cart.svg"></div>
-                    <div class="text" id="clear-btn">CLEAR</div>
-                </div>
-            </div>
-
+            
             <div class="menu-container">
                 <div class="menu-wrapper">
-                    <div class="menu-item active" data-menu="home">
+                    <div class="menu-item fade-outs" data-menu="home">
                         <div class="menu-icon"><i class="fa fa-home" aria-hidden="true"></i></div>
                         <div class="menu-name">Home</div>
                     </div>
-                    <div class="menu-item fade-outs" data-menu="orders">
+                    <div class="menu-item active" data-menu="orders">
                         <div class="menu-icon"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i></div>
                         <div class="menu-name">Orders</div>
                     </div>
@@ -188,7 +85,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
     </noscript>
@@ -298,21 +194,12 @@
         </div>
     </div>
 
-    <div class="image-preview-container d-none">
-        <div class="image-preview-wrapper" id="imgPreviewWrapper">
-            <div class="close-button" id="previewClose">X</div>
-            <div class="main-image" id="previewMainImg"></div>
-            <div class="side-images" id="previewSideImgs"></div>
-        </div>
-    </div>
-
-
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
     <script type="text/javascript" src='//cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
     <script type="text/javascript" src="./js/custom_event.js"></script>
-    <script type="text/javascript" src="./js/home.js?v=25"></script>
+    <script type="text/javascript" src="./js/orders.js?v=25"></script>
     <script type="text/javascript" src="./js/main.js?v=25"></script>
     <script type="text/javascript" src="./js/parse_data.js?v=25"></script>
 </body>

@@ -53,6 +53,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                     if(json_last_error() === JSON_ERROR_NONE){
                         if(count($items_data)){
+                            $date = date('Y-m-d H:i:s');
                             $sale_type = "order";
                             $username = $fields_data['username'];
                             $name = $fields_data['name'];
@@ -70,6 +71,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                             $query_type = "insert";
                             $query_columns = array(
+                                                    "date",
                                                     "order_id",
                                                     "sale_type",
                                                     "username",
@@ -86,6 +88,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                                     "items_details"
                                                 );
                             $query_values =	array(
+                                                $date,
                                                 $order_id,
                                                 $sale_type,
                                                 $username,
@@ -584,6 +587,28 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                         $return['info'] .= $update_result['additional_information'];
                     }
                 }
+            }
+        }elseif($action == "fetch_for_app"){
+            $data = $_POST['data'];
+            $username = $_POST['username'];
+
+            $where_clause = array("username=$username");
+
+            if($data != "all"){
+                $where_clause[] = "order_id=" . $data;
+            }
+
+            $extra_columns = array("no_of_items", "total_price", "is_confirmed", "is_paid", "is_cancelled");
+            $fetched_all_records = fetchRecord($query_table, $extra_columns, $where_clause);
+            if($fetched_all_records['result']){
+                $return['result'] = true;
+                $return['info'] .= "fetched all records ";
+                $return['orders'] = $fetched_all_records['data'];
+            }else{
+                $return['result'] = true;
+                $return['orders'] = array();
+                $return['info'] .= $fetched_all_records['info'];
+                $return['additional_info'] .= $fetched_all_records['additional_info'];
             }
         }else{
             $return['info'] .= "action: $action does not exist";

@@ -1,6 +1,7 @@
-function get_content(callback){
-	let url = "./lib/items.php";
-	
+function get_content(url, params, callback){
+
+	let body = new URLSearchParams(params).toString();
+
 	fetch(url, {
     "credentials": "omit",
     "headers": {
@@ -11,7 +12,7 @@ function get_content(callback){
         "Pragma": "no-cache",
         "Cache-Control": "no-cache"
     },
-    "body": "action=fetch_for_app&data=random_data",
+    "body": body,
     "method": "POST",
     "mode": "cors"
 	})
@@ -37,4 +38,8 @@ function render_content(_content){
 	target.fire("onApiReady");
 }
 
-get_content(render_content);
+get_content(
+	request_url, 
+	request_params,
+	render_content
+);
