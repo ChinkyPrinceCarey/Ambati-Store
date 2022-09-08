@@ -21,7 +21,7 @@ function onScriptReady(){
       if(route){
         $('.menu-item.active').removeClass('active');
         item.addClass('active');
-
+        managePreloader(true);
         window.location.href = route;
       }else if(!isUserLogged()){
         loginModal(true, `route_${menu}`);
