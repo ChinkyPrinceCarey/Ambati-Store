@@ -592,11 +592,13 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $data = $_POST['data'];
             $username = $_POST['username'];
 
-            $where_clause = array("username=$username");
+            $where_clause = "`username`='$username' ";
 
             if($data != "all"){
-                $where_clause[] = "order_id=" . $data;
+                $where_clause .= "AND `order_id`='$data' ";
             }
+
+            $where_clause .= "ORDER BY `order_id` DESC";
 
             $extra_columns = array("no_of_items", "total_price", "is_confirmed", "is_paid", "is_cancelled");
             $fetched_all_records = fetchRecord($query_table, $extra_columns, $where_clause);
