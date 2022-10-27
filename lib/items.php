@@ -16,10 +16,11 @@ $return['result'] = false;
 $return['info'] = "items.php: ";
 $return['additional_info'] = "";
 
+$query_table = "items";
+
 if(isset($_POST['data']) && !empty($_POST['data'])){
     if(isset($_POST['action']) && !empty($_POST['action'])){
         $action = $_POST['action'];
-        $query_table = "items";
 
         $manual_key_names = ['slno', 'making_cost', 'retailer_cost', 'available_stock'];
 
@@ -466,6 +467,56 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         }
     }else{
         $return['info'] .= "empty action";    
+    }
+}elseif(isset($_GET['data']) && !empty($_GET['data'])){
+    if(isset($_GET['action']) && !empty($_GET['action'])){
+        $action = $_GET['action'];
+
+        if($action == "image"){
+            
+            $query_type = "select";
+            //$query_table defined earlier
+            $query_columns = array("item", "image");
+            $query_where = array('shortcode=' . $_GET['data']);
+
+            $select_query = get_query($query_type, $query_table, $query_columns, $query_where);
+            $return['query'] = $select_query['query'];
+
+            $select_result = select_query($select_query);
+
+            if($select_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "fetched all records ";
+
+                $name = $select_result['additional_data'][0]['item'];
+                $images = $select_result['additional_data'][0]['image'];
+                if(count($images)){
+                    $image = "../" . $images[0]['thumb'];
+                    if(file_exists($image)){
+                        $image_info = getimagesize($image);
+                        header('Content-Type: ' . $image_info['mime']);
+                        header("Content-Disposition: inline; filename=\"" . $name . "\"");
+                        header('Content-Length: ' . filesize($image));
+                        readfile($image);
+                        exit;
+                    }
+                    else{
+                        header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
+                    }
+                }
+
+                $return['data'] = $select_result['additional_data'];
+            }else{
+                $return['result'] = true;
+                $return['data'] = array();
+                $return['info'] .= $select_result['info'];
+                $return['additional_info'] .= $select_result['additional_info'];
+            }
+        }else{
+            $return['info'] .= "action: $action does not exist";
+        }
+    }else{
+        $return['info'] .= "empty action";
     }
 }else{
     $return['info'] .= "invalid request";
