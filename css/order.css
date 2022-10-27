@@ -1,0 +1,276 @@
+*{
+  box-sizing: border-box;
+}
+
+.header > .wrapper{
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.status{
+  border-radius: 5px;
+  padding: 5px !important;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  text-transform: capitalize;
+}
+
+.status.color-primary{
+  background: var(--color-primary);
+}
+
+.status.color-red{
+  background: hsl(0, 100%, 40%);
+}
+
+.status.color-green{
+  background: #019c01;
+}
+
+.status.color-yellow{
+  background: #ffe400;
+  color: var(--color-secondary);
+}
+
+.main-content{
+  align-items: flex-start;
+  margin-top: 0px;
+}
+
+.delivery-details,
+.items-details,
+.billing-details
+{
+  width: 100%;
+  margin-top: 14px;
+}
+
+.delivery-details > .title,
+.items-details > .title,
+.billing-details > .title
+{
+  padding: 5px 10px;
+  background: var(--color-primary-3);
+  color: var(--color-primary-1);
+  font-weight: 600;
+}
+
+.body{
+  padding: 5px 10px;
+}
+
+.body .element{
+  margin: 14px 0px;
+}
+
+.body .element:first-of-type{
+  margin-top: 0px;
+}
+
+.body .element:last-of-type{
+  margin-bottom: 0px;
+}
+
+.body .element label,
+.body .element input,
+.body .element textarea
+{
+  display: block;
+}
+
+.body .element label{
+  font-weight: 500;
+  color: var(--color-primary-1);
+}
+
+.body .element input,
+.body .element textarea
+{
+  width: 100%;
+  padding: 5px;
+  border: 1px solid var(--color-primary-1);
+  outline: none;
+}
+
+.body .element textarea{
+  resize: none;
+}
+
+.item{
+  display: flex;
+  border-bottom: 1px solid var(--color-primary-2);
+  padding: 10px 0px;
+}
+
+.item .item-image{
+  height: 80px;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.item .item-image img{
+  height: 100%;
+}
+
+.item .item-image .item-code{
+  font-size: 8px;
+  text-align: center;
+}
+
+.item .item-content{
+  width: 100%;
+}
+
+.item .item-title,
+.item .item-price{
+  margin-bottom: 5px;
+}
+
+.item .item-title{
+  font-weight: 500;
+  color: var(--color-primary-1);
+}
+
+.item .item-price{
+  font-weight: 600;
+  color: var(--color-secondary)
+}
+
+.item .item-price::before{
+  content: '₹';
+  font-size: 11px;
+  vertical-align: super;
+  text-decoration: none;
+}
+
+.item .item-quantity{
+  width: 62px;
+  height: 20px;
+  border: 2px solid var(--color-primary);
+  border-radius: 25px;
+  background: white;
+  color: var(--color-primary);
+  padding: 0 2px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  box-sizing: content-box;
+}
+
+.item .item-quantity input{
+  width: 40%;
+  outline: none;
+  border: none;
+  text-align: center;
+  font-weight: 600;
+  user-select: auto;
+}
+
+.item .item-delete{
+  width: 100%;
+  color: var(--color-primary-1);
+  text-align: right;
+  margin-right: 9px;
+}
+
+.price-container{
+  display: flex;
+  margin: 6px 0px;
+  padding: 0px 10px;
+}
+
+.price-container .price-title{
+  width: 100%;
+  color: var(--color-primary-1);
+  font-weight: 500;
+}
+
+.price-container .price-data{
+  color: var(--color-secondary);
+  text-align: right;
+  font-weight: 600;
+  display: flex;
+  align-items: flex-start;
+}
+
+.price-container .price-data::before{
+  content: '₹';
+  font-size: 12px;
+  vertical-align: super;
+  text-decoration: none;
+}
+
+.price-container#grand_total{
+  background: var(--color-primary-3);
+  padding: 10px;
+  border-top: 1px dashed var(--color-primary-1);
+  border-bottom: 1px dashed var(--color-primary-1);
+}
+
+.billing-details > .body > .footer{
+  font-style: italic;
+  color: var(--color-primary-1);
+}
+
+.billing-details > .body > .footer span{
+  font-weight: 600;
+}
+
+.checkout-options{
+  width: 100%;
+  padding: 0px 16px;
+  margin-top: 5px;
+}
+
+.checkout-options > .body{
+  background: var(--color-primary-2);
+  border-radius: 4px;
+  padding: 10px 10px;
+  text-align: center;
+}
+
+.checkout-options > .body > button{
+  outline: none;
+  border: none;
+  margin: 0px 5px;
+  padding: 6px;
+  color: white;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.primary{
+  background: var(--color-primary-1);
+}
+
+button.green{
+  background: green;
+}
+
+button.red{
+  background: red;
+}
+
+/*begin: bottom fixed checkout options*/
+.billing-details{
+  margin-bottom: 110px;
+}
+
+.checkout-options{
+  position: fixed;
+  bottom: 47px;
+  z-index: 999;
+}
+
+.checkout-options > .body{
+  border: 1px solid rgba(0, 147, 204, 1);
+  background: rgba(0, 147, 204, 0.33);
+}
+
+.checkout-options > .body > button{
+  border: 2px solid white;
+}
+/*end: bottom fixed checkout options*/

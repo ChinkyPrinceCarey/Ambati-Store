@@ -51,8 +51,6 @@ function initCart(){
 
 function onPageReady(){
   var offset = $(".sticky-items").offset();
-
-  $('.lazy').Lazy();
   
   setTimeout(function(){
     initCart();

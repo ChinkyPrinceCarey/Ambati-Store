@@ -679,14 +679,14 @@ border-top: 3px solid var(--ribbion-color-end);
 }
 
 /* Chrome, Safari, Edge, Opera */
-input[name=itemCount]::-webkit-outer-spin-button,
-input[name=itemCount]::-webkit-inner-spin-button {
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
 -webkit-appearance: none;
 margin: 0;
 }
 
 /* Firefox */
-input[name=itemCount] {
+input[type=number] {
 -moz-appearance: textfield;
 }
 
@@ -954,7 +954,7 @@ button[disabled="disabled"]{
 
 input:focus:invalid,
 textarea:focus:invalid{
-  border:solid 2px #F5192F;
+  border:solid 2px #F5192F !important;
 }
 
 .modal > .wrapper .body .element input,

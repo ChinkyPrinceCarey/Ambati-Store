@@ -38,8 +38,15 @@ function render_content(_content){
 	target.fire("onApiReady");
 }
 
-get_content(
-	request_url, 
-	request_params,
-	render_content
-);
+if(request_url){
+	if(typeof preRequestedOrderId != "undefined"){
+		get_content(request_url, request_params, function(res){
+			let orders = res.orders[0];
+			render_content(orders)
+		});
+	}else{
+		get_content(request_url, request_params, render_content);
+	}
+}else{
+	render_content(manual_data);
+}
