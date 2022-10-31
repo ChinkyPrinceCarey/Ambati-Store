@@ -1,12 +1,12 @@
 <?php
 //database configuration
-define("DB_SERVER", "103.117.212.217");
-define("DB_USERNAME", "sanketma_mickey");
-define("DB_PASSWORD", "1@Passwordtrue");
-define("DB_DBNAME", "sanketma_ambati_v2"); //ambati_sms
+define("DB_SERVER", "localhost");
+define("DB_USERNAME", "u916003822_mickey_beta");
+define("DB_PASSWORD", "123@Passwordtrue");
+define("DB_DBNAME", "u916003822_ambati_beta");
 
 //## default directories ## //
-define("BASE_DIR", "/home/sanketma/public_html/ambatitastyfoods.com/v2");
+define("BASE_DIR", "/home/u916003822/domains/ambatitastyfoods.com/public_html/v2");
 define("LIB_DIR", BASE_DIR . "/lib");
 define("NAVIGATION_FILE", LIB_DIR . "/navigation_map.json");
 define("UPLOADS_DIRNAME", "uploads");

@@ -1,4 +1,4 @@
-AuthUserFile /home/sanketma/public_html/ambatitastyfoods.com/v2/customers/.htpasswd
+AuthUserFile /home/u916003822/domains/ambatitastyfoods.com/public_html/v2/customers/.htpasswd
 AuthType Basic
 AuthName "My Secret Folder"
 Require valid-user
