@@ -3,7 +3,7 @@
 define("DB_SERVER", "localhost");
 define("DB_USERNAME", "root");
 define("DB_PASSWORD", "");
-define("DB_DBNAME", "ambati_sms_v2_app"); //ambati_sms_v2
+define("DB_DBNAME", "u916003822_ambati_beta");
 
 //## default directories ## //
 define("BASE_DIR", "C:/wamp64/www/ambati_sms/v2");
