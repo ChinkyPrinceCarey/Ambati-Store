@@ -1,1 +1,3 @@
 uploads/
+*.jpg
+lib/test.php
