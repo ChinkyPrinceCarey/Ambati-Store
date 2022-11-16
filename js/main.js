@@ -17,7 +17,7 @@ function onScriptReady(){
       }else if(isUserLogged() && menu == "orders"){
         route = "orders.html"
       }else if(isUserLogged() && menu == "profile"){
-        //route = "profile.html"
+        route = "profile.html"
       }
 
       if(route){
