@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Online Store for Keerana vendors in rural areas!"/>
+    <title>Ambati Tasty Foods</title>
+
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+	
+  	<!-- Import Fonts Web [or] Local -->
+    <link rel="stylesheet" href="./css/fonts.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- /Import Fonts Web [or] Local -->
+
+    <link rel="stylesheet" href="./css/main.css?v=27">
+    <link rel="stylesheet" href="./css/login.css?v=27">
+    <link rel="stylesheet" href="./css/profile.css?v=27">
+
+    <!-- Content Render -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/template7/1.4.1/template7.min.js"></script>
+	<!-- /Content Render -->
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <img class="logo-svg" src="./imgs/logo.min.svg"/>
+    </div>
+    <!-- /-Preloader -->
+
+    <!-- Content Loader -->
+    <noscript id="content-template" type="text/template7">
+        <div class="header">
+            <div class="wrapper">
+                <div id="name" class="bold clr-primary">Profile</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="profile-container">
+                <div class="wrapper">
+                    <div class="profile-details">
+                        <div class="element">
+                            <label for="name">Name</label>
+                            <input type="text" name="name" id="name" minlength="4" value="" required>
+                        </div>
+                        <div class="element">
+                            <label for="name">Mobile Number</label>
+                            <input type="text" name="mobile_number" id="mobile_number" maxlength="10" minlength="10" required apattern="^\d*$" title="Enter your valid mobile number" value="">
+                        </div>
+                        <div class="element">
+                            <label for="name">Address</label>
+                            <textarea name="address" id="address" cols="30" rows="5" required minlength="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkout-options">
+                <div class="body">
+                  <!--<button class="primary" id="updateProfile">Update</button>-->
+                  <button class="green" id="requestDelete">Request to Delete</button>
+                  <button class="red" id="logout">Logout</button>
+                </div>
+            </div>
+            
+            <div class="menu-container">
+                <div class="menu-wrapper">
+                    <div class="menu-item fade-outs" data-menu="home">
+                        <div class="menu-icon"><i class="fa fa-home" aria-hidden="true"></i></div>
+                        <div class="menu-name">Home</div>
+                    </div>
+                    <div class="menu-item fade-outs" data-menu="orders">
+                        <div class="menu-icon"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i></div>
+                        <div class="menu-name">Orders</div>
+                    </div>
+                    <div class="menu-item active" data-menu="profile">
+                        <div class="menu-icon"><i class="fa fa-user" aria-hidden="true"></i></div>
+                        <div class="menu-name">Profile</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </noscript>
+    <!-- -/Content Loader -->
+  
+    <div id="content-rendered"></div>
+
+    <div class="modal d-none" id="basic-alert">
+        <div class="wrapper animate-open-top">
+            <i class="close-icon fa fa-times" aria-hidden="true"></i>
+
+            <div class="title">sometitle</div>
+            <div class="body">somebody</div>
+            <div class="footer">
+                <button class="primary" id="modal-okay">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-container d-none">
+        <div class="center-container">
+            <div class="wrapper">
+                <div class="logo">
+                    <img src="./imgs/logo.min.svg" alt="" width="80px">
+                </div>
+                <div class="brand-name">
+                    Ambati Tasty Foods
+                </div>
+                <div class="login-status" id="login_status"></div>
+                <form id="loginForm" action="">
+                    <div class="form-element">
+                        <label>Username</label>
+                        <input type="text" name="username" id="username">
+                    </div>
+                    <div class="form-element">
+                        <label>Password</label>
+                        <input type="password" name="password" id="password">
+                    </div>
+                    <div class="form-element btn-primary" id="login_btn">
+                        <button type="submit"><span>Login</span></button>
+                    </div>
+                    <div class="form-element btn-secondary" id="register_btn">
+                        <button type="button"><span>For Registration</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+    <script type="text/javascript" src='//cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+    <script type="text/javascript" src="./js/custom_event.js"></script>
+    <script type="text/javascript" src="./js/profile.js?v=27"></script>
+    <script type="text/javascript" src="./js/main.js?v=27"></script>
+    <script type="text/javascript" src="./js/parse_data.js?v=27"></script>
+</body>
+</html>
