@@ -10,7 +10,8 @@ function get_content(url, params, callback){
         "Accept-Language": "en-US,en;q=0.5",
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "Pragma": "no-cache",
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-cache",
+				"App_Version": Cookies.get('APP_VERSION')
     },
     "body": body,
     "method": "POST",
@@ -27,10 +28,12 @@ function get_content(url, params, callback){
 	});
 }
 
+let API_CONTENT;
 function render_content(_content){
 	var template = document.getElementById('content-template').innerHTML;
 	var compiled = Template7(template).compile();
 	var compiledRendered = compiled(_content);
+	API_CONTENT = _content;
 	
 	$('#content-rendered').prepend(compiledRendered);
 	

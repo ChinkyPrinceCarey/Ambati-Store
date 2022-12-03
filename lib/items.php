@@ -357,11 +357,27 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                 );
 
                 $app_button_text = "Download App";
-                $app_button_value = "https://ambatitastyfoods.com/Ambati_Store_v1.apk";
+                $app_button_value = "https://play.google.com/store/apps/details?id=com.cpc.ambatistore";
+                $app_update = false;
 
                 if($is_app_request){
                     $app_button_text = "www.ambatitastyfoods.com";
                     $app_button_value = "https://bit.ly/3ABTjf5";
+
+                    $app_version =  array_key_exists('HTTP_APP_VERSION', $_SERVER) ?
+                                    $_SERVER['HTTP_APP_VERSION'] :
+                                    '1.0';
+                    $app_version = (float)$app_version;
+                    
+                    if($app_version < 2.0){
+                        $app_button_text = "Update App: $app_version";
+                        $app_button_value = "https://play.google.com/?id=com.cpc.ambatistore";
+
+                        $app_update = array();
+                        $app_update['title'] = "Latest Update Available";
+                        $app_update['body'] = "Update to latest version 2.0 from your app store";
+                        $app_update['link'] = "https://play.google.com/?id=com.cpc.ambatistore";
+                    }
                 }
 
 				$return['header'] = array(
@@ -369,6 +385,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 										"header_2" => "Online store for Keerana Vendors",
 										"app_button_text" => $app_button_text,
 										"app_button_value" => $app_button_value,
+                                        "app_update" => $app_update,
 										"mobile_number" => "8096031765"
 									);
                 $return['categories'] = $categories_result['additional_data'];

@@ -29,7 +29,11 @@ function onScriptReady(){
         loginModal(true, `route_${menu}`);
       }
     }
-  })
+  });
+
+  if(API_CONTENT.header.app_update){
+    console.log(`App update available`);
+  }
 }
 
 function isUserLogged(){
