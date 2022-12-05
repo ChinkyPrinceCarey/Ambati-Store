@@ -55,6 +55,12 @@ function onPageReady(){
   setTimeout(function(){
     initCart();
   }, 1000);
+
+  if(!isUserLogged()){
+    $('.menu-item[data-menu="home"]').removeClass("active");
+    $("#content-rendered").css("filter", "blur(4px)");
+    loginModal(true, `route_home`, true);
+  }
   
   managePreloader(false);
 
@@ -390,7 +396,9 @@ function onPageReady(){
 
   $('.login-container').click(function(e){
     if($(e.target).hasClass("login-container")){
-      loginModal(false)
+      if(!loginModal("isDisableClose")){
+        loginModal(false)
+      }
     }
   });
 }

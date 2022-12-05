@@ -270,6 +270,10 @@ function orderModal(){
     @param2
       * (string)post-login
       *(optional)
+
+    @param3
+      *(boolean)disable-close
+      *(optional)
 **/ 
 function loginModal(){
   let should_modal_show = true;
@@ -284,10 +288,18 @@ function loginModal(){
       return !modal.hasClass("d-none");
     }else if(arguments[0] == "post_login"){
       return modal.data("post_login");
+    }else if(arguments[0] == "isDisableClose"){
+      return modal.hasClass("disable-close");
     }
 
     if(arguments[1] != undefined){
       post_login = arguments[1];
+    }
+
+    if(arguments[2] != undefined){
+      if(arguments[2]){
+        modal.addClass("disable-close");
+      }
     }
   }
 
@@ -324,6 +336,8 @@ function postLogin(post_login){
     $('.menu-item[data-menu="orders"]').click();
   }else if(post_login == "route_profile"){
     $('.menu-item[data-menu="profile"]').click();
+  }else{
+    $('.menu-item[data-menu="home"]').click();
   }
 }
 
