@@ -449,7 +449,7 @@ $(function(){
             { data: "image",
             render: function(data, type, row){
                 if(data){
-                    return `<img src="${data[0].thumb}" height="80px" onerror="this.onerror=null;this.src='./uploads/no-image.jpg';">`;
+                    return `<img src="${data[0].thumb}" height="80px" width="80px" data-src="${data[0].thumb}" onerror="imgOnError(this, false);">`;
                 }
             }
             },
@@ -464,6 +464,7 @@ $(function(){
         "initComplete": function( settings, json ) {
             //console.log(settings, json);
             $('.ui.rating').rating('disable');
+            //loadTableImages();
         }
     });
 
@@ -678,8 +679,11 @@ function cropButton(){
         .addClass('s-200px')
         .children('img')
             .addClass('maxWidth100')
+            .attr('width', '200px')
+            .attr('height', '200px')
             .attr('onload', '')
             .attr('src', thumbnail)
+            .attr('data-src', thumbnail)
             .attr('data-orginal', orginal)
             .attr('data-timestamp', getCurrentDate("dmt"))
         .parent()
@@ -725,6 +729,26 @@ function parseSearchOpts(_required_distinct_column){
             );    
         }
     });
+}
+
+function imgOnError(e, showNoImage){
+    if(showNoImage){
+        $(e).removeClass('loading');
+        e.onerror = null;
+        e.src = './uploads/no-image.jpg';
+    }else{
+        $(e).addClass('loading');
+        let actualImage = $(e).data("src");
+        e.onerror = function(){
+            imgOnError(e, true);
+        };
+        
+        if(actualImage != "undefined"){
+            e.src = `http://ambatitastyfoods.com/${actualImage}`;
+        }else{
+            imgOnError(e, true);
+        }
+    }
 }
 
 function setSelectOpts(url, fieldName){

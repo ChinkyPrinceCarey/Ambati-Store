@@ -376,6 +376,22 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['data'] = array();
                 $return['info'] = $select_result;
             }
+        }elseif($action == "item_image_upload"){
+            $timestamp = $_POST['timestamp'];
+            $type = $_POST['type'];
+            $data = $_POST['data'];
+
+            $imagename = "{$timestamp}_{$type}.jpg";
+
+            $path = UPLOADS_DIRNAME . "/" . $imagename;
+            $imageSavePath = BASE_DIR . "/" . $path;
+
+            if(file_put_contents($imageSavePath, file_get_contents($data)) !== FALSE){
+                $return['result'] = true;
+                $return['info'] .= "image upload successful";
+            }else{
+                $return['info'] .= "error image upload";
+            }
         }else{
             $return['info'] .= "action: $action does not exist";
         }

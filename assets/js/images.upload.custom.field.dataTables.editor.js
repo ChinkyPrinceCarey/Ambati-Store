@@ -34,7 +34,7 @@
         
         $(images).each(function(){
           dataArr.push({
-            thumb: $(this).children("img").attr("src"),
+            thumb: $(this).children("img").data("src"),
             orginal: $(this).children("img").data("orginal"),
             timestamp: $(this).children("img").data("timestamp")
           })
@@ -63,8 +63,12 @@
           <li class="s-200px image-container">
               <img 
                 class="maxWidth100" 
+                width="200px" 
+                height="200px" 
                 src="${dataArr[key].thumb}" 
+                data-src="${dataArr[key].thumb}" 
                 data-orginal="${dataArr[key].orginal}" 
+                onerror="imgOnError(this, false);"
               />
               ${popupDom}
           </li>

@@ -578,3 +578,16 @@ td i{
 .focusbgblack:focus{
     background-color: black !important;
 }
+
+/*Begin: Items Table Image*/
+td > img,
+.image-container > img{
+    background-size: cover;
+    background-position: center;
+}
+
+td > img.loading,
+.image-container > img.loading{
+    background-image: url('../images/loading.svg');
+}
+/*End: Items Table Image*/
