@@ -103,20 +103,30 @@ function sanitize_the_value($_value, $_sanitize_rule){
 				foreach($image as $type => &$data){
 					if(strlen($data) > 40){
 						//it's base_64 image
-						//we've to upload to server
+						//so first, we've to upload to server
 						$imagename = "{$timestamp}_{$type}.jpg";
 
 						$path = UPLOADS_DIRNAME . "/" . $imagename;
 						$imageSavePath = BASE_DIR . "/" . $path;
-						
-						if($_SERVER['HTTP_HOST'] != "localhost"){
-							//for remote server
-							$path = UPLOADS_DIR . "/" . $imagename;
-							$imageSavePath = BASE_DIR . $path;
-						}
 
-						if(file_put_contents($imageSavePath, file_get_contents($data)) !== FALSE){
-							$data = $path;
+						$request = array(
+							"action" => "item_image_upload",
+							"data" => $data,
+							"timestamp" => $timestamp,
+							"type" => $type
+						);
+
+						$image_upload_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $request);
+						if($image_upload_result['result']){
+							if($image_upload_result['data']['result']){
+								//uploading image on local server
+								$local_path = UPLOADS_DIR . "/" . $imagename;
+								$local_imageSavePath = BASE_DIR . $local_path;
+								file_put_contents($local_imageSavePath, file_get_contents($data));
+								
+								//2. since it is uploaded, here modifying the image data to image path
+								$data = $path;
+							}
 						}
 					}
 				}
@@ -135,7 +145,7 @@ function is_field_valid($_data, $_type, $_validation_rules){
     $return['result'] = false;
     $return['info'] = "is_field_valid(..): ";
 
-	//add if any validation_rules to the respective field type
+		//add if any validation_rules to the respective field type
     //if($_type == "id"){}
 
     foreach($_validation_rules as $field_def){
