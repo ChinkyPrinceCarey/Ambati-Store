@@ -1,2 +1,4 @@
 
 *.jpg
+lib/test.php
+lib/define_defaults.php
