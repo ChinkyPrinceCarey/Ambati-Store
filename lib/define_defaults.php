@@ -1,27 +1,19 @@
 <?php
-/*
-//database configuration
-define("DB_SERVER", "localhost");
-define("DB_USERNAME", "root");
-define("DB_PASSWORD", "");
-define("DB_DBNAME", "u916003822_ambati_beta");
-*/
+$database_server_mode = "beta";
 
-/*
-//server database configuration
-define("DB_SERVER", "217.21.88.3");
-define("DB_USERNAME", "u916003822_mickey_admin");
-define("DB_PASSWORD", "1@Passwordtrue");
-define("DB_DBNAME", "u916003822_ambati_sms");
-*/
-
-//
-//test-server database configuration
-define("DB_SERVER", "217.21.88.3");
-define("DB_USERNAME", "u916003822_mickey_beta");
-define("DB_PASSWORD", "123@Passwordtrue");
-define("DB_DBNAME", "u916003822_ambati_beta");
-//
+if($database_server_mode == "production"){
+    //server production database configuration
+    define("DB_SERVER", "217.21.88.3");
+    define("DB_USERNAME", "u916003822_mickey_admin");
+    define("DB_PASSWORD", "1@Passwordtrue");
+    define("DB_DBNAME", "u916003822_ambati_sms");
+}else{
+    //server beta database configuration
+    define("DB_SERVER", "localhost");
+    define("DB_USERNAME", "u916003822_mickey_beta");
+    define("DB_PASSWORD", "123@Passwordtrue");
+    define("DB_DBNAME", "u916003822_ambati_beta");
+}
 
 //## default directories ## //
 define("BASE_DIR", "C:/wamp64/www/ambati_sms/v2");
