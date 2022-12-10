@@ -9,7 +9,7 @@ if($database_server_mode == "production"){
     define("DB_DBNAME", "u916003822_ambati_sms");
 }else{
     //server beta database configuration
-    define("DB_SERVER", "localhost");
+    define("DB_SERVER", "217.21.88.3");
     define("DB_USERNAME", "u916003822_mickey_beta");
     define("DB_PASSWORD", "123@Passwordtrue");
     define("DB_DBNAME", "u916003822_ambati_beta");
