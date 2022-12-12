@@ -237,7 +237,11 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             
             UNION
             
-            SELECT * FROM (SELECT * FROM `items` WHERE `priority` = 'default' AND `material` != 'raw' AND `in_stock` != 0 ORDER BY rand()) `t3`
+            SELECT * FROM (SELECT * FROM `items` WHERE `priority` = 'default' AND `material` != 'raw' AND `in_stock` = 1 ORDER BY rand()) `t3`
+
+            UNION
+            
+            SELECT * FROM (SELECT * FROM `items` WHERE `priority` = 'default' AND `material` != 'raw' AND `in_stock` = 2) `t4`
             ";
 			
             $select_query = get_query($query_type, $query_table, $query_text);
