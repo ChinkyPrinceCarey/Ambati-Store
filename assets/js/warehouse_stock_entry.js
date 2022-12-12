@@ -495,6 +495,7 @@ function generateBarcodes(data){
         `);
         JsBarcode(`#barcode_1`).init();
 
+        //adding custom data
         $(`#barcode_1 g`).attr('transform', 'translate(10, 4)');
         $(`#barcode_1`).append(`
             <g class="custom_data">
@@ -534,15 +535,15 @@ function generateBarcodes(data){
             
             currentItemNumber++;
         }
+    }
 
-        //if any custom data added to svg
-        //those are will not be visible
-        //so appending again completely
-        if(custom_data){
-            let barcodes_data = $('#barcode_1').parent().parent().html();
-            $('#barcodes-list').empty();
-            $('#barcodes-list').html(barcodes_data);
-        }
+    //if any custom data added to svg
+    //those are will not be visible
+    //so appending again completely
+    if(getIsCottonEntry() || custom_data){
+        let barcodes_data = $('#barcodes-list div:nth-of-type(1)').parent().parent().html();
+        $('#barcodes-list').empty();
+        $('#barcodes-list').html(barcodes_data);
     }
 }
 
