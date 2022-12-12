@@ -251,6 +251,8 @@ function initValues(){
     stock_data = {...stock_data, ...stock_obj_methods};
     sale_data = {...sale_data, ...sale_obj_methods};
 
+    stock_data.cottonScanning = false;
+
     stock_data.sale_obj = sale_data;
     sale_data.stock_obj = stock_data;
 
