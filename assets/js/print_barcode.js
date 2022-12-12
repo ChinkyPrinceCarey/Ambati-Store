@@ -40,7 +40,12 @@ $(function(){
                 }else if(response.result){
                     print_barcode_btn.removeClass("disabled");
                     $("#generated_id").text(response.data[0].generate_id);
-                    populateBarcodes(response.data);
+                    
+                    let isCottonPrint = false;
+                    if(getFetchType(input_id_or_barcodes) == "generated_id"){
+                        isCottonPrint = response.data[0].is_cotton == "1";
+                    }
+                    populateBarcodes(response.data, isCottonPrint);
                 }else{
                     modal_body = "Something went wrong on backend connection";
                 }
@@ -90,39 +95,68 @@ function getFetchType(fetch_data){
     }
 }
 
-function populateBarcodes(data){
+function populateBarcodes(data, isCottonPrint){
     $('#barcodes-list').empty();
     let custom_data = data[0].custom_data;
-    for(let item of data){
-        $('#barcodes-list').append(
-            `<div class="barcode"><svg id="barcode_${item.item_number}"
-                jsbarcode-width="1"
-                jsbarcode-height="20"
-                jsbarcode-textmargin="1"
-                jsbarcode-fontsize="10"
-                jsbarcode-fontoptions="bold"
-                jsbarcode-text=${item.barcode}-${item.retailer_cost}
-                jsbarcode-value=${item.barcode}
-            >
-            </svg></div>`);  
-        JsBarcode(`#barcode_${item.item_number}`).init();
+    if(isCottonPrint){
+        let cottonDate = data[0].date.split("-");
+        cottonDate = `${cottonDate[2]}${cottonDate[1]}`;
+        let dataLength = data.length - 1;
+        $('#barcodes-list').append(`
+        <div class="barcode">
+            <svg    id="barcode_1"
+                    jsbarcode-width="1"
+                    jsbarcode-height="20"
+                    jsbarcode-textmargin="1"
+                    jsbarcode-fontsize="10"
+                    jsbarcode-fontoptions="bold"
+                    jsbarcode-text=${data[0].generate_id}
+                    jsbarcode-value=${data[0].generate_id}
+            ></svg>
+        </div>
+        `);
+        JsBarcode(`#barcode_1`).init();
 
-        //add Custom Data
-        if(custom_data){
-            $(`#barcode_${item.item_number} g`).attr('transform', 'translate(10, 5)');
-            $(`#barcode_${item.item_number}`).append(`
-                <g class="custom_data">
-					<line x1="0" y1="40" x2="100%" y2="40" stroke="black"></line>
-					<text style="font: 7px Arial; font-weight:600" x="5" y="49">${custom_data}</text>
-				</g>
-            `);
+        //adding custom_data
+        $(`#barcode_1 g`).attr('transform', 'translate(10, 4)');
+        $(`#barcode_1`).append(`
+            <g class="custom_data">
+                <line x1="0" y1="38" x2="100%" y2="38" stroke="black"></line>
+                <text style="font: 7px Arial; font-weight:600" x="5" y="45">${cottonDate}${data[0].shortcode}${data[0].item_number}-${data[dataLength].item_number}</text>
+            </g>
+        `);
+    }else{
+        for(let item of data){
+            $('#barcodes-list').append(
+                `<div class="barcode"><svg id="barcode_${item.item_number}"
+                    jsbarcode-width="1"
+                    jsbarcode-height="20"
+                    jsbarcode-textmargin="1"
+                    jsbarcode-fontsize="10"
+                    jsbarcode-fontoptions="bold"
+                    jsbarcode-text=${item.barcode}-${item.retailer_cost}
+                    jsbarcode-value=${item.barcode}
+                >
+                </svg></div>`);  
+            JsBarcode(`#barcode_${item.item_number}`).init();
+
+            //add Custom Data
+            if(custom_data){
+                $(`#barcode_${item.item_number} g`).attr('transform', 'translate(10, 5)');
+                $(`#barcode_${item.item_number}`).append(`
+                    <g class="custom_data">
+                        <line x1="0" y1="40" x2="100%" y2="40" stroke="black"></line>
+                        <text style="font: 7px Arial; font-weight:600" x="5" y="49">${custom_data}</text>
+                    </g>
+                `);
+            }
         }
     }
 
     //if any custom data added to svg
     //those are will not be visible
     //so appending again completely
-    if(custom_data){
+    if(isCottonPrint || custom_data){
         let barcodes_data = $("#barcodes-list div:nth-of-type(1)").parent().html();
         $('#barcodes-list').empty();
         $('#barcodes-list').html(barcodes_data);
