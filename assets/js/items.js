@@ -139,7 +139,7 @@ $(function(){
                 name: "level",
                 type: "select",
                 options: [
-                    { label: "Level 1", value: "level_1"},
+                    {label: "Level 1", value: "level_1"},
                     {label: "Level 2", value: "level_2"},
                     {label: "Level 3", value: "level_3"},
                     {label: "Level 4", value: "level_4"},
@@ -148,6 +148,11 @@ $(function(){
                 attr: {
                     name: 'level'
                 }
+            },
+            {
+                label: "Tracking Id",
+                name: "tracking_id",
+                type: "select_two"
             },
             {
                 label: "Making Cost",
@@ -438,6 +443,7 @@ $(function(){
                 return `<div class="ui star rating" data-rating="${rating}" data-max-rating="5"></div>`;
             }
             },
+            { data: "tracking_id" },
             { data: "in_stock",
             render: function(data, type, row){
                 let color = data == 1 ? "green" : "red";
