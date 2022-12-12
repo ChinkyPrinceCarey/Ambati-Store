@@ -21,6 +21,7 @@ let dropdown_weight;
 
 let field_current_item_no;
 let field_no_of_items;
+let dropdown_is_cotton;
 
 let selected_type;
 let selected_item_name;
@@ -31,6 +32,8 @@ let barcodes = [];
 let generate_stock_btn;
 let edit_stock_btn;
 let add_stock_btn;
+
+let GenerateId;
 
 let inProcess;
 
@@ -72,6 +75,7 @@ $(function(){
     
     field_current_item_no = $('input[name=current_item_no]');
     field_no_of_items = $('input[name=no_of_items]');
+    dropdown_is_cotton = $('select[name=is_cotton_entry]');
 	
 	generate_stock_btn = $('#generate_stock_btn');
 	
@@ -231,6 +235,9 @@ $(function(){
 			console.log(event, fields);
 			
 			if(validateGenerateStockFields(fields)){
+                //generate new generateId
+                getGenerateId(true);
+
 				//lock the fields
 				changeFieldsState();
 				
@@ -300,7 +307,7 @@ $(function(){
                     action: "stock_entry",
                     data: "random_data",
                     date: getCurrentDate(),
-                    generate_id: getCurrentDate("dmt"),
+                    generate_id: getGenerateId(),
                     material: dropdown_material.dropdown('get value'),
                     type: selected_type,
                     item: selected_item_name,
@@ -312,7 +319,8 @@ $(function(){
                     wholesale_cost: dropdown_material.dropdown('get value') == "raw" ? field_making_cost.val() : field_wholesale_cost.val(),
                     current_item_no: field_current_item_no.val(),
                     barcodes: barcodes,
-                    custom_data: getCustomData()
+                    custom_data: getCustomData(),
+                    is_cotton: getIsCottonEntry()
                 };
                 
                 ajaxPostCall('lib/warehouse_stock_entry.php', data_param, function(response){
@@ -325,7 +333,6 @@ $(function(){
                     }else if(response.result){
                         //let item_data = response.data;
                         //console.log(response.data);
-                        
                         smallModal(
                             "Stock Added Successfully", 
                             `${field_no_of_items.val()} stock items of ${selected_item_name}[${selected_item_shortcode}] are added successfully, click on print to print labels or notedown generated_id to print labels later</br><h2>GENERATED_ID: <b>${data_param.generate_id}</b></h2>`, 
@@ -460,52 +467,95 @@ function generateBarcodes(data){
 	//console.log(data.no_of_items);
 	
 	let currentItemNumber = parseInt(field_current_item_no.val());
-
+    let currentDate = getCurrentDate('dm');
     let custom_data = getCustomData();
 	
 	$('#barcodes-list').empty();
 	barcodes = [];
-	for(let i=1; i<=parseInt(data.no_of_items); i++){
-		
-		let barcode_value = `${getCurrentDate('dm')}${data.shortcode}${currentItemNumber}`;
-		barcodes.push(barcode_value);
-		
-		$('#barcodes-list').append(
-		`<div class="barcode"><svg id="barcode_${i}"
-		  jsbarcode-width="1"
-		  jsbarcode-height="20"
-		  jsbarcode-textmargin="1"
-		  jsbarcode-fontsize="10"
-          jsbarcode-fontoptions="bold"
-		  jsbarcode-text=${barcode_value}-${data.retailer_cost}
-		  jsbarcode-value=${barcode_value}
-		>
-		</svg></div>`);
-		
-		JsBarcode(`#barcode_${i}`).init();
 
-        //add Custom Data
-        if(custom_data){
-            $(`#barcode_${i} g`).attr('transform', 'translate(10, 4)');
-            $(`#barcode_${i}`).append(`
-                <g class="custom_data">
-					<line x1="0" y1="38" x2="100%" y2="38" stroke="black"></line>
-					<text style="font: 7px Arial; font-weight:600" x="5" y="45">${custom_data}</text>
-				</g>
-            `);
+    if(getIsCottonEntry()){
+        for(let i=1; i<=parseInt(data.no_of_items); i++){ 
+            let barcode_value = `${currentDate}${data.shortcode}${currentItemNumber}`;
+            barcodes.push(barcode_value);
+
+            currentItemNumber++;
         }
-		
-		currentItemNumber++;
-	}
+        $('#barcodes-list').append(`
+        <div class="barcode">
+            <svg    id="barcode_1"
+                    jsbarcode-width="1"
+                    jsbarcode-height="20"
+                    jsbarcode-textmargin="1"
+                    jsbarcode-fontsize="10"
+                    jsbarcode-fontoptions="bold"
+                    jsbarcode-text=${getGenerateId()}
+                    jsbarcode-value=${getGenerateId()}
+            ></svg>
+        </div>
+        `);
+        JsBarcode(`#barcode_1`).init();
 
-    //if any custom data added to svg
-    //those are will not be visible
-    //so appending again completely
-    if(custom_data){
-        let barcodes_data = $('#barcode_1').parent().parent().html();
-        $('#barcodes-list').empty();
-        $('#barcodes-list').html(barcodes_data);
+        $(`#barcode_1 g`).attr('transform', 'translate(10, 4)');
+        $(`#barcode_1`).append(`
+            <g class="custom_data">
+                <line x1="0" y1="38" x2="100%" y2="38" stroke="black"></line>
+                <text style="font: 7px Arial; font-weight:600" x="5" y="45">${currentDate}${data.shortcode}${currentItemNumber}-${data.no_of_items}</text>
+            </g>
+        `);
+    }else{
+        for(let i=1; i<=parseInt(data.no_of_items); i++){ 
+            let barcode_value = `${currentDate}${data.shortcode}${currentItemNumber}`;
+            barcodes.push(barcode_value);
+            
+            $('#barcodes-list').append(
+            `<div class="barcode"><svg id="barcode_${i}"
+            jsbarcode-width="1"
+            jsbarcode-height="20"
+            jsbarcode-textmargin="1"
+            jsbarcode-fontsize="10"
+            jsbarcode-fontoptions="bold"
+            jsbarcode-text=${barcode_value}-${data.retailer_cost}
+            jsbarcode-value=${barcode_value}
+            >
+            </svg></div>`);
+            
+            JsBarcode(`#barcode_${i}`).init();
+
+            //add Custom Data
+            if(custom_data){
+                $(`#barcode_${i} g`).attr('transform', 'translate(10, 4)');
+                $(`#barcode_${i}`).append(`
+                    <g class="custom_data">
+                        <line x1="0" y1="38" x2="100%" y2="38" stroke="black"></line>
+                        <text style="font: 7px Arial; font-weight:600" x="5" y="45">${custom_data}</text>
+                    </g>
+                `);
+            }
+            
+            currentItemNumber++;
+        }
+
+        //if any custom data added to svg
+        //those are will not be visible
+        //so appending again completely
+        if(custom_data){
+            let barcodes_data = $('#barcode_1').parent().parent().html();
+            $('#barcodes-list').empty();
+            $('#barcodes-list').html(barcodes_data);
+        }
     }
+}
+
+function getGenerateId(isNew){
+    if(isNew){
+        GenerateId = getCurrentDate("dmt");
+    }
+    
+    return GenerateId;
+}
+
+function getIsCottonEntry(){
+    return dropdown_is_cotton.dropdown('get value') == "yes" ? 1 : 0;
 }
 
 function getCustomData(){
@@ -568,6 +618,7 @@ function changeFieldsState(shouldDisable = true){
 		field_wholesale_cost.parent().addClass('disabled');
 		field_current_item_no.parent().addClass('disabled');
 		field_no_of_items.parent().addClass('disabled');
+        dropdown_is_cotton.parent().addClass("disabled")
 
         mrp_field.parent().addClass('disabled');
         calendar_manufactured_date.addClass('disabled');
@@ -584,6 +635,7 @@ function changeFieldsState(shouldDisable = true){
 		field_wholesale_cost.parent().removeClass('disabled');
 		field_current_item_no.parent().removeClass('disabled');
 		field_no_of_items.parent().removeClass('disabled');
+        dropdown_is_cotton.parent().removeClass('disabled');
 
         mrp_field.parent().removeClass('disabled');
         calendar_manufactured_date.removeClass('disabled');

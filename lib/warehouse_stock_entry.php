@@ -40,7 +40,8 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 													"making_cost",
 													"retailer_cost",
 													"wholesale_cost",
-													"custom_data"
+													"custom_data",
+													"is_cotton"
 												);
 							$query_values =		array(
 													$fields_data['data']['generate_id'],
@@ -54,7 +55,8 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 													$fields_data['data']['making_cost'],
 													$fields_data['data']['retailer_cost'],
 													$fields_data['data']['wholesale_cost'],
-													$fields_data['data']['custom_data']
+													$fields_data['data']['custom_data'],
+													$fields_data['data']['is_cotton']
 												);
 
 												
