@@ -559,6 +559,10 @@ td i{
     display: block;
 }
 
+.w-25percentage{
+    width: 25%;
+}
+
 .s-200px{
     width: 200px !important;
     height: 200px !important;
