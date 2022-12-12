@@ -446,6 +446,25 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['info'] .= $select_result['info'];
                 $return['additional_info'] .= $select_result['additional_info'];
             }
+        }else if($action == "tracking_id"){
+
+            $query_type = "select";
+            //$query_table defined earlier
+            $query_columns = array("item", "tracking_id");
+            $query_where = array('shortcode=' . $_GET['data']);
+
+            $select_query = get_query($query_type, $query_table, $query_columns, $query_where);
+            $return['query'] = $select_query['query'];
+
+            $select_result = select_query($select_query);
+
+            header('Content-Type: text/html');
+            if(count($select_result['additional_data'])){
+                echo $select_result['additional_data'][0]['tracking_id'];
+            }else{
+                echo '';
+            }
+            exit;
         }else{
             $return['info'] .= "action: $action does not exist";
         }
