@@ -24,7 +24,7 @@ define("UPLOADS_DIR", "/" . UPLOADS_DIRNAME);
 
 define("HOST_BASE_API", "http://localhost/ambati_sms/v2");
 define("LIB_BASE_API", HOST_BASE_API . "/lib");
-define("REMOTE_SERVER_API_ENDPOINT", "https://ambatitastyfoods.com/lib");
+define("REMOTE_SERVER_API_ENDPOINT", "https://ambatitastyfoods.com/v2/lib");
 define("REMOTE_SERVER_ITEMS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/items.php");
 define("REMOTE_SERVER_CUSTOMERS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/customers.php");
 define("REMOTE_SERVER_ORDERS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/orders.php");
