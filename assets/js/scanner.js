@@ -62,6 +62,14 @@ $(function(){
                     return sale_item;
                 }else if(_action == "remove"){
                     let stock_item = this.data.find(item => item.barcode == _barcode);
+                    if(!stock_item){
+                        if(_barcode.length == 14 && this.cottonScanning){
+                            //it would be generate id
+                            //so let's check
+                            stock_item = this.data.find(item => item.generate_id == _barcode);
+                            if(stock_item) _barcode = stock_item.barcode;
+                        }
+                    }
                     if(stock_item){
                         let removed_data = this.data.filter(item => item.barcode != _barcode);
                         if((this.data.length == (removed_data.length + 1))){
@@ -130,7 +138,8 @@ $(function(){
         update_summary: update_summary,
         update_billing: update_billing,
         isItemExist: isItemExist,
-        includeMakingCostInSummary: false
+        includeMakingCostInSummary: false,
+        cottonScanning: false
     }
 
     sale_obj_methods = {
@@ -496,7 +505,11 @@ function isItemExist(_barcode, _show_message = true, _searchBarcode = true){
     
     let is_item_exist = false;
     if(_searchBarcode){
-        is_item_exist = this.data.find(item => item.barcode == _barcode);   
+        is_item_exist = this.data.find(item => item.barcode == _barcode);
+        if(!is_item_exist && this.cottonScanning){
+            //since cotton scan enabled it could be generate_id
+            is_item_exist = this.data.find(item => item.generate_id == _barcode);
+        }
     }else{
         is_item_exist = this.summary.find(item => item.shortcode == _barcode);   
     }
