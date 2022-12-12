@@ -339,6 +339,8 @@ function initValues(){
     stock_data = {...stock_data, ...stock_obj_methods};
     sale_data = {...sale_data, ...sale_obj_methods};
 
+    stock_data.cottonScanning = true;
+
     sale_data.data_table = table_scanned_list;
     sale_data.summary_table = table_scanned_summary;
     sale_data.includeMakingCostInSummary = true;
@@ -357,6 +359,8 @@ function initValues(){
             if(action == "remove"){
                 let item = stock_data.isItemExist(barcode, false);
                 if(item){
+                    barcode = item.barcode; //if the cotton scanned
+
                     let shortcode = item.shortcode;
                     let isExistInOrderSummary = order_summary_after.isItemExist(shortcode, false, false);
                     if(isExistInOrderSummary){
