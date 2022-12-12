@@ -364,6 +364,7 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "item_number";
 			$columns[]  = "barcode";
 			$columns[]  = "custom_data";
+			$columns[]  = "is_cotton";
 			return $columns;
 		break;
 		
