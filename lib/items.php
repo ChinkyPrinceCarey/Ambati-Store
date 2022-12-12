@@ -327,7 +327,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $query_text = 
             "
             SELECT 
-                `items`.`material`, `items`.`item`, `items`.`shortcode`, `items`.`unit`, `items`.`type`, 
+                `items`.`material`, `items`.`item`, `items`.`shortcode`, `items`.`unit`, `items`.`type`, `items`.`tracking_id`,  
                 `stock_and_stock_nouse`.`making_cost`, `stock_and_stock_nouse`.`retailer_cost`, `stock_and_stock_nouse`.`wholesale_cost`, `stock_and_stock_nouse`.`item_number`, `stock_and_stock_nouse`.`date`
             FROM `items`
 

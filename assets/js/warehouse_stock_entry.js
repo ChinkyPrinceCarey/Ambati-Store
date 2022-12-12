@@ -21,6 +21,7 @@ let dropdown_weight;
 
 let field_current_item_no;
 let field_no_of_items;
+let tracking_id;
 let dropdown_is_cotton;
 
 let selected_type;
@@ -75,6 +76,7 @@ $(function(){
     
     field_current_item_no = $('input[name=current_item_no]');
     field_no_of_items = $('input[name=no_of_items]');
+    tracking_id = $('input[name=tracking_id]');
     dropdown_is_cotton = $('select[name=is_cotton_entry]');
 	
 	generate_stock_btn = $('#generate_stock_btn');
@@ -335,7 +337,9 @@ $(function(){
                         //console.log(response.data);
                         smallModal(
                             "Stock Added Successfully", 
-                            `${field_no_of_items.val()} stock items of ${selected_item_name}[${selected_item_shortcode}] are added successfully, click on print to print labels or notedown generated_id to print labels later</br><h2>GENERATED_ID: <b>${data_param.generate_id}</b></h2>`, 
+                            `${field_no_of_items.val()} stock items of ${selected_item_name}[${selected_item_shortcode}] are added successfully, click on print to print labels or notedown generated_id to print labels later
+                            ${tracking_id.val() ? '</br><h3>TRACKING_ID: <b>'+ tracking_id.val() +'</b></h3>' : ''}
+                            <h2>GENERATED_ID: <b>${data_param.generate_id}</b></h2>`, 
                             [
                                 {
                                     "node": "button",
@@ -584,6 +588,7 @@ function validateGenerateStockFields(obj){
                 property == "mrp"
             ||  property == "mfg"
             ||  property == "weight"
+            ||  property == "tracking_id"
         )
         && (!obj[property])
         ){
@@ -815,6 +820,8 @@ function populateFields(item_data){
         }else{
             field_current_item_no.val('').val(1);
         }
+
+        tracking_id.val('').val(item_data.tracking_id);
     }else{
         smallModal(
             "Error Getting Item Data", 
