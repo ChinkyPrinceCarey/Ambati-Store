@@ -221,26 +221,25 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['info'] .= "invalid data " . $fields_data['info'];
             }
         }elseif($action == "fetch_all"){
-            $fetched_all_records = null;
-            if($_SERVER['HTTP_HOST'] == "localhost"){
-                $fetched_all_records = curl_request(REMOTE_SERVER_ORDERS_API_ENDPOINT, $_POST);
-				if($fetched_all_records['result']){
-                    if($fetched_all_records['data']['result']){
-                        $return['result'] = true;
-                        $return['data'] = $fetched_all_records['data']['data'];
-                    }else{
-                        $return['info'] .= $fetched_all_records['data']['info'];
-                    }
-                }else{
-                    $return['data'] = array();
-                    $return['info'] .= $fetched_all_records['info'];
-                    $return['additional_info'] .= $fetched_all_records['additional_info'];
-                }
+            $extra_columns = array("no_of_items", "no_of_units", "making_cost", "sub_total", "total_price", "offer_percentage", "offer_amount", "is_confirmed", "is_paid");
+            
+            $start = array_key_exists('start', $_POST['data']) ? $_POST['data']['start'] . " 00:00:00" : null;
+            $end = array_key_exists('end', $_POST['data']) ? $_POST['data']['end'] . " 23:59:59" : null;
+
+            $where_clause = array("is_cancelled=0");
+            if($start && $end){
+                $where_clause = "`is_cancelled` = 0 AND `date` BETWEEN '$start' AND '$end' ORDER BY `date` DESC";
+            }
+
+            $fetched_all_records = fetchRecord($query_table, $extra_columns, $where_clause);
+            $return['fetched_all_records'] = $fetched_all_records;
+            if($fetched_all_records['result']){
+                $return['result'] = true;
+                $return['data'] = $fetched_all_records['data'];
             }else{
-                $extra_columns = array("no_of_items", "no_of_units", "making_cost", "sub_total", "total_price", "offer_percentage", "offer_amount", "is_confirmed", "is_paid");
-                $where_clause = array("is_cancelled=0");
-                $fetched_all_records = fetchRecord($query_table, $extra_columns, $where_clause);
-				$return = $fetched_all_records;
+                $return['data'] = array();
+                $return['info'] .= $fetched_all_records['info'];
+                $return['additional_info'] .= $fetched_all_records['additional_info'];
             }
         }elseif($action == "fetch_order"){
             $order_id = $_POST['data'];
