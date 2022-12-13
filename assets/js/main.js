@@ -271,6 +271,41 @@ function printLabels(callback){
 	}, 2000);
 }
 
+function invoicePrint(type, hideTracking, callback){
+    let myFrame = $("#myframe")
+    myFrame = myFrame.contents();
+
+    if(type != "preparation_print"){
+        let containers = myFrame.find(`
+                            #company-address,
+                            #footer,
+                            #support-contact
+                        `);
+        containers.removeClass("d-none");
+        
+        if(hideTracking){
+            myFrame.find(`table`).removeClass("hide-tracking");
+        }
+
+        myFrame.find(`#invoice-type`).addClass("d-none");
+    }
+
+    myFrame.find(`#order_id`).text(input_order_id.val());
+    myFrame.find(`#name`).text(input_name.val());
+    myFrame.find(`#mobile_number`).text(input_mobile_number.val());
+    myFrame.find(`#address`).text(input_address.val());
+
+    let myFrame_itemsDetails = myFrame.contents().find('#item-details');
+    let itemsDetails = $("#order-summary-after").parent().html();
+    
+    myFrame_itemsDetails.html(itemsDetails);
+
+    setTimeout(function(){
+        document.getElementById('myframe').contentWindow.print();
+        callback(true);
+    }, 2000);
+}
+
 function printInvoice(table_selector_, invoice_type_, response_data_, callback){
     console.log('printInvoice');
 	

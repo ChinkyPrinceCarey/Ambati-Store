@@ -10,6 +10,8 @@ let input_mobile_number;
 let input_address;
 
 let save_details_btn;
+let preparation_print_btn;
+let invoice_print_btn;
 let edit_details_btn;
 let sale_stock_btn;
 
@@ -49,6 +51,8 @@ $(function(){
     input_address = $("#address");
     
     save_details_btn = $("#save_details_btn");
+    preparation_print_btn = $("#preparation_print_btn");
+    invoice_print_btn = $("#invoice_print_btn");
     edit_details_btn = $("#edit_details_btn");
     sale_stock_btn = $("#sale_stock_btn");
 
@@ -122,13 +126,33 @@ $(function(){
                         initOrder();
                         order_fields.show();
                         save_details_btn.show();
+                        preparation_print_btn.show();
+                        invoice_print_btn.hide();
 
                         scanner_state.reason = "Order Data Parsed Successfully, however Order not saved yet!";
                     }else{
                         scanner_state.reason = "Order is already confirmed!";
 
-                        modal_title = "Fetching Order";
-                        modal_body = scanner_state.reason;
+                        order_details = JSON.parse(JSON.stringify(order_data));
+                        delete order_details.items_details;
+
+                        input_order_id.val(order_details.order_id);
+                        input_username.val(order_details.username);
+                        input_name.val(order_details.name);
+                        input_mobile_number.val(order_details.mobile_number);
+                        input_address.val(order_details.address);
+                        
+                        order_summary_before = JSON.parse(JSON.stringify(order_data.items_details));
+                        order_summary_after = JSON.parse(JSON.stringify(order_data.items_details));
+
+                        initOrder();
+                        order_fields.show();
+                        save_details_btn.hide();
+                        preparation_print_btn.hide();
+                        invoice_print_btn.show();
+
+                        //modal_title = "Fetching Order";
+                        //modal_body = scanner_state.reason;
                     }
                 }
             }else{
@@ -189,6 +213,8 @@ $(function(){
         scanner_state.reason = 'Order parsed and details are saved';
 
         save_details_btn.hide();
+        preparation_print_btn.hide();
+        invoice_print_btn.hide();
 
         search_order_btn.hide();
 
@@ -287,6 +313,26 @@ $(function(){
         }
         */
     });
+
+    preparation_print_btn.on('click', function(){
+        console.log('printInvoice');
+        preparation_print_btn.addClass("loading");
+        invoicePrint("preparation_print", true, function(isCompleted){
+            if(isCompleted){
+                preparation_print_btn.removeClass("loading");
+            }
+        });
+    });
+
+    invoice_print_btn.on('click', function(){
+        console.log('printInvoice');
+        invoice_print_btn.addClass("loading");
+        invoicePrint("delivery_print", true, function(isCompleted){
+            if(isCompleted){
+                invoice_print_btn.removeClass("loading");
+            }
+        });
+    });
 });
 
 function resetData(){
@@ -302,6 +348,8 @@ function resetData(){
     search_order_btn.show();
 
     save_details_btn.hide();
+    preparation_print_btn.hide();
+    invoice_print_btn.hide();
     edit_details_btn.hide();
     sale_stock_btn.hide();
 
@@ -487,13 +535,8 @@ function sale_items(){
                 [
                     {
                         "class": "ui approve medium violet button",
-                        "id": "printInvoiceSummaryBtn",
-                        "text": "Print Invoice Summary",
-                    },
-                    {
-                        "class": "ui approve pink button",
-                        "id": "printInvoiceListBtn",
-                        "text": "Print Invoice List",
+                        "id": "printInvoiceBtn",
+                        "text": "Print Invoice",
                     },
                     {
                         "class": "ui negative deny button",
@@ -505,17 +548,14 @@ function sale_items(){
                     closable: false,
                     onApprove: function(e){
                         let buttonId = e.attr('id');
-                        if(buttonId == "printInvoiceSummaryBtn"){
-                            $("#printInvoiceSummaryBtn").addClass("loading");
-                            printInvoice($("#sale-summary").parent(), "summary", response, function(isCompleted){
-                                $("#printInvoiceSummaryBtn").removeClass("loading");
+                        if(buttonId == "printInvoiceBtn"){
+                            $("#printInvoiceBtn").addClass("loading");
+                            invoicePrint("delivery_print", true, function(isCompleted){
+                                if(isCompleted){
+                                    $("#printInvoiceBtn").removeClass("loading");
+                                }
                             });
-                        }else if(buttonId == "printInvoiceListBtn"){
-                            $("#printInvoiceListBtn").addClass("loading");
-                            printInvoice($("#sale-list").parent(), "list", response, function(isCompleted){
-                                $("#printInvoiceListBtn").removeClass("loading");
-                            });
-                        }else{}
+                        }
                         return false;
                     },
                     onDeny: function(){
@@ -564,6 +604,58 @@ function clearTables(){
     tables.children('tfoot').children("tr").children("#total").text('');
 }
 
+function initTrackingId(){
+    let itemsShortcode = [];
+    table_order_summary_before.children("tbody").children("tr").each(function(){
+        itemsShortcode.push($(this).data("shortcode"));
+    });
+
+    if(itemsShortcode.length){
+        data_param = {
+            action: "fetch_tracking_id",
+            data: itemsShortcode
+        }
+    
+        ajaxPostCall('lib/items.php', data_param, function(response){
+            let modal_body; let modal_title = "Parsing Error";
+            if(response.status){
+                modal_body = response.status + ": " + response.statusText;
+            }else if(response.title){
+                modal_title = response.title;
+                modal_body = response.content;
+            }else if(response.result){
+                response.data.forEach(element => {
+                   $(`tr[data-shortcode='${element.shortcode}']`)
+                   .find("td.tracking_id")
+                   .text(element.tracking_id);
+                });
+            }else{
+                modal_body = response.info;
+            }
+    
+            if(modal_body){
+                smallModal(
+                    modal_title, 
+                    modal_body, 
+                    [
+                        {
+                            "class": "ui positive approve button",
+                            "id": "",
+                            "text": "Okay",
+                        }
+                    ], 
+                    {
+                        closable: false,
+                        onApprove: function(){
+                            return true;
+                        }
+                    }
+                );
+            }
+        });
+    }
+}
+
 function initOrder(){
   $("#order_summary_after").addClass("loading");
   $("#order_summary_before").addClass("loading");
@@ -575,12 +667,13 @@ function initOrder(){
     table_order_summary_after
       .children("tbody")
       .append(`
-          <tr data-item="${item.shortcode}_${item.unit_price}">
+          <tr data-item="${item.shortcode}_${item.unit_price}" data-shortcode="${item.shortcode}">
               <td class="slno collapsing"></td>
               <td class="item_shortcode">${item.item}[${item.shortcode}]</td>
               <td class="quantity right aligned collapsing">${item.quantity}</td>
               <td class="unit_price right aligned collapsing">${item.unit_price}</td>
               <td class="total_price right aligned collapsing">${item.total_price}</td>
+              <td class="tracking_id right aligned collapsing loading"></td>
           </tr>
       `)
   }
@@ -594,4 +687,6 @@ function initOrder(){
   $("#order_summary_after").removeClass("loading");
   $("#order_summary_before").removeClass("loading");
   search_form.removeClass("loading");
+
+  initTrackingId();
 }

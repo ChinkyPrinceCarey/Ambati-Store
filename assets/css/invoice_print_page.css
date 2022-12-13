@@ -1,0 +1,91 @@
+@page{
+	size: 80mm 210mm;
+	margin: 0;
+}
+
+*,
+*::before,
+*::after{
+  margin: 0;
+  padding: 0;
+}
+
+html, body{
+	width: 80mm;
+	margin: 0;
+	height: auto;
+	background: aquamarine;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bolder;
+}
+
+body{
+  border: 1px solid;
+  padding: 3px;
+  border: none;
+}
+
+/* begin: Ascending Serial Counter */
+table.asc-serial-counter{
+  counter-reset: AscendingSerial;
+}
+
+table.asc-serial-counter tbody tr td:first-child:before{
+  counter-increment: AscendingSerial;
+  content: counter(AscendingSerial);
+}
+/* end: Ascending Serial Counter */
+
+#header,
+#footer,
+#invoice-type{
+  text-align: center;
+}
+
+hr{
+  border: 1px dashed;
+  margin: 15px 0px;
+}
+
+#order-details{
+  word-wrap: break-word;
+}
+
+#item-details{
+  font-size: 14px;
+  word-wrap: anywhere;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+table thead,
+table tfoot{
+  display:table-row-group;
+}
+
+table tr{
+  page-break-inside: avoid;
+}
+
+.d-none{
+  display: none;
+}
+
+#header,
+#invoice-type,
+#order-details,
+#item-details,
+#footer,
+#support-contact{
+  border-top: 1px dashed;
+  border-bottom: 1px dashed;
+  padding: 5px 0;
+}
+
+table.hide-tracking th:last-child,
+table.hide-tracking td:last-child{
+  display: none;
+}

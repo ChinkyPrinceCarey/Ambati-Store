@@ -124,6 +124,14 @@
                         <i class="save icon large"></i>
                         SAVE ORDER
                     </button>
+                    <button type="button" class="ui green labeled icon button" id="preparation_print_btn">
+                        <i class="print icon large"></i>
+                        PREPARATION PRINT
+                    </button>
+                    <button type="button" class="ui green labeled icon button" id="invoice_print_btn">
+                        <i class="print icon large"></i>
+                        INVOICE PRINT
+                    </button>
                     <button type="button" class="ui pink labeled icon button" id="edit_details_btn">
                         <i class="edit icon large"></i>
                         EDIT ORDER
@@ -242,6 +250,7 @@
                               <th>Quantity</th>
                               <th>Unit Price</th>
                               <th>Total Price</th>
+                              <th>Tracking Id</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -250,21 +259,25 @@
                                 <th></th>
                                 <th class="right aligned" colspan="3">Sub Total</th>
                                 <th id="sub_total" class="right aligned">0</th>
+                                <th></th>
                             </tr>
                             <tr>
                                 <th></th>
                                 <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
                                 <th id="tax" class="right aligned">0</th>
+                                <th></th>
                             </tr>
                             <tr>
                                 <th></th>
                                 <th class="right aligned" colspan="3">Total</th>
                                 <th id="total" class="right aligned">0</th>
+                                <th></th>
                             </tr>
                             <tr>
                                 <th></th>
                                 <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
                                 <th id="offer_amount" class="right aligned">0</th>
+                                <th></th>
                             </tr>
                         </tfoot>
                     </table>
@@ -286,6 +299,7 @@
                               <th>Quantity</th>
                               <th>Unit Price</th>
                               <th>Total Price</th>
+                              <th>Tracking Id</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -318,7 +332,7 @@
 
 	</main>
 	
-	<iframe class="my-iframe d-none" id="myframe" src="invoice_sample.html" onload="iframeLoaded()"></iframe>
+	<iframe class="my-iframe d-none" id="myframe" src="sample_print_preparation_invoice.html" onload="iframeLoaded()"></iframe>
 
     <footer>
         <div class="copyright">
