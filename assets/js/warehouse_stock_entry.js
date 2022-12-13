@@ -478,6 +478,9 @@ function generateBarcodes(data){
 	barcodes = [];
 
     if(getIsCottonEntry()){
+        let barcodeText = getGenerateId();
+        if(tracking_id.val()) barcodeText += ` | ${tracking_id.val()}`
+
         for(let i=1; i<=parseInt(data.no_of_items); i++){ 
             let barcode_value = `${currentDate}${data.shortcode}${currentItemNumber}`;
             barcodes.push(barcode_value);
@@ -492,7 +495,7 @@ function generateBarcodes(data){
                     jsbarcode-textmargin="1"
                     jsbarcode-fontsize="10"
                     jsbarcode-fontoptions="bold"
-                    jsbarcode-text=${getGenerateId()}
+                    jsbarcode-text=${barcodeText}
                     jsbarcode-value=${getGenerateId()}
             ></svg>
         </div>
@@ -508,6 +511,8 @@ function generateBarcodes(data){
             </g>
         `);
     }else{
+        let barcodeTrackText = "";
+        if(tracking_id.val()) barcodeTrackText = `|${tracking_id.val()}`;
         for(let i=1; i<=parseInt(data.no_of_items); i++){ 
             let barcode_value = `${currentDate}${data.shortcode}${currentItemNumber}`;
             barcodes.push(barcode_value);
@@ -519,7 +524,7 @@ function generateBarcodes(data){
             jsbarcode-textmargin="1"
             jsbarcode-fontsize="10"
             jsbarcode-fontoptions="bold"
-            jsbarcode-text=${barcode_value}-${data.retailer_cost}
+            jsbarcode-text=${barcode_value}-${data.retailer_cost}${barcodeTrackText}
             jsbarcode-value=${barcode_value}
             >
             </svg></div>`);
