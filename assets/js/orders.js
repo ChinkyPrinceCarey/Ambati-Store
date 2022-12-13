@@ -100,7 +100,7 @@ $(function(){
             ]
         },
         "ajax": {
-            "url": API_ENDPOINT + "lib/orders.php",
+            "url": "lib/orders.php",
             "type": "POST",
             "data": function(d){
                 d.action = "fetch_all";
