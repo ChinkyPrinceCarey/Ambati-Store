@@ -396,6 +396,30 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             }else{
                 $return['info'] .= "error image upload";
             }
+        }elseif($action == "fetch_tracking_id"){
+            $data = $_POST['data'];
+            $dataStr = "('" . implode ("', '", $data) . "')";
+
+            $query_type = "select";
+            //$query_table defined earlier
+            $query_columns = array("shortcode", "tracking_id");
+            $query_where = "`shortcode` IN $dataStr";
+            
+            $select_query = get_query($query_type, $query_table, $query_columns, $query_where);
+            $return['query'] = $select_query['query'];
+
+            $select_result = select_query($select_query);
+
+            if($select_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "fetched all records ";
+                $return['data'] = $select_result['additional_data'];
+            }else{
+                $return['result'] = false;
+                $return['data'] = array();
+                $return['info'] = $select_result;
+                //$return['additional_info'] .= $select_result['additional_info'];
+            }
         }else{
             $return['info'] .= "action: $action does not exist";
         }
