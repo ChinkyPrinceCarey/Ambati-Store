@@ -120,6 +120,14 @@
                     </div>
                     <div class="two fields">
                         <div class="field">
+                            <label>Cotton Entry</label>
+                            <select name="is_cotton_entry" class="ui search dropdown is-cotton-field">
+                                <option value=""></option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="field">
                             <label>Quantity</label>
                             <input type="number" name="quantity" placeholder="Quantity" required>
                         </div>
@@ -171,18 +179,11 @@
                             <input type="text" name="current_item_no" placeholder="Current Item No.#" tabindex="-1" readonly required>
                         </div>
                         <div class="field">
-                            <label>No.of Items</label>
-                            <input type="number" name="no_of_items" placeholder="No.of Items" required>
+                            <label>No.of Barcodes</label>
+                            <input type="number" name="no_of_barcodes" placeholder="No.of Barcodes" required>
                         </div>
                     </div>
                     <div class="two fields">
-                        <div class="field">
-                            <label>Cotton Entry</label>
-                            <select name="is_cotton_entry" class="ui search dropdown is-cotton-field" required>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                            </select>
-                        </div>
                         <div class="field disabled opacity-1">
                             <label>Tracking Id</label>
                             <input type="text" name="tracking_id" placeholder="Tracking Id...">

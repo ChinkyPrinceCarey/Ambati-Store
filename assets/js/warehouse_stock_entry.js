@@ -20,7 +20,7 @@ let input_weight;
 let dropdown_weight;
 
 let field_current_item_no;
-let field_no_of_items;
+let field_no_of_barcodes;
 let tracking_id;
 let dropdown_is_cotton;
 
@@ -34,7 +34,7 @@ let generate_stock_btn;
 let edit_stock_btn;
 let add_stock_btn;
 
-let GenerateId;
+let GenerateId = [];
 
 let inProcess;
 
@@ -75,9 +75,9 @@ $(function(){
     dropdown_weight = field_weight.children("div").children(".ui.dropdown");
     
     field_current_item_no = $('input[name=current_item_no]');
-    field_no_of_items = $('input[name=no_of_items]');
+    field_no_of_barcodes = $('input[name=no_of_barcodes]');
     tracking_id = $('input[name=tracking_id]');
-    dropdown_is_cotton = $('select[name=is_cotton_entry]');
+    dropdown_is_cotton = $('.dropdown.is-cotton-field');
 	
 	generate_stock_btn = $('#generate_stock_btn');
 	
@@ -91,6 +91,9 @@ $(function(){
         onChange: materialOnChange
         }
     );
+
+    jQuery('.dropdown.is-cotton-field').dropdown('setting','onChange', dropdownIsCottonChange);
+    dropdownIsCottonChange("no"); //this will hide quantity by default
 
     //input_manufactured_date.val(getCurrentDate("d/m/y")); //not required
 
@@ -237,10 +240,7 @@ $(function(){
 			console.log(event, fields);
 			
 			if(validateGenerateStockFields(fields)){
-                //generate new generateId
-                getGenerateId(true);
-
-				//lock the fields
+                //lock the fields
 				changeFieldsState();
 				
 				//hide generate stock btn
@@ -302,14 +302,18 @@ $(function(){
 						}
 					}
 			);
-		}else if(parseInt(field_no_of_items.val()) == barcodes.length){
+		}else if(
+            getIsCottonEntry() ? 
+                (parseInt(field_quantity.val()) * parseInt(field_no_of_barcodes.val()) == barcodes.length) : 
+                (parseInt(field_no_of_barcodes.val()) == barcodes.length)
+        ){
 			if(typeof inProcess == "undefined"){
                 inProcess = true;
                 data_param = {
                     action: "stock_entry",
                     data: "random_data",
                     date: getCurrentDate(),
-                    generate_id: getGenerateId(),
+                    generate_id: GENERATEID("all"),
                     material: dropdown_material.dropdown('get value'),
                     type: selected_type,
                     item: selected_item_name,
@@ -337,7 +341,7 @@ $(function(){
                         //console.log(response.data);
                         smallModal(
                             "Stock Added Successfully", 
-                            `${field_no_of_items.val()} stock items of ${selected_item_name}[${selected_item_shortcode}] are added successfully, click on print to print labels or notedown generated_id to print labels later
+                            `${field_no_of_barcodes.val()} stock items of ${selected_item_name}[${selected_item_shortcode}] are added successfully, click on print to print labels or notedown generated_id to print labels later
                             ${tracking_id.val() ? '</br><h3>TRACKING_ID: <b>'+ tracking_id.val() +'</b></h3>' : ''}
                             <h2>GENERATED_ID: <b>${data_param.generate_id}</b></h2>`, 
                             [
@@ -403,7 +407,7 @@ $(function(){
 		}else{
 			smallModal(
             "Something is wrong", 
-            `No# of Items(${field_no_of_items}) and No# of Barcodes(${barcodes.length}) are not equal</br>Reload the Page`, 
+            `No# of Items(${field_no_of_barcodes}) and No# of Barcodes(${barcodes.length}) are not equal</br>Reload the Page`, 
             [
                 {
                     "class": "ui positive approve button",
@@ -463,57 +467,108 @@ function loadMaterial(){
     });
 }
 
+function wait(ms){
+    var start = new Date().getTime();
+    var end = start;
+    while(end < start + ms) {
+      end = new Date().getTime();
+   }
+ }
+
+function GENERATEID(){  
+    if(arguments.length){
+      if(typeof arguments[0] == "string"){
+        switch(arguments[0]){
+            case 'new':
+                wait(1000);
+                let newGenerateId = getCurrentDate("dmt");
+                GenerateId.push(newGenerateId);
+                return newGenerateId;
+
+            case 'first':
+            return GenerateId[0];
+
+            case 'last':
+            return GenerateId[GenerateId.length - 1];
+
+            case 'all':
+            return GenerateId;
+
+            case 'value':
+                if(arguments[1]){
+                    return GenerateId[arguments[1]];
+                }
+            return undefined;
+        }
+      }
+    }else{
+        return undefined;
+    }
+}
+
 function generateBarcodes(data){
 	//append a svg element with id
 	//then generate barcode to it
 	
 	//console.log(data);
-	//console.log(data.no_of_items);
+	//console.log(data.no_of_barcodes);
 	
 	let currentItemNumber = parseInt(field_current_item_no.val());
     let currentDate = getCurrentDate('dm');
     let custom_data = getCustomData();
+
+    data.no_of_barcodes = parseInt(data.no_of_barcodes);
+    data.quantity = parseInt(data.quantity);
 	
 	$('#barcodes-list').empty();
 	barcodes = [];
 
     if(getIsCottonEntry()){
-        let barcodeText = getGenerateId();
-        if(tracking_id.val()) barcodeText += ` | ${tracking_id.val()}`
+        for(i=1; i<=data.no_of_barcodes; i++){
+            let thisGenerateId = GENERATEID("new");
+            let barcodeText = thisGenerateId;
+            if(data.tracking_id) barcodeText += ` | ${data.tracking_id}`
 
-        for(let i=1; i<=parseInt(data.no_of_items); i++){ 
-            let barcode_value = `${currentDate}${data.shortcode}${currentItemNumber}`;
-            barcodes.push(barcode_value);
+            for(let j=1; j<=data.quantity; j++){ 
+                let barcode_value = `${currentDate}${data.shortcode}${currentItemNumber}`;
+                let obj = {generate_id: thisGenerateId, barcode: barcode_value }
+                barcodes.push(obj);
 
-            currentItemNumber++;
+                currentItemNumber++;
+            }
+            $('#barcodes-list').append(`
+            <div class="barcode">
+                <svg    id="barcode_${i}"
+                        jsbarcode-width="1"
+                        jsbarcode-height="20"
+                        jsbarcode-textmargin="1"
+                        jsbarcode-fontsize="10"
+                        jsbarcode-fontoptions="bold"
+                        jsbarcode-text=${barcodeText}
+                        jsbarcode-value=${thisGenerateId}
+                ></svg>
+            </div>
+            `);
+            JsBarcode(`#barcode_${i}`).init();
+
+            //adding custom data
+            $(`#barcode_${i} g`).attr('transform', 'translate(10, 4)');
+            $(`#barcode_${i}`).append(`
+                <g class="custom_data">
+                    <line x1="0" y1="38" x2="100%" y2="38" stroke="black"></line>
+                    <text style="font: 7px Arial; font-weight:600" x="5" y="45">${currentDate}${data.shortcode}${currentItemNumber}-${currentItemNumber + data.quantity}</text>
+                </g>
+            `);   
         }
-        $('#barcodes-list').append(`
-        <div class="barcode">
-            <svg    id="barcode_1"
-                    jsbarcode-width="1"
-                    jsbarcode-height="20"
-                    jsbarcode-textmargin="1"
-                    jsbarcode-fontsize="10"
-                    jsbarcode-fontoptions="bold"
-                    jsbarcode-text=${barcodeText}
-                    jsbarcode-value=${getGenerateId()}
-            ></svg>
-        </div>
-        `);
-        JsBarcode(`#barcode_1`).init();
-
-        //adding custom data
-        $(`#barcode_1 g`).attr('transform', 'translate(10, 4)');
-        $(`#barcode_1`).append(`
-            <g class="custom_data">
-                <line x1="0" y1="38" x2="100%" y2="38" stroke="black"></line>
-                <text style="font: 7px Arial; font-weight:600" x="5" y="45">${currentDate}${data.shortcode}${currentItemNumber}-${data.no_of_items}</text>
-            </g>
-        `);
     }else{
+        GENERATEID("new");
+        
+        data.no_of_barcodes = parseInt(data.no_of_barcodes);
+        
         let barcodeTrackText = "";
-        if(tracking_id.val()) barcodeTrackText = `|${tracking_id.val()}`;
-        for(let i=1; i<=parseInt(data.no_of_items); i++){ 
+        if(data.tracking_id) barcodeTrackText = `|${data.tracking_id}`;
+        
+        for(let i=1; i<=data.no_of_barcodes; i++){ 
             let barcode_value = `${currentDate}${data.shortcode}${currentItemNumber}`;
             barcodes.push(barcode_value);
             
@@ -554,14 +609,6 @@ function generateBarcodes(data){
         $('#barcodes-list').empty();
         $('#barcodes-list').html(barcodes_data);
     }
-}
-
-function getGenerateId(isNew){
-    if(isNew){
-        GenerateId = getCurrentDate("dmt");
-    }
-    
-    return GenerateId;
 }
 
 function getIsCottonEntry(){
@@ -628,7 +675,7 @@ function changeFieldsState(shouldDisable = true){
 		field_retailer_cost.parent().addClass('disabled');
 		field_wholesale_cost.parent().addClass('disabled');
 		field_current_item_no.parent().addClass('disabled');
-		field_no_of_items.parent().addClass('disabled');
+		field_no_of_barcodes.parent().addClass('disabled');
         dropdown_is_cotton.parent().addClass("disabled")
 
         mrp_field.parent().addClass('disabled');
@@ -645,7 +692,7 @@ function changeFieldsState(shouldDisable = true){
 		field_retailer_cost.parent().removeClass('disabled');
 		field_wholesale_cost.parent().removeClass('disabled');
 		field_current_item_no.parent().removeClass('disabled');
-		field_no_of_items.parent().removeClass('disabled');
+		field_no_of_barcodes.parent().removeClass('disabled');
         dropdown_is_cotton.parent().removeClass('disabled');
 
         mrp_field.parent().removeClass('disabled');
@@ -663,7 +710,7 @@ function resetFields(){
     field_making_cost.val('')
     field_retailer_cost.val('')
     field_wholesale_cost.val('')
-    field_no_of_items.val('')
+    field_no_of_barcodes.val('')
 }
 
 function adjustFields(materialType){
@@ -699,6 +746,16 @@ function adjustFields(materialType){
         mrp_field.attr('tabindex', -1);
         input_manufactured_date.attr('tabindex', -1)
         input_weight.attr('tabindex', -1)
+    }
+}
+
+function dropdownIsCottonChange(value, text, choice){
+    if(value == "yes"){
+        field_quantity.val('').parent().show();
+        field_no_of_barcodes.siblings().text('No.of Cottons');
+    }else{
+        field_quantity.val('1').parent().hide();
+        field_no_of_barcodes.siblings().text('No.of Items');
     }
 }
 
