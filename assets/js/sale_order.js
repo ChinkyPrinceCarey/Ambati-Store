@@ -4,6 +4,7 @@ let search_form;
 let input_order_id;
 
 let order_fields;
+let input_date;
 let input_username;
 let input_name;
 let input_mobile_number;
@@ -45,6 +46,7 @@ $(function(){
 
     order_fields = $("#order_fields");
 
+    input_date = $("#input_date");
     input_username = $("#username");
     input_name = $("#name");
     input_mobile_number = $("#mobile_number");
@@ -114,6 +116,7 @@ $(function(){
                         order_details = JSON.parse(JSON.stringify(order_data));
                         delete order_details.items_details;
 
+                        input_date.val(order_details.date);
                         input_order_id.val(order_details.order_id);
                         input_username.val(order_details.username);
                         input_name.val(order_details.name);
@@ -136,6 +139,7 @@ $(function(){
                         order_details = JSON.parse(JSON.stringify(order_data));
                         delete order_details.items_details;
 
+                        input_date.val(order_details.date);
                         input_order_id.val(order_details.order_id);
                         input_username.val(order_details.username);
                         input_name.val(order_details.name);
@@ -317,7 +321,7 @@ $(function(){
     preparation_print_btn.on('click', function(){
         console.log('printInvoice');
         preparation_print_btn.addClass("loading");
-        invoicePrint("preparation_print", true, function(isCompleted){
+        invoicePrint("preparation_print", false, function(isCompleted){
             if(isCompleted){
                 preparation_print_btn.removeClass("loading");
             }

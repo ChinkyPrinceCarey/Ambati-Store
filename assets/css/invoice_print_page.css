@@ -36,6 +36,18 @@ table.asc-serial-counter tbody tr td:first-child:before{
 }
 /* end: Ascending Serial Counter */
 
+.brand{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.brand img{
+  height: 30px;
+  margin: 4px 8px;
+}
+
+#shop_code,
 #header,
 #footer,
 #invoice-type{
@@ -85,7 +97,7 @@ table tr{
   padding: 5px 0;
 }
 
-table.hide-tracking th:last-child,
-table.hide-tracking td:last-child{
+.hide-tracking table th:last-child,
+.hide-tracking table td:last-child{
   display: none;
 }

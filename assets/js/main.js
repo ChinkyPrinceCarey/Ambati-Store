@@ -282,14 +282,15 @@ function invoicePrint(type, hideTracking, callback){
                             #support-contact
                         `);
         containers.removeClass("d-none");
-        
-        if(hideTracking){
-            myFrame.find(`table`).removeClass("hide-tracking");
-        }
 
         myFrame.find(`#invoice-type`).addClass("d-none");
     }
 
+    if(hideTracking){
+        myFrame.find(`#item-details`).addClass("hide-tracking");
+    }
+
+    myFrame.find(`#input_date`).text(input_date.val());
     myFrame.find(`#order_id`).text(input_order_id.val());
     myFrame.find(`#name`).text(input_name.val());
     myFrame.find(`#mobile_number`).text(input_mobile_number.val());
