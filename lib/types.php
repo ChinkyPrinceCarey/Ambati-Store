@@ -54,6 +54,10 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                         $return['result'] = true;
                         $return['info'] .= "and fetched record";
                         $return['data'] = $inserted_record['data'];
+                        
+                        type_item_column(
+                            array($return['data'][0]['id'] => $return['data'][0]['type'])
+                        );
                     }else{
                         $return['info'] .= "but " . $inserted_record['info'];
                         $return['additional_info'] .= $inserted_record['additional_info'];
@@ -99,6 +103,10 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                         $return['result'] = true;
                         $return['info'] .= "and fetched record ";
                         $return['data'] = $updated_record['data'];
+
+                        type_item_column(
+                            array($return['data'][0]['id'] => $return['data'][0]['type'])
+                        );
                     }else{
                         $return['info'] .= "but " . $updated_record['info'];
                         $return['additional_info'] .= $updated_record['additional_info'];
@@ -135,6 +143,12 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['result'] = true;
                 $return['info'] .= count($query_where) . "record(s) deleted ";
                 $return['data'] = array();
+
+                foreach($data as $iter_data){
+                    type_item_column(
+                        array($iter_data['id'] => false)
+                    );
+                }
             }else{
                 $return['info'] .= "error deleting the record ";
                 $return['additional_info'] .= $delete_result['additional_information'];

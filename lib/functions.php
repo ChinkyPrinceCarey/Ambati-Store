@@ -622,6 +622,24 @@ function getOrderId(){
 	return $return;
 }
 
+function type_item_column($param){
+  $type_path = LIB_DIR . "/type.json";
+  $type_arr = json_decode(file_get_contents($type_path), true);
+  if(gettype($param) == "array"){
+		$key_name = key($param);
+		$key_value = $param[$key_name];
+		if($key_value === false){
+			unset($type_arr[$key_name]);
+		}else{
+    	$type_arr[$key_name] = $key_value;
+		}
+    file_put_contents($type_path, json_encode($type_arr));
+  }else{
+    return $type_arr[$param];
+  }
+  return $type_arr;
+}
+
 function sale_stock($_fields_data, $_is_vehicle_shift){
 	$return = array();
 	$return['result'] = false;
