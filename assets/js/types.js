@@ -25,7 +25,7 @@ $(function(){
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  "lib/types.php",
+                url:  API_ENDPOINT + "lib/types.php",
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -138,7 +138,7 @@ $(function(){
             ],
         },
         "ajax": {
-            "url": "lib/types.php",
+            "url": API_ENDPOINT + "lib/types.php",
             "type": "POST",
             "data" : {"action": "fetch_all", "data": "random_data"},
             "dataType": 'json',
