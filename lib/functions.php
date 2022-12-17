@@ -634,10 +634,36 @@ function type_item_column($param){
     	$type_arr[$key_name] = $key_value;
 		}
     file_put_contents($type_path, json_encode($type_arr));
-  }else{
+  }else if($param == "all"){
+		return $type_arr;
+	}else{
     return $type_arr[$param];
   }
-  return $type_arr;
+}
+
+function generateOrderByCase($type_arr){
+	$counter = 1;
+	$order_by_case_str = "";
+	foreach($type_arr as $type){
+		$order_by_case_str .= "WHEN `type` = '$type' THEN $counter ";
+		$counter++;
+	}
+	$counter++;
+	$order_by_case_str .= "ELSE $counter END";
+
+	return $order_by_case_str;
+}
+
+function shuffle_assoc($list) { 
+  if (!is_array($list)) return $list; 
+
+  $keys = array_keys($list); 
+  shuffle($keys); 
+  $random = array(); 
+  foreach ($keys as $key) { 
+    $random[$key] = $list[$key]; 
+  }
+  return $random; 
 }
 
 function sale_stock($_fields_data, $_is_vehicle_shift){
