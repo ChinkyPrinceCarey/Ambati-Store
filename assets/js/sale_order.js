@@ -433,7 +433,7 @@ function initValues(){
                             }
                         }
                     }else{
-                        play_error_notification();
+                        sound_notification("scan_fail");
                         smallModal(
                             "Wrong Item Scanned", 
                             "The item you're scanned is not in Order Summary, Kindly scan items which are in Order Summary", 

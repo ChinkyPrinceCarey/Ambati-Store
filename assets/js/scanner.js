@@ -1,6 +1,4 @@
-let success_notification;
-let success_notification_src
-let error_notification;
+let notifyAudio;
 
 let scanner_form;
 
@@ -49,6 +47,8 @@ let billing_template_obj = {
 
 $(function(){
 
+    sound_notification(); //initializing audio
+
     stock_obj_methods = {
         update_data: function(_action, _barcode){
             if(scanner_state.isEnabled){
@@ -92,9 +92,9 @@ $(function(){
                             barcode_input.val('');
 
                             if(scanner_state.isEnabled){
-                                play_success_notification();
+                                sound_notification("scan_success");
                             }else{
-                                play_error_notification();
+                                sound_notification("scan_fail");
                             }
 
                             return sale_item;
@@ -103,7 +103,7 @@ $(function(){
                             scanner_state.reason = 'Error at updateList(..): Stock Data and Sale Data are not matching';
                         }
                     }else{
-                        play_error_notification();
+                        sound_notification("scan_fail");
     
                         smallModal(
                             "Item not available!", 
@@ -240,11 +240,7 @@ $(function(){
         isCookieEnabled: true,
         includeMakingCostInSummary: false
     }
-
-    success_notification = $("#success_notification")[0];
-    success_notification_src = $(success_notification).attr('src');
-    error_notification = $("#error_notification")[0];
-
+    
     scanner_form = $("#scanner_form");
     scanner_btn = $("#scanner_btn");
     barcode_input = $("#barcode_input");
@@ -257,7 +253,7 @@ $(function(){
 		onSuccess: function(event, fields){
             event.preventDefault();
             if(scanner_form.hasClass("disabled")){
-                play_error_notification();
+                sound_notification("scan_fail");
 
                 //"It seems you're not saved details, save details then proceed with adding items..."
 
@@ -637,25 +633,43 @@ $(document).on('click', '.remove-item', function(){
             }
         );
     }
-})
+});
 
-function play_success_notification(){
-    error_notification.pause();
-
-    success_notification.pause();
-    $(success_notification).attr('src', '');
-    $(success_notification).attr('src', success_notification_src);
-    success_notification.play();
-}
-
-function play_error_notification(){
-    success_notification.pause();
-    error_notification.play();
+function sound_notification(){
+    if(arguments.length){
+        notifyAudio.pause();
+        if(typeof arguments[0] == "boolean"){
+            if(!arguments[0]){
+                //`false` passed hence clearing any audio
+                notifyAudio = new Audio();
+            }
+        }else{
+            let default_audio_dir = "assets/sounds/";
+            switch (arguments[0]){
+                case "scanned":
+                    notifyAudio.src = default_audio_dir + "notification_sound.mp3";
+                break;
+                case "scan_success":
+                    notifyAudio.src = default_audio_dir + "success_adding_item.mp3";
+                break;
+                case "scan_fail":
+                    notifyAudio.src = default_audio_dir + "error_adding_item.mp3";
+                break;
+                default:
+                    notifyAudio.pause();
+                    return;
+            }
+            notifyAudio.play();
+        }
+    }else{
+        //no arguments, which means we have to init the `notifyAudio` variable
+        notifyAudio = new Audio();
+    }
 }
 
 document.addEventListener('keypress', e => {
     if(barcode_input.is(":focus") && scanner_form.hasClass("disabled")){
-        play_error_notification();
+        sound_notification("scan_fail");
         scanner_form.submit(); //which will trigger and shows modal and plays error
     }else if(!(
             barcode_input.is(":focus")
@@ -663,7 +677,7 @@ document.addEventListener('keypress', e => {
         || ($('.ui.modal').modal('is active') && $('.ui.modal .header').text() == "Verify and Confirm Sale")
     )
     ){
-        play_error_notification();
+        sound_notification("scan_fail");
         smallModal(
             "Focus is not on Barcode Field", 
             "Manually click on Barcode Field to keep focus", 
