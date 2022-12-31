@@ -225,12 +225,15 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 			
             $categories_query = get_query($query_type, $query_table, $categories_query_text);
             $categories_result = select_query($categories_query);
+
+            $except_one_column = "`id`, `datetime`, `material`, `item`, `shortcode`, `unit`, `type`, `counting`, `sub_name`, `company_name`, `flavour`, `denomination`, `actual_cost`, `cost`, `level`, `tracking_id`, `priority`, `image`, `t2_shortcode`, `available_stock`";
+            $all_columns = $except_one_column . ", `in_stock`";
 			
 			$query_text = 
             "
             SELECT * FROM (
                 SELECT * FROM (
-                    SELECT * FROM `items_live_stock` 
+                    SELECT $all_columns FROM `items_live_stock` 
                         WHERE `priority` != 'default'
                             AND `available_stock` > 0  
                             AND `in_stock` = 1
@@ -243,14 +246,14 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             
             SELECT * FROM 
             (
-                SELECT * FROM `items_live_stock` WHERE `priority` = 'default' AND `available_stock` > 0  AND `in_stock` = 1 ORDER BY rand()
+                SELECT $all_columns FROM `items_live_stock` WHERE `priority` = 'default' AND `available_stock` > 0  AND `in_stock` = 1 ORDER BY rand()
             ) AS `t3`
             
             UNION 
             
             SELECT * FROM 
             (
-                SELECT * FROM `items_live_stock` WHERE `priority` = 'default' AND `available_stock` IS NULL  OR `in_stock` = 2 ORDER BY rand()
+                SELECT $except_one_column, '2' AS `in_stock` FROM `items_live_stock` WHERE `priority` = 'default' AND `available_stock` IS NULL  OR `in_stock` = 2 ORDER BY rand()
             ) AS `t4`
             ";
 			
