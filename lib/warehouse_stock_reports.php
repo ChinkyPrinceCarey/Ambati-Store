@@ -40,7 +40,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
             $stock_deleted_query_type = "custom";
             $stock_deleted_query_table = "stock_deleted";
-            $stock_deleted_query_text = "INSERT INTO `stock_deleted` SELECT * FROM `stock` WHERE $where_str";
+            $stock_deleted_query_text = "INSERT INTO `stock_deleted` SELECT NULL AS `row_id`, DATE_ADD(NOW(), INTERVAL 330 MINUTE) AS `row_date`, `stock`.* FROM `stock` WHERE $where_str";
 
             $stock_deleted_query = get_query($stock_deleted_query_type, $stock_deleted_query_table, $stock_deleted_query_text);
             
