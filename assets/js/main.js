@@ -275,7 +275,7 @@ function invoicePrint(type, hideTracking, callback){
     let myFrame = $("#myframe")
     myFrame = myFrame.contents();
 
-    if(type != "preparation_print"){
+    if(type == "delivery_print"){
         let containers = myFrame.find(`
                             #company-address,
                             #footer,
@@ -284,6 +284,8 @@ function invoicePrint(type, hideTracking, callback){
         containers.removeClass("d-none");
 
         myFrame.find(`#invoice-type`).addClass("d-none");
+    }else if(type == "cancel_preview_print"){
+        myFrame.find(`#invoice-type`).text('***CANCEL PREVIEW PRINT***');
     }
 
     if(hideTracking){
