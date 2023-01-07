@@ -643,13 +643,21 @@ function sale_items(){
     $("#remaining_what_selection").parent()
     .add("#cancellation_reason").parent()
     .addClass("disabled");
+
+    let remaining_what_status = $('#remaining_what_selection').length
+                                ? $('#remaining_what_selection').dropdown('get value')
+                                : "";
+
+    let remaining_what_reason = $("#cancellation_reason").length
+                                ? $("#cancellation_reason").val()
+                                : "";
     
     data_param = {
         action: "sale_order",
         order_id: order_details.order_id,
         order_data: order_details,
-        remaining_what_status: $('#remaining_what_selection').dropdown('get value'),
-        remaining_what_reason: $("#cancellation_reason").val(),
+        remaining_what_status: remaining_what_status,
+        remaining_what_reason: remaining_what_reason,
         unscanned_data: JSON.stringify({summary: order_summary_after.summary, billing: order_summary_after.billing}),
         data: JSON.stringify({summary: sale_data.summary, list: sale_data.data, billing: sale_data.billing})
     }
