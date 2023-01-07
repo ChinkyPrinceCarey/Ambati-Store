@@ -9,6 +9,7 @@ let scanner_data;
 
 let scanner_state = {
     isEnabled: false,
+    isKeyPressEnable: true,
     reason: 'Page just loaded, save the details to scan items',
     default_error_suffix: "</br>adding/removing items disabled</br>Kindly perform sale ASAP"
 }
@@ -668,33 +669,35 @@ function sound_notification(){
 }
 
 document.addEventListener('keypress', e => {
-    if(barcode_input.is(":focus") && scanner_form.hasClass("disabled")){
-        sound_notification("scan_fail");
-        scanner_form.submit(); //which will trigger and shows modal and plays error
-    }else if(!(
-            barcode_input.is(":focus")
-        ||  $("#details input, #details button, #offer_form input").is(":focus")
-        || ($('.ui.modal').modal('is active') && $('.ui.modal .header').text() == "Verify and Confirm Sale")
-    )
-    ){
-        sound_notification("scan_fail");
-        smallModal(
-            "Focus is not on Barcode Field", 
-            "Manually click on Barcode Field to keep focus", 
-            [
+    if(scanner_state.isKeyPressEnable){
+        if(barcode_input.is(":focus") && scanner_form.hasClass("disabled")){
+            sound_notification("scan_fail");
+            scanner_form.submit(); //which will trigger and shows modal and plays error
+        }else if(!(
+                barcode_input.is(":focus")
+            ||  $("#details input, #details button, #offer_form input").is(":focus")
+            || ($('.ui.modal').modal('is active') && $('.ui.modal .header').text() == "Verify and Confirm Sale")
+        )
+        ){
+            sound_notification("scan_fail");
+            smallModal(
+                "Focus is not on Barcode Field", 
+                "Manually click on Barcode Field to keep focus", 
+                [
+                    {
+                        "class": "ui positive approve button",
+                        "id": "",
+                        "text": "Okay",
+                    }
+                ], 
                 {
-                    "class": "ui positive approve button",
-                    "id": "",
-                    "text": "Okay",
+                    closable: false,
+                    onApprove: function(){
+                        return true;
+                    }
                 }
-            ], 
-            {
-                closable: false,
-                onApprove: function(){
-                    return true;
-                }
-            }
-        );
+            );
+        }
     }
 })
 
@@ -866,6 +869,7 @@ function offer_dialogue(
     _show_offer = true,
     _modal_data = {title: "Verify and Confirm Sale", desc: "Sale Items Overview", primary_btn_title: "Sale Stock"}
 ){
+    scanner_state.isKeyPressEnable = false;
     let offer_dom = '';
     if(_show_offer){
         offer_dom = 
@@ -959,11 +963,13 @@ function offer_dialogue(
         {
             closable: false,
             onApprove: function(){
+                scanner_state.isKeyPressEnable = true;
                 callback();
                 return true;
             },
             onDeny: function(){
                 scanner_data.remove_offer();
+                scanner_state.isKeyPressEnable = true;
                 return true;
             }
         }
