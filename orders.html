@@ -115,6 +115,39 @@
                     </div>
                 </div>
 
+                <div class="ui multiple dropdown" id="dropdown_fetch_orders_filter">
+                    <input type="hidden" name="filters">
+                    <i class="filter icon"></i>
+                    <span class="text">Fetch Orders Filter</span>
+                    <div class="menu">
+                      <div class="ui icon search input">
+                        <i class="search icon"></i>
+                        <input type="text" placeholder="Search tags...">
+                      </div>
+                      <div class="divider"></div>
+                      <div class="header">
+                        <i class="tags icon"></i>
+                        Tag Filters
+                      </div>
+                      <div class="scrolling menu">
+                        <div class="item" data-value="pending">
+                            <div class="ui blue empty circular label"></div>
+                            Pending
+                        </div>
+                        <div class="item" data-value="confirmed">
+                          <div class="ui green empty circular label"></div>
+                          Confirmed
+                        </div>
+                        <div class="item" data-value="cancelled">
+                          <div class="ui red empty circular label"></div>
+                          Cancelled
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="ui horizontal divider"></div>
+
                 <div id="overview">
                     <div class="filters_container">
                         <div class="ui action input" id="filter_date">
@@ -178,7 +211,7 @@
                                 <th>Offer(%)</th>
                                 <th>Offer Amt</th>
                                 <th>Status</th>
-                                <th>Payment</th>
+                                <!--<th>Payment</th>-->
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -200,7 +233,7 @@
                                 <th>Offer(%)</th>
                                 <th>Offer Amt</th>
                                 <th>Status</th>
-                                <th>Payment</th>
+                                <!--<th>Payment</th>-->
                                 <th>Actions</th>
                             </tr>
                         </tfoot>

@@ -18,6 +18,7 @@ $return['additional_info'] = "";
 
 if(isset($_POST['data']) && !empty($_POST['data'])){
     if(isset($_POST['action']) && !empty($_POST['action'])){
+        $current_time_function_for_db = "ADDTIME(NOW(), '05:29:47')";
         $action = $_POST['action'];
         $query_table = "orders";
 
@@ -221,40 +222,106 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['info'] .= "invalid data " . $fields_data['info'];
             }
         }elseif($action == "fetch_all"){
-            $extra_columns = array("no_of_items", "no_of_units", "making_cost", "sub_total", "total_price", "offer_percentage", "offer_amount", "is_confirmed", "is_paid");
-            
+            set_mysql_values($query_table, 'SET @slno=0');
+            $fetch_filter = $_POST['fetch_filter'];
+
             $start = array_key_exists('start', $_POST['data']) ? $_POST['data']['start'] . " 00:00:00" : null;
             $end = array_key_exists('end', $_POST['data']) ? $_POST['data']['end'] . " 23:59:59" : null;
 
-            $where_clause = array("is_cancelled=0");
-            if($start && $end){
-                $where_clause = "`is_cancelled` = 0 AND `date` BETWEEN '$start' AND '$end' ORDER BY `date` DESC";
+            $fetch_filter_where = "";
+            if($fetch_filter){
+                $fetch_filter = "'" . str_replace(",", "','", $fetch_filter) . "'";
+                $fetch_filter_where = "`t2`.`status` IN ($fetch_filter)";
             }
 
-            $fetched_all_records = fetchRecord($query_table, $extra_columns, $where_clause);
-            $return['fetched_all_records'] = $fetched_all_records;
-            if($fetched_all_records['result']){
+            $fetch_date_filter_where = "";
+            if($start && $end){
+                $fetch_date_filter_where = "`date` BETWEEN '$start' AND '$end' ORDER BY `date` DESC";
+            }
+
+            $query_type = "custom";
+            $query_text = 
+            "
+            SELECT * FROM 
+                (
+                    SELECT 
+                            @slno:=@slno+1 AS `slno`,
+                            `orders`.*, 
+                            CASE 
+                                WHEN `is_confirmed` = 0 AND `is_cancelled` = 0 THEN 'pending'
+                                WHEN `is_confirmed` = 0 AND `is_cancelled` = 1 THEN 'cancelled'
+                                WHEN `is_confirmed` = 1 AND `is_cancelled` = 0 THEN 'confirmed'
+                            END AS 'status' FROM `orders`
+                    WHERE $fetch_date_filter_where
+                ) t2 WHERE $fetch_filter_where;
+            ";
+
+            $select_query = get_query($query_type, $query_table, $query_text);
+            $return['query'] = $select_query;
+            $select_result = select_query($select_query);
+
+            if($select_result['result']){
                 $return['result'] = true;
-                $return['data'] = $fetched_all_records['data'];
+                $return['info'] .= "fetched all records ";
+                $return['data'] = $select_result['additional_data'];
             }else{
+                $return['result'] = true;
                 $return['data'] = array();
-                $return['info'] .= $fetched_all_records['info'];
-                $return['additional_info'] .= $fetched_all_records['additional_info'];
+                //$return['info'] .= $select_result['additional_info'];
+                //$return['additional_info'] .= $select_result['additional_info'];
             }
         }elseif($action == "fetch_order"){
             $order_id = $_POST['data'];
-            $extra_column = array("items_details");
-            $where_clause = "`order_id` LIKE '$order_id' AND `is_cancelled`='0'";
-            $fetched_all_records = fetchRecord($query_table, $extra_column, $where_clause);
-            if($fetched_all_records['result']){
+
+            $query_type = "custom";
+            $query_text = 
+            "
+                SELECT  *, 
+                        CASE 
+                            WHEN `is_confirmed` = 0 AND `is_cancelled` = 0 THEN 'pending'
+                            WHEN `is_confirmed` = 0 AND `is_cancelled` = 1 THEN 'cancelled'
+                            WHEN `is_confirmed` = 1 AND `is_cancelled` = 0 THEN 'confirmed'
+                        END AS 'status' FROM `orders`
+                WHERE `order_id` LIKE '$order_id';
+            ";
+
+            $select_query = get_query($query_type, $query_table, $query_text);
+            $return['query'] = $select_query;
+            $select_result = select_query($select_query);
+
+            if($select_result['result']){
                 $return['result'] = true;
                 $return['info'] .= "fetched all records ";
-                $return['data'] = $fetched_all_records['data'];
+                $return['data'] = $select_result['additional_data'];
             }else{
                 $return['result'] = true;
                 $return['data'] = array();
-                $return['info'] .= $fetched_all_records['info'];
-                $return['additional_info'] .= $fetched_all_records['additional_info'];
+                //$return['info'] .= $select_result['additional_info'];
+                //$return['additional_info'] .= $select_result['additional_info'];
+            }
+        }elseif($action == "cancel_order"){
+
+            $order_id = $_POST['order_id'];
+            $affected_reason = $_POST['data'];
+
+            $query_type = "update";
+            $update_set = array("is_cancelled=1", "affected_reason=$affected_reason", "affected_time=$current_time_function_for_db");
+            $update_where = "`is_confirmed` = 0 AND `order_id` LIKE '$order_id'";
+            
+            $update_query = get_query($query_type, $query_table, $update_set, $update_where);
+            $return['query'] = $update_query; //for debugging
+
+            $update_result = update_query($update_query);
+
+            if($update_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "successful ";
+            }else{
+                $return['info'] .= "error updating the record ";
+                $return['additional_info'] .= $update_result['additional_information'];
+
+                //debug
+                $return['query'] = $update_query;
             }
         }elseif($action == "sale_order"){
             if($_SERVER['HTTP_HOST'] == "localhost"){
@@ -334,9 +401,12 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                     
                     if(count($unscanned_data['summary'])){
                         $new_order_id = generateInvoiceId($order_data['order_id'], true);
+                        $remaining_what_status = $_POST['remaining_what_status'] == "cancel" ? 1 : 0 ;
+                        $remaining_what_reason = $_POST['remaining_what_reason'];
 
                         $insert_query_type = "insert";
                         $insert_query_columns = array(
+                            "date",
                             "order_id",
                             "sale_type",
                             "username",
@@ -350,10 +420,14 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                             "total_price",
                             "offer_percentage",
                             "offer_amount",
-                            "items_details"
+                            "items_details",
+                            "is_cancelled",
+                            "affected_time",
+                            "affected_reason"
                         );
 
                         $insert_query_values =	array(
+                                            $current_time_function_for_db,
                                             $new_order_id,
                                             $order_data['sale_type'],
                                             $order_data['username'],
@@ -367,7 +441,10 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                             $unscanned_data['billing']['total'],
                                             0,
                                             0,
-                                            json_encode($unscanned_data)
+                                            json_encode($unscanned_data),
+                                            $remaining_what_status,
+                                            $current_time_function_for_db,
+                                            $remaining_what_reason
                                         );
 
                         $insert_query = get_query($insert_query_type, $query_table, $insert_query_columns, $insert_query_values);
@@ -384,6 +461,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                                 "total_price=" . $scanned_data['billing']['total'],
                                                 "is_confirmed=1",
                                                 "items_details=" . json_encode($scanned_data),
+                                                "affected_time=" . $current_time_function_for_db
                                             );
                         $update_column_where = "`order_id` LIKE '$order_id'";
 

@@ -6,6 +6,8 @@ let dropdown_reports_type;
 let rangestart_input;
 let rangeend_input;
 
+let dropdown_fetch_orders_filter;
+
 let span_reports_type;
 
 let overview;
@@ -19,6 +21,7 @@ let list_datatable;
 let overview_datatable_options;
 let summary_datatable_options;
 let list_datatable_options;
+let status_visibilities;
 
 $(function(){
 
@@ -29,6 +32,10 @@ $(function(){
 
     rangestart_input.val(getCurrentDate());
     rangeend_input.val(getCurrentDate());
+
+    dropdown_fetch_orders_filter = $("#dropdown_fetch_orders_filter");
+    dropdown_fetch_orders_filter.dropdown();
+    dropdown_fetch_orders_filter.dropdown('set exactly', ['pending']);
 
     initCalendar();
 
@@ -46,6 +53,12 @@ $(function(){
         .dropdown()
         .dropdown('set selected', 'overview')
         .dropdown({ onChange: setTable});
+
+    status_visibilities = {
+        pending: {color: "blue", text: "pending"},
+        confirmed: {color: "green", text: "confirmed"},
+        cancelled: {color: "red", text: "cancelled"}
+    }
 
     tableDom = 
     "<'ui stackable grid'"+
@@ -104,6 +117,7 @@ $(function(){
             "type": "POST",
             "data": function(d){
                 d.action = "fetch_all";
+                d.fetch_filter = dropdown_fetch_orders_filter.dropdown("get value");
                 d.type = dropdown_reports_type.dropdown('get value');
                 d.sale_type = "order";
                 d.data = {start: rangestart_input.val(), end: rangeend_input.val()};
@@ -204,21 +218,19 @@ $(function(){
             { data: "offer_percentage" },
             { data: "offer_amount" },
             {
-                data: "is_confirmed",
+                data: "status",
                 render: function(data, type, row){
-                    let color = data == 0 ? "orange" : "green";
-                    let text = data == 0 ? "pending" : "confirmed";
-                    return `<div class="ui ${color} horizontal label">${text}</div>`;
+                    return `<div class="ui ${status_visibilities[data].color} horizontal label">${status_visibilities[data].text}</div>`;
                 }
             },
-            {
+            /*{
                 data: "is_paid",
                 render: function(data, type, row){
                     let color = data == 0 ? "red" : "green";
                     let text = data == 0 ? "pending" : "paid";
                     return `<div class="ui ${color} horizontal label">${text}</div>`;
                 }
-            },
+            },*/
             { 
                 data: null,
                 className: "dt-center cart arrow down order-actions",
@@ -226,17 +238,19 @@ $(function(){
                 render: function (data, type, row){
                     let h = "";
 
-                    if(!parseInt(row.is_confirmed)){
+                    if(row.status == "pending"){
                         h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-sale-order truck icon" data-content="Sale Order"></i>`;
+                    }else if(row.status == "confirmed"){
+                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-return backward icon" data-content="Order Return"></i>`;
+                    }else if(row.status == "cancelled"){
+                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-cancel-preview print icon" data-content="Cancel Preview"></i>`;
                     }
 
+                    /*
                     if(parseInt(row.is_confirmed) && !parseInt(row.is_paid)){
                         h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-payment amazon pay icon" data-content="Order Payment"></i>`;
                     }
-
-                    if(parseInt(row.is_confirmed)){
-                        h += `<i row_id="${row.id}" order_id="${row.order_id}" class="icon-order-return backward icon" data-content="Order Return"></i>`;
-                    }
+                    */
 
                     return h;
                 },
@@ -363,7 +377,7 @@ $(function(){
 
     setTable();
 
-    $('#overview #example').on('click', 'i.icon-sale-order', function (e) {
+    $('#overview #example').on('click', 'i.icon-sale-order, i.icon-order-cancel-preview', function (e) {
         e.preventDefault();
 
         $('#overview table#example').addClass('disable'); table.processing(true);
