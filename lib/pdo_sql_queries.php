@@ -75,6 +75,8 @@ function generate_quotes($quote_type, $array, $break_type="comma"){
 			}elseif($value == ''){
 				$value = 'NULL';
 				$string .= $backquote . $column . $backquote . $equal . $value . $break;
+			}elseif(is_exist($value, "ADDTIME(NOW()")){
+				$string .= $backquote . $column . $backquote . $equal . $value . $break;
 			}else{
 				$string .= $backquote . $column . $backquote . $equal . $quote . $value . $quote . $break;
 			}
@@ -87,7 +89,10 @@ function generate_quotes($quote_type, $array, $break_type="comma"){
 			if($array_loop != 0 && ($array_loop === null || $array_loop == '')){
 				$string .= "NULL" . $break;
 			}else{
-				if(is_exist($array_loop, " AS ")){
+				if(
+							is_exist($array_loop, " AS ")
+					||	is_exist($array_loop, "ADDTIME(NOW()")
+				){
 					$string .= $array_loop . $break;
 				}else{
 					$string .= $quote . $array_loop . $quote . $break;
