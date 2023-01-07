@@ -12,7 +12,9 @@ let input_address;
 
 let save_details_btn;
 let preparation_print_btn;
+let cancel_order_btn;
 let invoice_print_btn;
+let cancel_preview_print_btn;
 let edit_details_btn;
 let sale_stock_btn;
 
@@ -54,7 +56,9 @@ $(function(){
     
     save_details_btn = $("#save_details_btn");
     preparation_print_btn = $("#preparation_print_btn");
+    cancel_order_btn = $("#cancel_order_btn");
     invoice_print_btn = $("#invoice_print_btn");
+    cancel_preview_print_btn = $("#cancel_preview_print_btn");
     edit_details_btn = $("#edit_details_btn");
     sale_stock_btn = $("#sale_stock_btn");
 
@@ -112,7 +116,7 @@ $(function(){
                     modal_body = scanner_state.reason;
                 }else{
                     let order_data = response.data[0];
-                    if(!parseInt(order_data.is_confirmed)){
+                    if(order_data.status == "pending"){
                         order_details = JSON.parse(JSON.stringify(order_data));
                         delete order_details.items_details;
 
@@ -130,10 +134,12 @@ $(function(){
                         order_fields.show();
                         save_details_btn.show();
                         preparation_print_btn.show();
+                        cancel_order_btn.show();
                         invoice_print_btn.hide();
+                        cancel_preview_print_btn.hide();
 
                         scanner_state.reason = "Order Data Parsed Successfully, however Order not saved yet!";
-                    }else{
+                    }else if(order_data.status == "confirmed"){
                         scanner_state.reason = "Order is already confirmed!";
 
                         order_details = JSON.parse(JSON.stringify(order_data));
@@ -153,10 +159,36 @@ $(function(){
                         order_fields.show();
                         save_details_btn.hide();
                         preparation_print_btn.hide();
+                        cancel_order_btn.hide();
                         invoice_print_btn.show();
+                        cancel_preview_print_btn.hide();
 
                         //modal_title = "Fetching Order";
                         //modal_body = scanner_state.reason;
+                    }else{
+                        scanner_state.reason = "Order is Cancelled!";
+
+                        order_details = JSON.parse(JSON.stringify(order_data));
+                        delete order_details.items_details;
+
+                        input_date.val(order_details.date);
+                        input_order_id.val(order_details.order_id);
+                        input_username.val(order_details.username);
+                        input_name.val(order_details.name);
+                        input_mobile_number.val(order_details.mobile_number);
+                        input_address.val(order_details.address);
+                        
+                        order_summary_before = JSON.parse(JSON.stringify(order_data.items_details));
+                        order_summary_after = JSON.parse(JSON.stringify(order_data.items_details));
+
+                        initOrder();
+                        order_fields.show();
+                        save_details_btn.hide();
+                        preparation_print_btn.hide();
+                        cancel_order_btn.hide();
+                        invoice_print_btn.hide();
+                        cancel_preview_print_btn.show();
+
                     }
                 }
             }else{
@@ -167,6 +199,7 @@ $(function(){
             }
 
             if(modal_body){
+                scanner_state.isKeyPressEnable = false;
                 smallModal(
                     modal_title, 
                     modal_body, 
@@ -181,6 +214,7 @@ $(function(){
                         closable: false,
                         onApprove: function(){
                             search_form.removeClass("loading");
+                            scanner_state.isKeyPressEnable = true;
                             return true;
                         }
                     }
@@ -191,6 +225,7 @@ $(function(){
             scanner_state.isEnabled = false;
             scanner_state.reason = 'Empty Order Id when Searching';
 
+            scanner_state.isKeyPressEnable = false;
             smallModal(
                 scanner_state.reason, 
                 "Enter Order Id", 
@@ -205,6 +240,7 @@ $(function(){
                     closable: false,
                     onApprove: function(){
                         search_form.removeClass("loading");
+                        scanner_state.isKeyPressEnable = true;
                         return true;
                     }
                 }
@@ -218,7 +254,9 @@ $(function(){
 
         save_details_btn.hide();
         preparation_print_btn.hide();
+        cancel_order_btn.hide();
         invoice_print_btn.hide();
+        cancel_preview_print_btn.hide();
 
         search_order_btn.hide();
 
@@ -249,7 +287,6 @@ $(function(){
             {
                 closable: false,
                 onApprove: function(){
-
                     scanner_state.isEnabled = false;
                     scanner_state.reason = 'Details are not saved after clicking on edit';
             
@@ -285,6 +322,29 @@ $(function(){
             );
         }else{
             scanner_data.offer_dialogue();
+            if(order_summary_after.summary.length){
+                $(".modal .content").append(`
+                    <div class="field">
+                        <div class="ui action input">
+                            <select class="ui compact selection dropdown" id="remaining_what_selection">
+                                <option value="cancel">Cancel</option>
+                                <option value="not_cancel">Not Cancel</option>
+                            </select>
+                            <input type="text" id="cancellation_reason" class="" placeholder="Cancellation Reason...">
+                        </div>
+                    </div>
+                `);
+
+                $("#remaining_what_selection").dropdown();
+
+                jQuery('#remaining_what_selection').dropdown('setting','onChange', function(value){
+                    if(value == "cancel"){
+                        $("#cancellation_reason").removeClass("d-none");
+                    }else{
+                        $("#cancellation_reason").addClass("d-none");
+                    }
+                });
+            }
         }
 
         /*
@@ -337,7 +397,91 @@ $(function(){
             }
         });
     });
+
+    cancel_preview_print_btn.on('click', function(){
+        console.log('printInvoice');
+        cancel_preview_print_btn.addClass("loading");
+        invoicePrint("cancel_preview_print", true, function(isCompleted){
+            if(isCompleted){
+                cancel_preview_print_btn.removeClass("loading");
+            }
+        });
+    });
+
+    cancel_order_btn.on('click', function(){
+        scanner_state.isKeyPressEnable = false;
+        smallModal(
+            "Cancellation Reason", 
+            `
+            <form class="ui form">
+                <div class="field">
+                    <label>Reason for cancellation</label>
+                    <input type="text" id="cancellation_reason" name="cancellation_reason" placeholder="Reason for Cancellation...">
+                </div>
+            </form>
+            <b id="status"></b>
+            `, 
+            [
+                            {
+                                "class": "ui red approve button",
+                                "id": "confirmBtn",
+                                "text": "Confirm",
+                            },
+                            {
+                                "class": "ui green deny button",
+                                "id": "closeBtn",
+                                "text": "Close",
+                            }
+            ], 
+            {
+                closable: false,
+                onApprove: function(event){
+                    event.addClass("loading");
+                    $(this).find("#status").text("Preparing Request...");
+                    cancelRequest($(this));
+                    return false;
+                },
+                onDeny: function(event){
+                    if(!$("#confirmBtn").hasClass("loading")){
+                        event.addClass("loading");
+                        window.location.replace(getCurrentPage());
+                    }
+                    return false;
+                }
+            }
+        );
+    });
 });
+
+function cancelRequest(modalContainer){
+    let cancellation_reason = modalContainer.find("form #cancellation_reason").val().trim();
+    console.log(cancellation_reason);
+
+    data_param = {
+        action: "cancel_order",
+        order_id: order_details.order_id,
+        data: cancellation_reason
+    }
+
+    ajaxPostCall('lib/orders.php', data_param, function(response){
+        let modal_body; let modal_title = "Parsing Error";
+        if(response.status){
+            modal_body = response.status + ": " + response.statusText;
+        }else if(response.title){
+            modal_title = response.title;
+            modal_body = response.content;
+        }else if(response.result){
+            modal_title = "Order Id: " + order_details.order_id;
+            modal_body = "Cancel Successful";
+            $("#confirmBtn").addClass("disabled");
+        }else{
+            modal_body = response.info;
+        }
+
+        modalContainer.find("#status").text(`${modal_title}:${modal_body}`);
+        $("#confirmBtn").removeClass("loading");
+    });
+}
 
 function resetData(){
     order_fields.hide();
@@ -353,7 +497,9 @@ function resetData(){
 
     save_details_btn.hide();
     preparation_print_btn.hide();
+    cancel_order_btn.hide();
     invoice_print_btn.hide();
+    cancel_preview_print_btn.hide();
     edit_details_btn.hide();
     sale_stock_btn.hide();
 
@@ -494,10 +640,16 @@ function initValues(){
 }
 
 function sale_items(){
+    $("#remaining_what_selection").parent()
+    .add("#cancellation_reason").parent()
+    .addClass("disabled");
+    
     data_param = {
         action: "sale_order",
         order_id: order_details.order_id,
         order_data: order_details,
+        remaining_what_status: $('#remaining_what_selection').dropdown('get value'),
+        remaining_what_reason: $("#cancellation_reason").val(),
         unscanned_data: JSON.stringify({summary: order_summary_after.summary, billing: order_summary_after.billing}),
         data: JSON.stringify({summary: sale_data.summary, list: sale_data.data, billing: sale_data.billing})
     }
@@ -511,6 +663,7 @@ function sale_items(){
             modal_body = response.content;
         }else if(response.result){
             sale_data.reset_cookie();
+            scanner_state.isKeyPressEnable = false;
             smallModal(
                 "Order Sale Successful",
                 `
@@ -574,6 +727,7 @@ function sale_items(){
         }
 
         if(modal_body){
+            scanner_state.isKeyPressEnable = false;
             smallModal(
                 modal_title, 
                 modal_body, 
@@ -587,6 +741,7 @@ function sale_items(){
                 {
                     closable: false,
                     onApprove: function(){
+                        scanner_state.isKeyPressEnable = true;
                         return true;
                     }
                 }
@@ -638,6 +793,7 @@ function initTrackingId(){
             }
     
             if(modal_body){
+                scanner_state.isKeyPressEnable = false;
                 smallModal(
                     modal_title, 
                     modal_body, 
@@ -651,6 +807,7 @@ function initTrackingId(){
                     {
                         closable: false,
                         onApprove: function(){
+                            scanner_state.isKeyPressEnable = true;
                             return true;
                         }
                     }
