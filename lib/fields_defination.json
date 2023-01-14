@@ -411,5 +411,25 @@
 		"name": "address",
 		"type": "name",
 		"accept_null": true
+	},
+	{
+		"variable": "EMAIL_ID",
+		"name": "email_id",
+		"type": "name",
+		"validation":[
+			{
+				"email": true
+			}
+		]
+	},
+	{
+		"variable": "ROLES",
+		"name": "roles",
+		"type": "array",
+		"validation":[
+			{
+				"array": true
+			}
+		]
 	}
 ]
