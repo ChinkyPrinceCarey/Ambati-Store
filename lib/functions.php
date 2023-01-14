@@ -95,7 +95,7 @@ function sanitize_the_value($_value, $_sanitize_rule){
 
 			foreach($_value as &$image){
 				//thumb [or] orginal
-				$timestamp = time();
+				$timestamp = "";
 				if(array_key_exists('timestamp', $image)){
 					$timestamp = $image['timestamp'];
 					unset($image['timestamp']);
@@ -103,31 +103,19 @@ function sanitize_the_value($_value, $_sanitize_rule){
 				foreach($image as $type => &$data){
 					if(strlen($data) > 40){
 						//it's base_64 image
-						//so first, we've to upload to server
-						$imagename = "{$timestamp}_{$type}.jpg";
+						//uploading to server
+						//from .js it will request to upload on local server
+            $imagename = "{$timestamp}_{$type}.jpg";
 
-						$path = UPLOADS_DIRNAME . "/" . $imagename;
-						$imageSavePath = BASE_DIR . "/" . $path;
+            $path = UPLOADS_DIRNAME . "/" . $imagename;
+            $imageSavePath = BASE_DIR . "/" . $path;
 
-						$request = array(
-							"action" => "item_image_upload",
-							"data" => $data,
-							"timestamp" => $timestamp,
-							"type" => $type
-						);
-
-						$image_upload_result = curl_request(REMOTE_SERVER_ITEMS_API_ENDPOINT, $request);
-						if($image_upload_result['result']){
-							if($image_upload_result['data']['result']){
-								//uploading image on local server
-								$local_path = UPLOADS_DIR . "/" . $imagename;
-								$local_imageSavePath = BASE_DIR . $local_path;
-								file_put_contents($local_imageSavePath, file_get_contents($data));
-								
-								//2. since it is uploaded, here modifying the image data to image path
-								$data = $path;
-							}
-						}
+            if(file_put_contents($imageSavePath, file_get_contents($data)) !== FALSE){
+							$data = $path;
+            }else{
+							//clearing base64 data because it's failed to upload
+							$data = "";
+            }
 					}
 				}
 				usleep(100);
@@ -256,6 +244,38 @@ function is_data_matches_with_rule($_data, $_rule_name, $_rule_def = null){
 					$return['result'] = false;
 					$return['info'] .= "'$_data' contains spaces";
 				}				
+			}
+		break;
+
+		case 'email':
+			$email = $_rule_def;
+			if($email){
+				if(!preg_match('/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/', $_data, $_match)){
+					$return['result'] = false;
+					$return['info'] .= "'$_data' is an invalid email id";
+				}
+			}
+		break;
+		
+		case 'json':
+			$json = $_rule_def;
+			if($json){
+				json_decode($_data);
+				$is_valid_json = json_last_error() === JSON_ERROR_NONE;
+   			if(!$is_valid_json){
+					$return['result'] = false;
+					$return['info'] .= "invalid json";
+				}
+			}
+		break;
+
+		case 'array':
+			$array = $_rule_def;
+			if($array){
+				if(!is_array($_data)){
+					$return['result'] = false;
+					$return['info'] .= "invalid array";
+				}
 			}
 		break;
 		
@@ -483,6 +503,17 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			return $columns;
 		break;
 
+		case 'staff':
+			$columns[] = "id";
+			$columns[] = "name";
+			$columns[] = "email_id";
+			$columns[] = "mobile_number";
+			$columns[] = "roles";
+			$columns[] = "updated_at";
+			$columns[] = "created_at";
+			return $columns;
+		break;
+		
 		default:
 			return $columns;
 	}

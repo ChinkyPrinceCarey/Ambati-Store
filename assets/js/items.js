@@ -221,7 +221,7 @@ $(function(){
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  `${API_ENDPOINT}lib/items.php`,
+                url:  `${LIB_API_ENDPOINT}/items.php`,
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -358,7 +358,7 @@ $(function(){
             ],
         },
         "ajax": {
-            "url": `${API_ENDPOINT}lib/items.php`,
+            "url": `${LIB_API_ENDPOINT}/items.php`,
             "type": "POST",
             "data" : {"action": "fetch_all", "data": "random_data"},
             "dataType": 'json',
@@ -521,9 +521,9 @@ $(function(){
     });
 
     table.on('init.dt', function(){
-        setSelectOpts('lib/material.php', 'material');
-        setSelectOpts('lib/units.php', 'unit');
-        setSelectOpts('lib/types.php', 'type');
+        setSelectOpts(`${LIB_API_ENDPOINT}/material.php`, 'material');
+        setSelectOpts(`${LIB_API_ENDPOINT}/units.php`, 'unit');
+        setSelectOpts(`${LIB_API_ENDPOINT}/types.php`, 'type');
 
         parseSearchOpts('item');
         parseSearchOpts('company_name');
@@ -681,6 +681,8 @@ function cropButton(){
         <i class="arrow alternate circle right icon move-image-right"></i>
     </div>`;
 
+    let timestamp = getCurrentDate("dmt");
+
     previewContainer
         .addClass('s-200px')
         .children('img')
@@ -691,14 +693,27 @@ function cropButton(){
             .attr('src', thumbnail)
             .attr('data-src', thumbnail)
             .attr('data-orginal', orginal)
-            .attr('data-timestamp', getCurrentDate("dmt"))
+            .attr('data-timestamp', timestamp)
         .parent()
         .removeClass('cropping-preview')
         .append(popupDom);
+
+    let data_param = {
+        action: "item_image_upload",
+        timestamp: timestamp,
+        data: {
+            thumb: thumbnail,
+            orginal: orginal
+        }
+    }
+
+    ajaxPostCall(`local_lib/item_image_upload.php`, data_param, function(response){
+        console.log("Response: ", response);
+    });
 }
 
 function parseSearchOpts(_required_distinct_column){
-    ajaxPostCall(`${API_ENDPOINT}lib/items.php`, {action: "fetch_distinct_column", data: _required_distinct_column}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/items.php`, {action: "fetch_distinct_column", data: _required_distinct_column}, function(response){
 
         let modal_title = `On parse '${_required_distinct_column}' error`;
         let modal_body = null;
@@ -750,7 +765,7 @@ function imgOnError(e, showNoImage){
         };
         
         if(actualImage != "undefined"){
-            e.src = `http://ambatitastyfoods.com/${actualImage}`;
+            e.src = `${API_ENDPOINT}/${actualImage}`;
         }else{
             imgOnError(e, true);
         }
