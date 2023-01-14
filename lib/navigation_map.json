@@ -95,7 +95,7 @@
 				"icon": "icon truck",
 				"title": "vehicle",
 				"link": null,
-				"access": ["admin", "seller"],
+				"access": ["admins", "sellers"],
 				"dropdown": [
 					{
 						"icon": "icon truck",
@@ -223,5 +223,11 @@
 				"access": ["admin", "seller", "operator"]
 			}
 		]
+	},
+	{
+		"icon": "icon user",
+		"title": "staff",
+		"link": "staff.html",
+		"access": ["admin"]
 	}
 ]
