@@ -1,0 +1,90 @@
+.header > .wrapper{
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.main-content{
+  align-items: flex-start;
+}
+
+.orders-container{
+  width: 100%;
+}
+
+
+.order-container{
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-primary-2);
+}
+
+.order-container:last-of-type{
+  margin-bottom: 50px;
+}
+
+.order-wrapper{
+  display: grid;
+  grid-auto-flow: column;
+}
+
+.order-wrapper > .right{
+  text-align: center;
+  justify-self: end;
+}
+
+.order-wrapper{
+  color: var(--color-primary);
+}
+
+.order-wrapper span{
+  color: var(--color-secondary);
+}
+
+.order-number{
+  font-size: 14px;
+}
+
+.order-number > span{
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.no-of-items,
+.amount{
+  line-height: 1.5;
+}
+
+.amount > span:before{
+  content: '₹';
+  font-size: 11px;
+  vertical-align: super;
+  text-decoration: none;
+}
+
+.amount > span{
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.status{
+  border-radius: 10px;
+  padding: 2px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+
+.status.color-primary{
+  background: var(--color-primary);
+}
+
+.status.color-red{
+  background: hsl(0, 100%, 40%);
+}
+
+.status.color-green{
+  background: #019c01;
+}
+
+.status.color-yellow{
+  background: #ffe400;
+  color: var(--color-secondary);
+}
