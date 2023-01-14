@@ -1,37 +1,89 @@
 <?php
-$database_server_mode = "beta";
+/**
+ * simple method to encrypt or decrypt a plain text string
+ * initialization vector(IV) has to be the same when encrypting and decrypting
+ * 
+ * @param string $action: can be 'encrypt' or 'decrypt'
+ * @param string $string: string to encrypt or decrypt
+ *
+ * @return string
+ */
+function encrypt_decrypt($action, $string) {
+    $output = false;
 
-if($database_server_mode == "production"){
-    //server production database configuration
-    define("DB_SERVER", "217.21.88.3");
-    define("DB_USERNAME", "u916003822_mickey_admin");
-    define("DB_PASSWORD", "1@Passwordtrue");
-    define("DB_DBNAME", "u916003822_ambati_sms");
-}else{
-    //server beta database configuration
-    define("DB_SERVER", "217.21.88.3");
-    define("DB_USERNAME", "u916003822_mickey_beta");
-    define("DB_PASSWORD", "123@Passwordtrue");
-    define("DB_DBNAME", "u916003822_ambati_beta");
+    $encrypt_method = "AES-256-CBC";
+    $secret_key = 'This is my secret key';
+    $secret_iv = 'This is my secret iv';
+
+    // hash
+    $key = hash('sha256', $secret_key);
+    
+    // iv - encrypt method AES-256-CBC expects 16 bytes - else you will get a warning
+    $iv = substr(hash('sha256', $secret_iv), 0, 16);
+
+    if ( $action == 'encrypt' ) {
+        $output = openssl_encrypt($string, $encrypt_method, $key, 0, $iv);
+        $output = base64_encode($output);
+    } else if( $action == 'decrypt' ) {
+        $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
+    }
+
+    return $output;
 }
 
-//## default directories ## //
-define("BASE_DIR", "C:/wamp64/www/ambati_sms/v2");
-define("LIB_DIR", BASE_DIR . "/lib");
-define("NAVIGATION_FILE", LIB_DIR . "/navigation_map.json");
-define("UPLOADS_DIRNAME", "uploads");
-define("UPLOADS_DIR", "/" . UPLOADS_DIRNAME);
+function get_variable_value($_arr, $_str){
+    $currly_var_pattern = '/(?<={)(\w+)(?=})/';
+    if(preg_match_all($currly_var_pattern, $_str, $currly_variables)){
+      $currly_variables = array_shift($currly_variables);
+  
+      foreach($currly_variables as $currly_variable){
+        $currly_value = null;
+        if(array_key_exists($currly_variable, $_arr)){
+          $currly_value = $_arr[$currly_variable];
+          $_str = str_replace('{'. $currly_variable .'}', $currly_value, $_str);
+        }
+      }
+  
+      if(preg_match_all($currly_var_pattern, $_str, $currly_variables)){
+        $_str = get_variable_value($_arr, $_str);
+      }
+    }
+  
+    return $_str;
+}
+?>
+<?php
+$ENV_STR_ENCRYPTED = file_get_contents('../env.json');
+$ENV_STR = encrypt_decrypt("decrypt", $ENV_STR_ENCRYPTED);
+$ALL_ENV = json_decode($ENV_STR, true);
+$SERVER_MODE = $ALL_ENV['SERVER_MODE'];
+$ENV = $ALL_ENV[$SERVER_MODE];
 
-define("HOST_BASE_API", "http://localhost/ambati_sms/v2");
-define("LIB_BASE_API", HOST_BASE_API . "/lib");
-define("REMOTE_SERVER_API_ENDPOINT", "https://ambatitastyfoods.com/v2/lib");
-define("REMOTE_SERVER_ITEMS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/items.php");
-define("REMOTE_SERVER_CUSTOMERS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/customers.php");
-define("REMOTE_SERVER_ORDERS_API_ENDPOINT", REMOTE_SERVER_API_ENDPOINT . "/orders.php");
+$VARIABLES_STR = file_get_contents('../variables.json');
+$ALL_VARIABLES = json_decode($VARIABLES_STR, true);
+$VARIABLES_SERVER_MODE = $ALL_VARIABLES['SERVER_MODE'];
+$VARIABLES = $ALL_VARIABLES[$VARIABLES_SERVER_MODE];
+
+define("DB_SERVER", $ENV['DB_SERVER']);
+define("DB_USERNAME", $ENV['DB_USERNAME']);
+define("DB_PASSWORD", $ENV['DB_PASSWORD']);
+define("DB_DBNAME", $ENV['DB_DBNAME']);
+
+//## default directories ## //
+define("BASE_DIR", get_variable_value($VARIABLES, $VARIABLES['BASE_DIR']));
+define("LIB_DIR", get_variable_value($VARIABLES, $VARIABLES['LIB_DIR']));
+define("NAVIGATION_FILE", get_variable_value($VARIABLES, $VARIABLES['NAVIGATION_FILE']));
+define("UPLOADS_DIRNAME", get_variable_value($VARIABLES, $VARIABLES['UPLOADS_DIRNAME']));
+define("UPLOADS_DIR", get_variable_value($VARIABLES, $VARIABLES['UPLOADS_DIR']));
+
 
 //fields config
-$fields_defination = json_decode(file_get_contents(LIB_DIR . '/fields_defination.json'), true);
-foreach($fields_defination as $field_def){
-    define($field_def['variable'], $field_def);
+$fields_defination = array();
+$fields_defination_path = LIB_DIR . '/fields_defination.json';
+if(file_exists($fields_defination_path)){
+    $fields_defination = json_decode(file_get_contents($fields_defination_path), true);
+    foreach($fields_defination as $field_def){
+        define($field_def['variable'], $field_def);
+    }
 }
 ?>
