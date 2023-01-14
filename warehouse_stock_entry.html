@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmbatiSMS</title>
+
+    <!--Begin: Main Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="assets/font/montserrat/font.css">
+    <link rel="stylesheet" type="text/css" href="assets/library/semantic/2.4.2/semantic_mod.css">
+    <link rel="stylesheet" type="text/css" href="assets/library/perfect-scrollbar/perfect-scrollbar.min.css">
+    <!--End: Main Stylesheets-->
+
+    <!-- Begin: Semantic DataTable Stylesheets -->
+    <link rel="stylesheet" href="assets/library/DataTables/DataTables-1.11.1/css/dataTables.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/buttons/2.0.0/css/buttons.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/select/1.3.3/css/select.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/datetime/1.1.1/css/dataTables.dateTime.min.css">
+    <link rel="stylesheet" href="assets/library/data-tables-editor/css/editor.semanticui.min.css">
+    <!--End: Semantic DataTable Stylesheets -->
+
+    <link rel="stylesheet" href="assets/library/fomantic/components/calendar.min.css">
+
+    <link rel="stylesheet" type="text/css" href="assets/css/utility.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/warehouse_stock_entry.css">
+	
+	
+	<script type="text/javascript">
+		let isIframeLoaded = false;
+		function iframeLoaded(){
+			isIframeLoaded = true;
+		}
+	</script>
+</head>
+<body>
+
+    <div id="preloader" class="ui segment">
+        <div class="ui active dimmer">
+          <div class="ui indeterminate text loader" id="title">Preparing Files</div>
+        </div>
+        <p></p>
+    </div>
+
+    <header>
+        <div class="breadcrumb-container"></div>
+        <div class="profile">
+            <div class="avatar">
+                <span>A</span>
+            </div>
+            <span class="name"></span>
+        </div>
+    </header>
+
+    <div class="window-controls">
+        <i id="min-btn" class="window minimize icon"></i>
+        <i id="max-btn" class="window maximize icon"></i>
+        <!--<i class="window restore icon"></i>-->
+        <i id="close-btn" class="window close icon"></i>
+    </div>
+
+    <!--BEGIN: SideNav-->
+    <aside class="sidenav gradient-45deg-deep-purple-blue">
+        <div class="brand">
+            <img src="assets/images/brand_logo.svg" alt="Brand Logo">
+            <span class="text">AmbatiSMS</span>
+        </div>
+        <nav></nav>
+    </aside>
+    <!--END: SideNav-->
+
+    <main>
+        <div class="card">
+            <div class="wrapper">
+                <div class="ui segment">
+                    <form class="ui form" id="get_data" method="POST" action="lib/items.php">
+                        <div class="field">
+                        <label>ShortCode</label>
+                        <input type="text" name="shortcode" placeholder="Short Code">
+                        </div>
+                        <button class="ui red labeled icon button" type="submit">
+                            <i class="cloud download icon"></i>
+                            GET DATA
+						</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="wrapper">
+                <h5 class="ui dividing header left date">DATE: <span id="date"></span></h5>
+                <form class="ui form" id="generate_stock" method="POST" action="lib/items.php">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Material</label>
+                            <select name="material" class="ui search dropdown material-field" required>
+                                <option value="">Select Material</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Type</label>
+                            <select name="type" class="ui search dropdown type-field" requiredd>
+                                <option value="">Select Type</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Item</label>
+                            <select name="item" class="ui search dropdown item-field" requiredd>
+                                <option value="">Select Item</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Unit</label>
+                            <input type="text" name="unit" placeholder="Unit" tabindex="-1" required readonly>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Cotton Entry</label>
+                            <select name="is_cotton_entry" class="ui search dropdown is-cotton-field">
+                                <option value=""></option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Quantity</label>
+                            <input type="number" name="quantity" placeholder="Quantity" required>
+                        </div>
+                        <div class="field">
+                            <label>Making Cost</label>
+                            <input type="number" name="making_cost" placeholder="Making Cost" required>
+                        </div>
+                        <div class="field" id="wholesale_field">
+                            <label>Wholesale Cost</label>
+                            <input type="number" name="wholesale_cost" placeholder="Wholesale Cost" required>
+                        </div>
+                        <div class="field" id="retailer_field">
+                            <label>Retailer Cost</label>
+                            <input type="number" name="retailer_cost" placeholder="Retailer Cost" required>
+                        </div>
+                    </div>
+                    <div class="two fields" id="custom-fields">
+                        <div class="field" id="mrp_field">
+                            <label>MRP</label>
+                            <input type="number" name="mrp" placeholder="MRP">
+                        </div>
+                        <div class="field" id="mfg_field">
+                            <label>Manufactured Date</label>
+                            <div class="ui calendar">
+                                <div class="ui input left icon">
+                                  <i class="calendar icon"></i>
+                                  <input type="text" name="mfg" placeholder="Manufactured Date">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field" id="weight_field">
+                            <label>Weight</label>
+                            <div class="ui right labeled input">
+                                <input type="number" name="weight" placeholder="weight">
+                                <div class="ui dropdown label">
+                                  <div class="text">gms</div>
+                                  <i class="dropdown icon"></i>
+                                  <div class="menu">
+									<div class="item">gms</div>
+                                    <div class="item">kg</div>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Current Item No.#</label>
+                            <input type="text" name="current_item_no" placeholder="Current Item No.#" tabindex="-1" readonly required>
+                        </div>
+                        <div class="field">
+                            <label>No.of Barcodes</label>
+                            <input type="number" name="no_of_barcodes" placeholder="No.of Barcodes" required>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field disabled opacity-1">
+                            <label>Tracking Id</label>
+                            <input type="text" name="tracking_id" placeholder="Tracking Id...">
+                        </div>
+                    </div>
+                    
+                    <button class="ui violet labeled icon button focusbgblack" id="generate_stock_btn" type="submit">
+                        <i class="sync icon"></i>
+                        GENERATE STOCK
+                    </button>
+
+                    <button class="ui purple labeled icon button focusbgblack" id="add_stock_btn" type="button">
+                        <i class="add icon"></i>
+                        ADD STOCK
+                    </button>
+					
+					<button class="ui pink labeled icon button focusbgblack" id="edit_stock_btn" type="button">
+                        <i class="edit icon"></i>
+                        EDIT STOCK
+                    </button>
+                </form>
+				
+            </div>
+			
+        </div>
+
+        <div class="card">
+            <div class="wrapper">
+                <div id="barcodes-list">
+                    
+                </div>
+            </div>
+        </div>
+	</main>
+	
+	<iframe class="my-iframe d-none" id="myframe" src="sample_print_barcode_iframe.html" onload="iframeLoaded()"></iframe>
+
+    <footer>
+        <div class="copyright">
+            ©2022 <strong>AMBATI PRODUCTS</strong> All rights reserved.
+        </div>
+        <div class="credits">
+            Design and Developed by <strong>SKONLINE DEALS</strong>
+        </div>
+    </footer>
+    
+    <div class="ui modal small">
+        <div class="header"></div>
+        <div class="content">
+          <p></p>
+        </div>
+        <div class="actions"></div>
+    </div>
+	
+    
+    <!--Begin: Main Scripts-->
+    <script type="text/javascript" src="assets/library/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/library/semantic/2.4.2/semantic.min.js"></script>
+    <script type="text/javascript" src="assets/library/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="assets/library/js-cookie/js.cookie.min.js"></script>
+    <!--End: Main Scripts-->
+
+    <!--Begin: DataTables-->
+    <script type="text/javascript" src="assets/library/DataTables/DataTables-1.11.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/DataTables-1.11.1/js/dataTables.semanticui.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/buttons.semanticui.min.js"></script>
+    <!--<script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/select.semanticui.min.js"></script>-->
+    <script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/dataTables.select.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/DateTime/1.1.1/js/dataTables.dateTime.min.js"></script>
+    <script type="text/javascript" src="assets/library/data-tables-editor/js/dataTables.editor.js"></script>
+    <script type="text/javascript" src="assets/library/data-tables-editor/js/editor.semanticui.min.js"></script>
+    <!--End: DataTables-->
+    
+    <script type="text/javascript" src="assets/library/jsbarcode/3.11.0/JsBarcode.all.min.js"></script>
+
+    <script type="text/javascript" src="assets/library/fomantic/components/calendar.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <script type="text/javascript" src="assets/js/warehouse_stock_entry.js"></script>
+</body>
+</html>

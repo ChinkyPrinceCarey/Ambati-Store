@@ -1,0 +1,51 @@
+.filters_container{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 12px;
+    margin-bottom: 20px;
+}
+
+.filters_container div input::placeholder{
+    color: #5829bb !important;
+    font-weight: 700;
+    opacity: .5;
+}
+
+main .card .wrapper{
+    position: relative;
+}
+
+main .card .wrapper .header{
+    line-height: 68px;
+}
+
+main .card .wrapper .reports-type-dropdown-container{
+    position: absolute;
+    width: 450px;
+    top: 0;
+    left: 0;
+}
+
+main .card .wrapper .calendar-container{
+    position: absolute;
+    width: 450px;
+    top: 0;
+    right: 0;
+}
+
+.calendar-container .two.fields .field button{
+    width: 100%;
+}
+
+.order-actions i{
+    font-size: 23px;
+    border: 1px solid;
+    border-radius: 100px;
+    padding: 10px;
+    color: #6435C9;
+}
+
+.order-actions i:hover{
+    background: black;
+    color: white;
+}

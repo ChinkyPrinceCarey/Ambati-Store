@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="manual_barcode_print_page.css">
+</head>
+<body>
+	<div class="field">
+		<input type="text" name="mfg" id="mfg" placeholder="mfg">
+		<input type="text" name="weight" id="weight" placeholder="weight">
+		<input type="text" name="mrp" id="mrp" placeholder="mrp">
+		<input type="text" name="expire_months" id="expire_months" placeholder="expire_months" autocomplete="on">
+		<button id="generate">GENERATE</button>
+		<button id="print">PRINT</button>
+	</div>
+	<div class="barcode_list">
+		<div class="barcode">
+			<pre>AMBATI TASTY FOODS</pre>
+			<div class="food_licence">FSSAI: 13621033000086</div>
+			<div class="mfg">Mfg: <span id="mfg"></span></div>
+			<div class="weight">Weight: <span id="weight"></span>(approx.)</div>
+			<div>
+				<div class="mrp">MRP: <span id="mrp"></span>/-</div>
+				<p class="footer">Best before <span id="expire_months"></span></p>
+			</div>
+		</div>
+		<div class="barcode">
+			<pre>AMBATI TASTY FOODS</pre>
+			<div class="food_licence">FSSAI: 13621033000086</div>
+			<div class="mfg">Mfg: <span id="mfg"></span></div>
+			<div class="weight">Weight: <span id="weight"></span>(approx.)</div>
+			<div>
+				<div class="mrp">MRP: <span id="mrp"></span>/-</div>
+				<p class="footer">Best before <span id="expire_months"></span></p>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="JsBarcode.all.min.js"></script>
+	<script type="text/javascript" src="script.js"></script>
+</body>

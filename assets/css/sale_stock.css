@@ -1,0 +1,49 @@
+.card .wrapper{
+    position: relative;
+}
+
+.card .wrapper input[type=checkbox]{
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+}
+
+.card .wrapper input[type=checkbox] + label{
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+
+    display: inline-block;
+    opacity: 1;
+    margin: 0em 0.25rem 0em 0em;
+    width: 1.18em;
+    height: 1em;
+    font-family: 'Icons';
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    text-align: center;
+    font-size: 1.3em;
+}
+
+.card .wrapper input[type=checkbox] + label::before{
+    content: "\f067";
+}
+
+.card .wrapper input[type=checkbox]:checked + label::before{
+    content: "\f068"
+}
+
+.card .wrapper input[type=checkbox] + label + div{
+    display: block;
+}
+
+.card .wrapper input[type=checkbox]:checked + label + div{
+    display: none;
+}
+
+td i{
+    cursor: pointer;
+}

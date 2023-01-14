@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmbatiSMS</title>
+
+    <!--Begin: Main Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="assets/font/montserrat/font.css">
+    <link rel="stylesheet" type="text/css" href="assets/library/semantic/2.4.2/semantic_mod.css">
+    <link rel="stylesheet" type="text/css" href="assets/library/perfect-scrollbar/perfect-scrollbar.min.css">
+    <!--End: Main Stylesheets-->
+
+    <!-- Begin: Semantic DataTable Stylesheets -->
+    <link rel="stylesheet" href="assets/library/DataTables/DataTables-1.11.1/css/dataTables.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/buttons/2.0.0/css/buttons.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/select/1.3.3/css/select.semanticui.min.css">
+    <link rel="stylesheet" href="assets/library/DataTables/datetime/1.1.1/css/dataTables.dateTime.min.css">
+    <link rel="stylesheet" href="assets/library/data-tables-editor/css/editor.semanticui.min.css">
+    <!--End: Semantic DataTable Stylesheets -->
+
+    <link rel="stylesheet" type="text/css" href="assets/css/utility.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+</head>
+<body>
+
+    <div id="preloader" class="ui segment">
+        <div class="ui active dimmer">
+          <div class="ui indeterminate text loader" id="title">Preparing Files</div>
+        </div>
+        <p></p>
+    </div>
+
+    <header>
+        <div class="breadcrumb-container"></div>
+        <div class="profile">
+            <div class="avatar">
+                <span>A</span>
+            </div>
+            <span class="name"></span>
+        </div>
+    </header>
+
+    <div class="window-controls">
+        <i id="min-btn" class="window minimize icon"></i>
+        <i id="max-btn" class="window maximize icon"></i>
+        <!--<i class="window restore icon"></i>-->
+        <i id="close-btn" class="window close icon"></i>
+    </div>
+
+    <!--BEGIN: SideNav-->
+    <aside class="sidenav gradient-45deg-deep-purple-blue">
+        <div class="brand">
+            <img src="assets/images/brand_logo.svg" alt="Brand Logo">
+            <span class="text">AmbatiSMS</span>
+        </div>
+        <nav></nav>
+    </aside>
+    <!--END: SideNav-->
+
+    <main>
+        <div class="card">
+            <div class="wrapper">
+                <h4 class="ui dividing header center">Sellers</h4>
+                <table id="example" class="ui selectable celled table" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Slno</th>
+                            <th>Seller Id</th>
+                            <th>Seller Name</th>
+                            <th>Seller Mobile Number</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Slno</th>
+                            <th>Seller Id</th>
+                            <th>Seller Name</th>
+                            <th>Seller Mobile Number</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="copyright">
+            ©2022 <strong>AMBATI PRODUCTS</strong> All rights reserved.
+        </div>
+        <div class="credits">
+            Design and Developed by <strong>SKONLINE DEALS</strong>
+        </div>
+    </footer>
+    
+    <div class="ui modal small">
+        <div class="header"></div>
+        <div class="content">
+          <p></p>
+        </div>
+        <div class="actions"></div>
+    </div>
+    
+    <!--Begin: Main Scripts-->
+    <script type="text/javascript" src="assets/library/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/library/semantic/2.4.2/semantic.min.js"></script>
+    <script type="text/javascript" src="assets/library/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="assets/library/js-cookie/js.cookie.min.js"></script>
+    <!--End: Main Scripts-->
+
+    <!--Begin: DataTables-->
+    <script type="text/javascript" src="assets/library/DataTables/DataTables-1.11.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/DataTables-1.11.1/js/dataTables.semanticui.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/buttons.semanticui.min.js"></script>
+    <!--<script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/select.semanticui.min.js"></script>-->
+    <script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/dataTables.select.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/DateTime/1.1.1/js/dataTables.dateTime.min.js"></script>
+    <script type="text/javascript" src="assets/library/data-tables-editor/js/dataTables.editor.js"></script>
+    <script type="text/javascript" src="assets/library/data-tables-editor/js/editor.semanticui.min.js"></script>
+    <!--End: DataTables-->
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <script type="text/javascript" src="assets/js/sellers.js"></script>
+</body>
+</html>

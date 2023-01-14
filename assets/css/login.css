@@ -1,0 +1,77 @@
+body{
+    background-color: #330055;
+    background-image: url('../images/dragon-scales.svg');
+    background-attachment: fixed;
+    background-size: contain;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+}
+
+.card{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    width: 40vw;
+    min-height: 50vh;
+    box-shadow:0 6px 20px 0 rgba(144, 57, 171, 0.5)!important;
+
+    visibility: hidden;
+}
+
+.card .brand{
+	position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+	top: -55px;
+	background: #fafafa;
+    box-shadow:0 6px 20px 0 rgba(144, 57, 171, 0.5)!important;
+	border-radius: 100px;
+	width: 120px;
+	height: 120px;
+    padding: 10px;
+}
+
+.card .brand img{
+    height: 100%;
+}
+
+.card .wrapper{
+    width: 85%;
+    margin-top: 65px;
+}
+
+.card .wrapper .title{
+    text-align: center;
+    font-weight: 500;
+    font-size: 26px;
+}
+
+.card .wrapper .subtitle{
+    text-align: center;
+}
+
+.card .wrapper form{
+    padding-top: 13px;
+}
+
+.card .wrapper form #forget_password{
+    color: #6435C9;
+    float: right;
+    font-size: 15px;
+}
+
+.card .wrapper form #forget_password:hover{
+    color: #5829bb;
+}
+
+.card .wrapper #login-state{
+    font-size: 12px;
+}

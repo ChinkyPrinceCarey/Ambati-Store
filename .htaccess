@@ -1,0 +1,9 @@
+RewriteEngine On
+#LAPTOP CHROME USER AGENT
+#SO IT PREVENTS CHROME FROM ACCESSING AMBATI_SMS
+#RewriteCond %{HTTP_USER_AGENT} "=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0"
+#RewriteRule .* - [F]
+
+ErrorDocument 403 http://%{HTTP_HOST}/ambati_sms/v2/index.html?error=403
+ErrorDocument 404 http://%{HTTP_HOST}/ambati_sms/v2/index.html?error=404
+ErrorDocument 500 http://%{HTTP_HOST}/ambati_sms/v2/index.html?error=505
