@@ -1,56 +1,113 @@
-let API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
+let ALL_ENV;
+let SERVER_MODE;
+let SERVER_MODE_VARIABLES;
+let API_ENDPOINT;
+let LIB_API_ENDPOINT;
 
-$(function(){
-    console.log(`hello`)
+$(async function(){
+    console.log(`hello`);
 
-    if(typeof loginPage === "undefined"){
-        preloader("Validating Authentication");
-        /* Begin: Check User */
-        if(isUserValid()){
-            let user = getCurrentUser();
-            $(".profile .name").text(user.username);
+    await initEnv();
 
-            preloader("Preparing the Page");
-            /* Begin: Initializes Navigation Items & Scroll Bar */
-            initNavigation();
-            const demo = document.querySelector('nav');
-            if(demo){
-                const ps = new PerfectScrollbar(demo);
-                ps.update();
-            }
-            /* End: Initializes Navigation Items & Scroll Bar */
-            //preloader will be hidden inside `activateCurrentNavItem()`
+    if(API_ENDPOINT){
+        if(typeof loginPage === "undefined"){
+            preloader("Validating Authentication");
+            /* Begin: Check User */
+            if(isUserValid()){
+                let user = getCurrentUser();
+                $(".profile .name").text(user.username);
 
-            //Initialize dropdown
-            $('select').dropdown();
-        }else{
-            //show modal then on button click let signout
-            clearCurrentUser();
-            smallModal(
-               "Invalid Login Detected", 
-               "Relogin because invalid login detected!", 
-                [
-                    {
-                        "class": "ui positive approve button",
-                        "id": "",
-                        "text": "Relogin",
-                    }
-                ], 
-                {
-                    closable: false,
-                    onApprove: function(){
-                        window.location.replace("login.html");
-                        return false;
-                    }
+                preloader("Preparing the Page");
+                /* Begin: Initializes Navigation Items & Scroll Bar */
+                initNavigation();
+                const demo = document.querySelector('nav');
+                if(demo){
+                    const ps = new PerfectScrollbar(demo);
+                    ps.update();
                 }
-            );
+                /* End: Initializes Navigation Items & Scroll Bar */
+                //preloader will be hidden inside `activateCurrentNavItem()`
+
+                //Initialize dropdown
+                $('select').dropdown();
+            }else{
+                //show modal then on button click let signout
+                clearCurrentUser();
+                smallModal(
+                "Invalid Login Detected", 
+                "Relogin because invalid login detected!", 
+                    [
+                        {
+                            "class": "ui positive approve button",
+                            "id": "",
+                            "text": "Relogin",
+                        }
+                    ], 
+                    {
+                        closable: false,
+                        onApprove: function(){
+                            window.location.replace("login.html");
+                            return false;
+                        }
+                    }
+                );
+            }
+            /* End: Check User */
+        }else{
+            //it will fall in this block if login page
+            clearCurrentUser();
         }
-        /* End: Check User */
-    }else{
-        //it will fall in this block if login page
-        clearCurrentUser();
     }
-})
+});
+
+function get_variable(_arr, _str){
+    let currly_var_pattern = /(?<={)(\w+)(?=})/gm;
+    let currly_variables = _str.match(currly_var_pattern);
+    if(currly_variables){
+        for(currly_variable of currly_variables){
+            let currly_value = _arr[currly_variable];
+            if(currly_value){
+                _str = _str.replaceAll('{'+currly_variable+'}', currly_value);
+            }
+        }
+        if(_str.match(currly_var_pattern)){
+            _str = get_variable(_arr, _str);
+        }
+    }
+    return _str;
+}
+
+async function initEnv(){
+    try{
+        const response = await fetch('./variables.json');
+        const ALL_ENV = await response.json();
+        
+        SERVER_MODE = ALL_ENV.SERVER_MODE;
+        SERVER_MODE_VARIABLES = ALL_ENV[SERVER_MODE];
+        API_ENDPOINT = get_variable(SERVER_MODE_VARIABLES, SERVER_MODE_VARIABLES.API_ENDPOINT);
+        LIB_API_ENDPOINT = get_variable(SERVER_MODE_VARIABLES, SERVER_MODE_VARIABLES.LIB_API_ENDPOINT);
+    }catch(error){
+        console.error('initEnv: Error:', error);
+        smallModal(
+        "Error Loading ENV", 
+        error, 
+            [
+                {
+                    "class": "ui positive approve button",
+                    "id": "",
+                    "text": "Try Again",
+                }
+            ], 
+            {
+                closable: false,
+                onApprove: function(){
+                    window.location.replace(getCurrentPage());
+                    return false;
+                }
+            }
+        );
+    }
+}
 
 function preloader(param){
     if(param){
@@ -65,7 +122,7 @@ function preloader(param){
 
 function initNavigation(){
     let user = getCurrentUser();
-    ajaxPostCall("lib/navigation.php", {user_role: user.role}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/navigation.php`, {user_role: user.role}, function(response){
         let modalTitle;
         let modalContent;
         if(response.status){
