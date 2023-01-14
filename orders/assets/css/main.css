@@ -95,6 +95,58 @@ table.dsc-serial-counter tbody tr td:first-child:before{
   padding: 0px;
 }
 
+#scanner .torch{
+  position: absolute;
+  top: 5px;
+  width: 94vw;
+  color: white;
+  z-index: 20;
+}
+
+#scanner .torch i{
+  cursor: pointer;
+  border: 1px solid;
+  border-radius: 100px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  float: right;
+  color: black;
+}
+
+#scanner .torch i.on{
+  color: white;
+}
+
+main.camera-enabled #scanner{
+  position: fixed;
+  border-bottom: 7px solid white;
+  z-index: 10;
+  left: 0;
+  top: 0;
+}
+
+main.camera-enabled{
+  padding-top: 155px;
+}
+
+#scanner_form{
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 3px solid #E03997;
+  background-color: #6435C9;
+  left: 0;
+  margin-bottom: 0px;
+  z-index: 10;
+}
+
+main .card:last-child{
+  margin-bottom: 95px;
+}
+
 #scanner_form .inline.fields{
   margin-bottom: 0px;
 }
@@ -107,7 +159,7 @@ table.dsc-serial-counter tbody tr td:first-child:before{
   position: relative;
   border-bottom: 2px solid;
   text-align: center;
-  color: #E03997;
+  color: white;
   font-size: 25px;
   cursor: pointer;
 }

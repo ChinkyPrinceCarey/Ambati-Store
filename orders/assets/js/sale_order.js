@@ -30,6 +30,7 @@ let table_scanned_summary;
 
 let table_order_summary_before;
 let table_order_summary_after;
+let track;
 
 $(function(){
 
@@ -42,6 +43,20 @@ $(function(){
     });
 
     $("#scanner").hide();
+
+    $(".torch i").on('click', function(){
+        if(!track){
+            track = Quagga.CameraAccess.getActiveTrack();
+        }
+
+        if($(this).hasClass("on")){
+            $(this).removeClass("on");
+            track.applyConstraints({advanced: [{torch: false}]});
+        }else{
+            $(this).addClass("on");
+            track.applyConstraints({advanced: [{torch: true}]});
+        }
+    });
 
     table_scanned_list = $("#scanned-list");
     table_scanned_summary = $("#scanned-summary");
@@ -364,7 +379,7 @@ function ScannerCamera(param1){
 
     if(type == "start"){
         //camera start
-        $("#scanner").show();
+        $("#scanner").show().parent().addClass("camera-enabled");
 
         barcode_icon.addClass("strike");
 
@@ -396,7 +411,7 @@ function ScannerCamera(param1){
               });
         });
     }else{
-        $("#scanner").hide();
+        $("#scanner").hide().parent().removeClass("camera-enabled");
 
         barcode_icon.removeClass("strike");
         Quagga.stop();
@@ -514,7 +529,6 @@ function initValues(){
                                 closable: false,
                                 onApprove: function(){
                                     barcode_input.val('');
-                                    barcode_input.focus();
                                     return true;
                                 }
                             }

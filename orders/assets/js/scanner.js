@@ -124,8 +124,9 @@ $(function(){
                                 closable: false,
                                 onApprove: function(){
                                     barcode_input.val('');
-                                    barcode_input.focus();
-                                    $(".ui.modal .content .message").remove();
+                                    if($(".ui.modal .content .message").length){
+										$(".ui.modal .content .message").remove();
+									}
                                     return true;
                                 }
                             }
