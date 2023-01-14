@@ -126,7 +126,7 @@ function initValues(){
 }
 
 function initLoadStock(_type, _table, callback){
-    ajaxPostCall("lib/warehouse_stock_reports.php", {action: _type, table: _table, data: ["something_random"]}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/warehouse_stock_reports.php`, {action: _type, table: _table, data: ["something_random"]}, function(response){
         let modal_title = "Loading Stock Error";
         let modal_body = null;
 
@@ -226,7 +226,7 @@ function dump_stock(){
         data: JSON.stringify(unscanned_data.data)
     }
 
-    ajaxPostCall('lib/warehouse_stock_reports.php', data_param, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/warehouse_stock_reports.php`, data_param, function(response){
 
         let modal_body; let modal_title = "Data Error";
         if(response.status){

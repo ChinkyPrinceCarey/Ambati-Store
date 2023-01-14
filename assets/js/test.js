@@ -44,7 +44,7 @@ $(function(){
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  "lib/units.php",
+                url: `${LIB_API_ENDPOINT}/units.php`,
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -99,7 +99,7 @@ $(function(){
             ],
         },
         ajax: {
-            "url": "lib/units.php",
+            "url": `${LIB_API_ENDPOINT}/units.php`,
             "type": "POST",
             "data" : {"action": "fetch_all", "data": "random_data"},
             "dataType": 'json',

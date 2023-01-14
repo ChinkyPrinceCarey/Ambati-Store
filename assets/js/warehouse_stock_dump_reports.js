@@ -65,7 +65,7 @@ $(function(){
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  "lib/warehouse_stock_reports.php",
+                url: `${LIB_API_ENDPOINT}/warehouse_stock_reports.php`,
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -173,7 +173,7 @@ $(function(){
             ],
         },
         "ajax": {
-            "url": "lib/warehouse_stock_reports.php",
+            "url": `${LIB_API_ENDPOINT}/warehouse_stock_reports.php`,
             "type": "POST",
             //"data" : {"action": "fetch_all", "data": {from: rangestart_input.val(), end: rangeend_input.val()}},
             "data": function(d){

@@ -233,7 +233,7 @@ function initValues(){
 function initVehicles(){
     vehicle_dropdown.addClass("loading");
 
-    ajaxPostCall("lib/vehicles.php", {action: "fetch_all", data: ["something_random"]}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/vehicles.php`, {action: "fetch_all", data: ["something_random"]}, function(response){
         let modal_title = "Loading Vehicles Error";
         let modal_body = null;
 
@@ -305,7 +305,7 @@ function fetchVehicleInvoice(){
         data: "some_data"
     }
 
-    ajaxPostCall('lib/vehicles.php', data_param, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/vehicles.php`, data_param, function(response){
         let modal_body; let modal_title = "Parsing Vehicle Invoice Error";
         if(response.status){
             modal_body = response.status + ": " + response.statusText;
@@ -490,7 +490,7 @@ function return_items(){
         return_data: JSON.stringify({summary: return_invoice.summary, data: return_invoice.data, billing: return_invoice.billing})
     }
 
-    ajaxPostCall('lib/sale_stock.php', data_param, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/sale_stock.php`, data_param, function(response){
 
         let modal_body; let modal_title = "Parsing Item Data Error";
         if(response.status){

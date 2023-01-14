@@ -88,7 +88,7 @@ $(function(){
                 type: "invoice_id",
                 data: invoice_id
             }
-            ajaxPostCall('lib/sale_reports.php', data_param, function(response){
+            ajaxPostCall(`${LIB_API_ENDPOINT}/sale_reports.php`, data_param, function(response){
                 let modal_body; let modal_title = "Parsing Invoice Error";
                 if(response.status){
                     modal_body = response.status + ": " + response.statusText;
@@ -411,7 +411,7 @@ function sale_cancel(){
         cancelled_invoice: {summary: cancelled_sale.summary, list: cancelled_sale.data, billing: cancelled_sale.billing}
     }
 
-    ajaxPostCall('lib/sale_cancel.php', data_param, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/sale_cancel.php`, data_param, function(response){
         console.log(response);
 
         let modal_body; let modal_title = "Cancelling Sale Error";

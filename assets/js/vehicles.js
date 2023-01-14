@@ -57,7 +57,7 @@ $(function(){
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  "lib/vehicles.php",
+                url: `${LIB_API_ENDPOINT}/vehicles.php`,
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -149,7 +149,7 @@ $(function(){
             ],
         },
         "ajax": {
-            "url": "lib/vehicles.php",
+            "url": `${LIB_API_ENDPOINT}/vehicles.php`,
             "type": "POST",
             "data" : {"action": "fetch_all", "data": "random_data"},
             "dataType": 'json',
@@ -247,10 +247,7 @@ $(function(){
         }
     });
 
-    table.on('init.dt', function(){
-        //setSelectOpts('lib/units.php', 'unit');
-        //setSelectOpts('lib/types.php', 'type');
-    });
+    table.on('init.dt', function(){});
 
     //to disable `edit` button on when multiple rows selected
     table.on('select', function(e, f, g){

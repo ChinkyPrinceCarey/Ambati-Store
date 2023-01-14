@@ -64,7 +64,7 @@ $(function(){
 })
 
 function initStats(){
-    ajaxPostCall("lib/stats.php", {data: "random_data"}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/stats.php`, {data: "random_data"}, function(response){
         let modalTitle;
         let modalContent;
         if(response.status){

@@ -43,7 +43,7 @@ $(function(){
                 data: invoice_id
             }
 
-            ajaxPostCall('lib/sale_reports.php', data_param, function(response){
+            ajaxPostCall(`${LIB_API_ENDPOINT}/sale_reports.php`, data_param, function(response){
                 let modal_body; let modal_title = "Parsing Item Data Error";
                 if(response.status){
                     modal_body = response.status + ": " + response.statusText;

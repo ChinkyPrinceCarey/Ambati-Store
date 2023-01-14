@@ -138,7 +138,7 @@ $(function(){
             $('#get_data').addClass("loading");
             fieldsLoading();
 
-            ajaxPostCall('lib/items.php', {action: "fetch_item_data", data: "random_data", shortcode: fields.shortcode}, function(response){
+            ajaxPostCall(`${LIB_API_ENDPOINT}/items.php`, {action: "fetch_item_data", data: "random_data", shortcode: fields.shortcode}, function(response){
                 let modal_body; let modal_title = "Parsing Item Data Error";
                 if(response.status){
                     modal_body = response.status + ": " + response.statusText;
@@ -329,7 +329,7 @@ $(function(){
                     is_cotton: getIsCottonEntry()
                 };
                 
-                ajaxPostCall('lib/warehouse_stock_entry.php', data_param, function(response){
+                ajaxPostCall(`${LIB_API_ENDPOINT}/warehouse_stock_entry.php`, data_param, function(response){
                     let modal_body; let modal_title = "Parsing Item Data Error";
                     if(response.status){
                         modal_body = response.status + ": " + response.statusText;
@@ -427,7 +427,7 @@ $(function(){
 })
 
 function loadMaterial(){
-    ajaxPostCall('lib/material.php', {action: "fetch_all", data: "random_data"}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/material.php`, {action: "fetch_all", data: "random_data"}, function(response){
 
         let modal_title = "error fetching `material`";
         let modal_body = null;
@@ -770,7 +770,7 @@ function materialOnChange(value, text, choice){
     let required_fields = ['DISTINCT `type` AS `type`']
     let suffix_query_str = 'ORDER BY `type` ASC';
     
-    getSelectOpts('lib/items.php', rules, required_fields, suffix_query_str, dropdown_type);
+    getSelectOpts(`${LIB_API_ENDPOINT}/items.php`, rules, required_fields, suffix_query_str, dropdown_type);
     
     dropdown_item.dropdown({values: []});
     resetFields();
@@ -788,7 +788,7 @@ function typeOnChange(value, text, choice){
         let suffix_query_str = 'ORDER BY `item` ASC';
 
         dropdown_item.dropdown({values: []});
-        getSelectOpts('lib/items.php', rules, required_fields, suffix_query_str, dropdown_item);
+        getSelectOpts(`${LIB_API_ENDPOINT}/items.php`, rules, required_fields, suffix_query_str, dropdown_item);
     }else{
         smallModal(
             "Error Getting Selected Material Value", 
@@ -816,7 +816,7 @@ function itemOnChange(value, text, choice){
 	resetFields();
     fieldsLoading();
 
-    ajaxPostCall('lib/items.php', {action: "fetch_item_data", data: "random_data", shortcode: value}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/items.php`, {action: "fetch_item_data", data: "random_data", shortcode: value}, function(response){
         let modal_body; let modal_title = "Parsing Item Data Error";
         if(response.status){
             modal_body = response.status + ": " + response.statusText;

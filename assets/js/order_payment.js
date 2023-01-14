@@ -64,7 +64,7 @@ $(function(){
             type: "order_id",
             data: order_id
         }
-        ajaxPostCall(API_ENDPOINT + 'lib/orders.php', data_param, function(response){
+        ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
             let modal_body; let modal_title = "Parsing Order Error";
             if(response.status){
                 modal_body = response.status + ": " + response.statusText;
@@ -243,7 +243,7 @@ function order_payment(){
         data: order_details.order_id
     }
 
-    ajaxPostCall(API_ENDPOINT + 'lib/orders.php', data_param, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
         let modal_body; let modal_title = "Parsing Error";
         if(response.status){
             modal_body = response.status + ": " + response.statusText;

@@ -107,7 +107,7 @@ $(function(){
             ]
         },
         "ajax": {
-            "url": "lib/sale_reports.php",
+            "url": `${LIB_API_ENDPOINT}/sale_reports.php`,
             "type": "POST",
             "data": function(d){
                 d.action = "fetch_all";

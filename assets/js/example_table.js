@@ -2,7 +2,7 @@ var editor; // use a global for the submit and return data rendering in the exam
  
 $(document).ready(function() {
     editor = new $.fn.dataTable.Editor( {
-        ajax: "lib/example_table.php",
+        ajax: `${LIB_API_ENDPOINT}/example_table.php`,
         table: "#example",
         fields: [ {
                 label: "First name:",
@@ -17,7 +17,7 @@ $(document).ready(function() {
     $('#example').DataTable( {
         dom: "Bfrtip",
         ajax: {
-            url: "lib/example_table.php",
+            url: `${LIB_API_ENDPOINT}/example_table.php`,
             type: 'POST'
         },
         columns: [

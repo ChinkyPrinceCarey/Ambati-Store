@@ -88,7 +88,7 @@ $(function(){
             type: "order_id",
             data: order_id
         }
-        ajaxPostCall(API_ENDPOINT + 'lib/orders.php', data_param, function(response){
+        ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
             let modal_body; let modal_title = "Parsing Order Error";
             if(response.status){
                 modal_body = response.status + ": " + response.statusText;
@@ -463,7 +463,7 @@ function cancelRequest(modalContainer){
         data: cancellation_reason
     }
 
-    ajaxPostCall('lib/orders.php', data_param, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
         let modal_body; let modal_title = "Parsing Error";
         if(response.status){
             modal_body = response.status + ": " + response.statusText;
@@ -662,7 +662,7 @@ function sale_items(){
         data: JSON.stringify({summary: sale_data.summary, list: sale_data.data, billing: sale_data.billing})
     }
 
-    ajaxPostCall('lib/orders.php', data_param, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
         let modal_body; let modal_title = "Parsing Error";
         if(response.status){
             modal_body = response.status + ": " + response.statusText;
@@ -783,7 +783,7 @@ function initTrackingId(){
             data: itemsShortcode
         }
     
-        ajaxPostCall('lib/items.php', data_param, function(response){
+        ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
             let modal_body; let modal_title = "Parsing Error";
             if(response.status){
                 modal_body = response.status + ": " + response.statusText;

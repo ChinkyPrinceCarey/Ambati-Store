@@ -30,7 +30,7 @@ $(function(){
                 data: input_id_or_barcodes.includes(",") || parseInt(input_id_or_barcodes) != input_id_or_barcodes ? input_id_or_barcodes.split(",") : input_id_or_barcodes
             }
 
-            ajaxPostCall('lib/warehouse_stock_reports.php', data_param, function(response){
+            ajaxPostCall(`${LIB_API_ENDPOINT}/warehouse_stock_reports.php`, data_param, function(response){
                 let modal_body; let modal_title = "Parsing Item Data Error";
                 if(response.status){
                     modal_body = response.status + ": " + response.statusText;

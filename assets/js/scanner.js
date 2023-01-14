@@ -535,7 +535,7 @@ function isItemExist(_barcode, _show_message = true, _searchBarcode = true){
 }
 
 function initLoadStock(){
-    ajaxPostCall("lib/warehouse_stock_reports.php", {action: "fetch_all", data: ["something_random"]}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/warehouse_stock_reports.php`, {action: "fetch_all", data: ["something_random"]}, function(response){
         let modal_title = "Loading Stock Error";
         let modal_body = null;
 

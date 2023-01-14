@@ -297,7 +297,7 @@ function sale_items(){
         data: JSON.stringify({summary: sale_data.summary, list: sale_data.data, billing: sale_data.billing})
     }
 
-    ajaxPostCall('lib/sale_stock.php', data_param, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/sale_stock.php`, data_param, function(response){
 
         console.log(response);
 
@@ -403,7 +403,7 @@ function sale_items(){
 function initSellersOpts(){
     seller_dropdown.addClass("loading");
 
-    ajaxPostCall("lib/sellers.php", {action: "fetch_all", data: 'random_string'}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/sellers.php`, {action: "fetch_all", data: 'random_string'}, function(response){
         let modal_title = "Parsing Sellers Options error";
         let modal_body = null;
 

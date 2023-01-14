@@ -113,7 +113,7 @@ $(function(){
             ]
         },
         "ajax": {
-            "url": "lib/orders.php",
+            "url": `${LIB_API_ENDPOINT}/orders.php`,
             "type": "POST",
             "data": function(d){
                 d.action = "fetch_all";
