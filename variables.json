@@ -11,9 +11,9 @@
     "UPLOADS_DIR": "/{UPLOADS_DIRNAME}"
   },
   "BETA": {
-    "API_ENDPOINT": "https://ambatitastyfoods.com/v2",
+    "API_ENDPOINT": "https://beta.ambatitastyfoods.com",
     "LIB_API_ENDPOINT": "{API_ENDPOINT}/lib",
-    "BASE_DIR": "C:/wamp64/www/ambati_sms/v2",
+    "BASE_DIR": "C:/wamp64/www/beta.ambatitastyfoods.com/desktop",
     "LIB_DIR": "{BASE_DIR}/lib",
     "NAVIGATION_FILE": "{LIB_DIR}/navigation_map.json",
     "UPLOADS_DIRNAME": "uploads",
