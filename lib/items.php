@@ -462,7 +462,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $name = $select_result['additional_data'][0]['item'];
                 $images = $select_result['additional_data'][0]['image'];
                 if(count($images)){
-                    $image = "../" . $images[0]['thumb'];
+                    $image = APP_BASE_DIR . "/" . $images[0]['thumb'];
                     if(file_exists($image)){
                         $image_info = getimagesize($image);
                         header('Content-Type: ' . $image_info['mime']);
