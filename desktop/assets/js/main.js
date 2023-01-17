@@ -4,12 +4,12 @@ let SERVER_MODE_VARIABLES;
 let API_ENDPOINT;
 let LIB_API_ENDPOINT;
 
-$(async function(){
+$(function(){
     console.log(`hello`);
 
-    await initEnv();
+    InitVariables();
 
-    if(API_ENDPOINT){
+    if(LIB_API_ENDPOINT){
         if(typeof loginPage === "undefined"){
             preloader("Validating Authentication");
             /* Begin: Check User */
@@ -57,8 +57,127 @@ $(async function(){
             //it will fall in this block if login page
             clearCurrentUser();
         }
+    }else{
+        smallModal(
+            "Empty LIB_API_ENDPOINT", 
+            "LIB_API_ENDPOINT failed to load", 
+            [
+                {
+                    "class": "ui positive approve button",
+                    "id": "",
+                    "text": "Relogin",
+                }
+            ], 
+            {
+                closable: false,
+                onApprove: function(){
+                    window.location.replace("login.html");
+                    return false;
+                }
+            }
+        );
     }
 });
+
+/*BEGIN: CODE CAN BE USED IN FUTURE IMPLEMENTATIONS */
+async function asyncInitEnv(){
+    try{
+        const response = await fetch('../variables.json');
+        const ALL_ENV = await response.json();
+        
+        SERVER_MODE = ALL_ENV.SERVER_MODE;
+        SERVER_MODE_VARIABLES = ALL_ENV[SERVER_MODE];
+        API_ENDPOINT = get_variable(SERVER_MODE_VARIABLES, SERVER_MODE_VARIABLES.API_ENDPOINT);
+        LIB_API_ENDPOINT = get_variable(SERVER_MODE_VARIABLES, SERVER_MODE_VARIABLES.LIB_API_ENDPOINT);
+    }catch(error){
+        console.error('initEnv: Error:', error);
+        smallModal(
+        "Error Loading ENV", 
+        error, 
+            [
+                {
+                    "class": "ui positive approve button",
+                    "id": "",
+                    "text": "Try Again",
+                }
+            ], 
+            {
+                closable: false,
+                onApprove: function(){
+                    window.location.replace(getCurrentPage());
+                    return false;
+                }
+            }
+        );
+    }
+}
+
+const asyncWait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function asyncWaitForVariables(howManyMilliSeconds, howManyTimes){
+    console.log("waitForVariables");
+    for(let i=0; i<howManyTimes; i++){
+        console.log(i);
+        if(LIB_API_ENDPOINT) return true;
+        
+        await asyncWait(howManyMilliSeconds);
+        if(LIB_API_ENDPOINT) return true;
+    }
+
+    return false;
+}
+
+function syncInitEnv(){
+    fetch('../variables.json')
+    .then(response => response.json())
+    .then(ALL_ENV => {
+        SERVER_MODE = ALL_ENV.SERVER_MODE;
+        SERVER_MODE_VARIABLES = ALL_ENV[SERVER_MODE];
+        API_ENDPOINT = get_variable(SERVER_MODE_VARIABLES, SERVER_MODE_VARIABLES.API_ENDPOINT);
+        LIB_API_ENDPOINT = get_variable(SERVER_MODE_VARIABLES, SERVER_MODE_VARIABLES.LIB_API_ENDPOINT);
+        console.log('variables has been set');
+    })
+    .catch(error => {
+        console.error('Error loading JSON file:', error);
+        smallModal(
+            "Error Loading ENV", 
+            error, 
+            [
+                {
+                    "class": "ui positive approve button",
+                    "id": "",
+                    "text": "Try Again",
+                }
+            ], 
+            {
+                closable: false,
+                onApprove: function(){
+                    window.location.replace(getCurrentPage());
+                    return false;
+                }
+            }
+        );
+    });
+}
+
+const syncWait = ms => {
+    const end = Date.now() + ms
+    while (Date.now() < end) continue
+}
+
+function syncWaitForVariables(howManyMilliSeconds, howManyTimes){
+    console.log("syncWaitForVariables");
+    for(let i=0; i<howManyTimes; i++){
+        console.log(i);
+        if(LIB_API_ENDPOINT) break;
+        
+        syncWait(howManyMilliSeconds);
+        if(LIB_API_ENDPOINT) break;
+    }
+
+    return false;
+}
+/*END: CODE CAN BE USED IN FUTURE IMPLEMENTATIONS */
 
 function get_variable(_arr, _str){
     let currly_var_pattern = /(?<={)(\w+)(?=})/gm;
@@ -77,20 +196,25 @@ function get_variable(_arr, _str){
     return _str;
 }
 
-async function initEnv(){
-    try{
-        const response = await fetch('./variables.json');
-        const ALL_ENV = await response.json();
+function InitVariables(){
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '../variables.json', false);
+    xhr.send();
+    
+    if(xhr.status === 200){
+        ALL_ENV = JSON.parse(xhr.responseText);
         
         SERVER_MODE = ALL_ENV.SERVER_MODE;
         SERVER_MODE_VARIABLES = ALL_ENV[SERVER_MODE];
         API_ENDPOINT = get_variable(SERVER_MODE_VARIABLES, SERVER_MODE_VARIABLES.API_ENDPOINT);
         LIB_API_ENDPOINT = get_variable(SERVER_MODE_VARIABLES, SERVER_MODE_VARIABLES.LIB_API_ENDPOINT);
-    }catch(error){
-        console.error('initEnv: Error:', error);
+        
+        console.log('variables has been set');
+    }else{
+        console.error('Error loading JSON file:', xhr.statusText);
         smallModal(
-        "Error Loading ENV", 
-        error, 
+            "Error Loading ENV", 
+            xhr.statusText, 
             [
                 {
                     "class": "ui positive approve button",
