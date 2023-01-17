@@ -468,6 +468,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                     "barcode",
                     "custom_data"
                 );
+
                 foreach($cancelled_invoice['list'] as $cancelled_item){
                     $stock_insert_values =	array(
                         $cancelled_item['generate_id'],
@@ -492,74 +493,118 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                 /*
                     scenario: 1
-                    if all items are scanned in the order for return, the `current_invoice` would be empty
-                    that means just cancel that order
+                    if all items are scanned in the order for return, 
+                    
+                    the `current_invoice` would be empty
+                    so, we will use update query to set `is_cancelled` = 1 for that order
 
                     scenario: 2
-                    if few items are unscanned in the order for return, the `current_invoice` would have list
-                    that means cancel that order
-                    and also create a new order with the `current_invoice`
+                    if few items are unscanned in the order for return.
+                    
+                    the `current_invoice` will have list of items which are unscanned
+                    the `cancelled_invoice` will have list of items which are scanned
 
-                    If you can look cancel that order is common in both scenarios
-                    so irrespective of if-else block first we have to cancel that order
-
-                    then using following if block condition solving scenario: 2 case
-
-                    else block not required because cancel that order is common and keeping it begining irrespective of scenarios
+                    so, we should use update query to update current order with `current_invoice` details.
+                    then, we should create new order with 
+                        continuos order_id number with `cancelled_invoice` details,
+                        and, `is_cancelled` = 1
                 */
 
-                //cancel that order
-                $update_query_type = "update";
-                $update_column_set = array("is_cancelled=1");
-                $update_column_where = "`order_id` LIKE '$order_id'";
-
-                $update_query = get_query($update_query_type, $query_table, $update_column_set, $update_column_where);
-                $transaction_queries[] = array("update" => $update_query);
-
+                $is_all_items_scanned = !(      array_key_exists('list', $_POST['current_invoice'])
+                                            &&  count($_POST['current_invoice']['list'])
+                                        );
                 
-                $new_insert_order_required =        array_key_exists('current_invoice', $_POST)
-                                                &&  count($_POST['current_invoice']['list']);
+                if($is_all_items_scanned){
+                    //cancel that order
+                    $update_query_type = "update";
+                    $update_column_set = array("is_cancelled=1", "affected_reason=Order Return");
+                    $update_column_where = "`order_id` LIKE '$order_id'";
 
-                //if `current_invoice` is not empty
-                //then create a new order with the `current_invoice`
-                if($new_insert_order_required){
-                    $insert_query_type = "insert";
-                    $insert_query_columns = array(
-                        "order_id",
-                        "sale_type",
-                        "username",
-                        "name",
-                        "mobile_number",
-                        "address",
-                        "no_of_items",
-                        "no_of_units",
-                        "making_cost",
-                        "sub_total",
-                        "total_price",
-                        "offer_percentage",
-                        "offer_amount",
-                        "items_details",
-                        "is_confirmed"
-                    );
-                    $insert_query_values =	array(
-                                    generateInvoiceId($order_id, true),
-                                    $order_details['sale_type'],
-                                    $order_details['username'],
-                                    $order_details['name'],
-                                    $order_details['mobile_number'],
-                                    $order_details['address'],
-                                    $order_details['no_of_items'],
-                                    $order_details['no_of_units'],
-                                    $order_details['making_cost'],
-                                    $order_details['sub_total'],
-                                    $order_details['total_price'],
-                                    $order_details['offer_percentage'],
-                                    $order_details['offer_amount'],
-                                    json_encode($_POST['current_invoice']),
-                                    1
-                                );
+                    $update_query = get_query($update_query_type, $query_table, $update_column_set, $update_column_where);
+                    $transaction_queries[] = array("update" => $update_query);
+                }else{
+                    //so, we should use update query to update current order with `current_invoice` details.
 
-                    $insert_query = get_query($insert_query_type, $query_table, $insert_query_columns, $insert_query_values);
+                    $current_invoice_no_of_items = count($_POST['current_invoice']['summary']);
+                    $current_invoice_no_of_units = $_POST['current_invoice']['no_of_units'];
+                    $current_invoice_making_cost = $_POST['current_invoice']['billing']['making_cost'];
+                    $current_invoice_sub_total = $_POST['current_invoice']['billing']['sub_total'];
+                    $current_invoice_total_price = $_POST['current_invoice']['billing']['total'];
+                    $current_invoice_items_details = json_encode($_POST['current_invoice']);
+
+                    $update_query_type = "update";
+                    $update_column_set = array(
+                                            "no_of_items=$current_invoice_no_of_items",
+                                            "no_of_units=$current_invoice_no_of_units",
+                                            "making_cost=$current_invoice_making_cost",
+                                            "sub_total=$current_invoice_sub_total",
+                                            "total_price=$current_invoice_total_price",
+                                            "items_details=$current_invoice_items_details"
+                                        );
+                    $update_column_where = "`is_confirmed` = 1 AND `is_cancelled` = 0 AND `order_id` LIKE '$order_id'";
+
+                    $update_query = get_query($update_query_type, $query_table, $update_column_set, $update_column_where);
+                    $transaction_queries[] = array("update" => $update_query);
+
+                    //then, we should create new order with 
+                    //continuos order_id number with `cancelled_invoice` details,
+                    //and, `is_cancelled` = 1
+                    $date = date('Y-m-d H:i:s');
+                    $order_id_without_decimal = preg_replace('/(\.).*$/', '', $order_id);
+
+                    $cancelled_invoice_username = $order_details['username'];
+                    $cancelled_invoice_name = $order_details['name'];
+                    $cancelled_invoice_mobile_number = $order_details['mobile_number'];
+                    $cancelled_invoice_address = $order_details['address'];
+
+                    $cancelled_invoice_no_of_items = count($_POST['cancelled_invoice']['summary']);
+                    $cancelled_invoice_no_of_units = $_POST['cancelled_invoice']['no_of_units'];
+                    $cancelled_invoice_making_cost = $_POST['cancelled_invoice']['billing']['making_cost'];
+                    $cancelled_invoice_sub_total = $_POST['cancelled_invoice']['billing']['sub_total'];
+                    $cancelled_invoice_total_price = $_POST['cancelled_invoice']['billing']['total'];
+                    $cancelled_invoice_items_details = json_encode($_POST['cancelled_invoice']);
+                    
+                    $insert_query_type = "custom";
+                    $insert_query_text = "
+                        INSERT INTO `orders` (
+                            `date`,
+                            `order_id`,
+                            `sale_type`,
+                            `username`,
+                            `name`,
+                            `mobile_number`,
+                            `address`,
+                            `no_of_items`,
+                            `no_of_units`,
+                            `making_cost`,
+                            `sub_total`,
+                            `total_price`,
+                            `items_details`,
+                            `is_cancelled`,
+                            `affected_time`,
+                            `affected_reason`
+                        )
+                        
+                        SELECT 
+                            '$date', 
+                            (SELECT ROUND(`order_id` + '0.1', 1) FROM `orders` WHERE `order_id` BETWEEN '$order_id' AND '$order_id_without_decimal.9' ORDER BY `order_id` DESC LIMIT 1),
+                            'order',
+                            '$cancelled_invoice_username',
+                            '$cancelled_invoice_name',
+                            '$cancelled_invoice_mobile_number',
+                            '$cancelled_invoice_address',
+                            '$cancelled_invoice_no_of_items',
+                            '$cancelled_invoice_no_of_units',
+                            '$cancelled_invoice_making_cost',
+                            '$cancelled_invoice_sub_total',
+                            '$cancelled_invoice_total_price',
+                            '$cancelled_invoice_items_details',
+                            '1',
+                            '$date', 
+                            'Order Return'
+                    ";
+                    
+                    $insert_query = get_query($insert_query_type, $query_table, $insert_query_text);
                     $transaction_queries[] = array("insert" => $insert_query);
                 }
 
@@ -573,16 +618,13 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                         $return['order_id'] = $order_id;
 
-                        $return['info'] .= "Successfully ";
-                        $return['info'] .= "Order Cancelled ";
-
+                        $return['info'] .= "Successfully Order Cancelled ";
+                        
                         $return['success_title'] = "Items returned in the Order";
-                        $return['success_content'] = "Items returned in the Order";
+                        $return['success_content'] = "And created a new order with returned items which is cancelled";
 
-                        if($new_insert_order_required){
-                            $return['new_order_id'] = generateInvoiceId($order_id, true);
-
-                            $return['info'] .= "and Order Created ";
+                        if($is_all_items_scanned){
+                            $return['info'] .= "Completely ";
 
                             $return['success_title'] = "Complete Order Cancelled";
                             $return['success_content'] = "Complete Order Cancelled";

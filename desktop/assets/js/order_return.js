@@ -409,8 +409,18 @@ function order_return(){
     let data_param = {
         action: "order_return",
         data: invoice_details,
-        current_invoice: {summary: current_sale.summary, list: current_sale.data, billing: current_sale.billing},
-        cancelled_invoice: {summary: cancelled_sale.summary, list: cancelled_sale.data, billing: cancelled_sale.billing}
+        current_invoice: {
+            summary: current_sale.summary, 
+            list: current_sale.data, 
+            billing: current_sale.billing,
+            no_of_units: sumPropertyValues(current_sale.summary, 'quantity')
+        },
+        cancelled_invoice: {
+            summary: cancelled_sale.summary, 
+            list: cancelled_sale.data, 
+            billing: cancelled_sale.billing,
+            no_of_units: sumPropertyValues(cancelled_sale.summary, 'quantity')
+        }
     }
 
     ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
