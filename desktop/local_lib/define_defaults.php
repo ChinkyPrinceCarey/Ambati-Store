@@ -21,13 +21,16 @@ function get_variable_value($_arr, $_str){
 }
 ?>
 <?php
-$VARIABLES_STR = file_get_contents('../variables.json');
+$VARIABLES_STR = file_get_contents('../../variables.json');
 $ALL_VARIABLES = json_decode($VARIABLES_STR, true);
 $VARIABLES_SERVER_MODE = $ALL_VARIABLES['SERVER_MODE'];
 $VARIABLES = $ALL_VARIABLES[$VARIABLES_SERVER_MODE];
+$VARIABLES['BASE_DIR'] = $VARIABLES['DESKTOP']['BASE_DIR'];
 
 //## default directories ## //
 define("BASE_DIR", get_variable_value($VARIABLES, $VARIABLES['BASE_DIR']));
+define("DESKTOP_BASE_DIR", get_variable_value($VARIABLES, $VARIABLES['DESKTOP_BASE_DIR']));
+define("APP_BASE_DIR", get_variable_value($VARIABLES, $VARIABLES['APP_BASE_DIR']));
 define("LIB_DIR", get_variable_value($VARIABLES, $VARIABLES['LIB_DIR']));
 define("NAVIGATION_FILE", get_variable_value($VARIABLES, $VARIABLES['NAVIGATION_FILE']));
 define("UPLOADS_DIRNAME", get_variable_value($VARIABLES, $VARIABLES['UPLOADS_DIRNAME']));
