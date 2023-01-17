@@ -53,7 +53,7 @@ function get_variable_value($_arr, $_str){
 }
 ?>
 <?php
-$ENV_STR_ENCRYPTED = file_get_contents('../env.json');
+$ENV_STR_ENCRYPTED = file_get_contents('../.env');
 $ENV_STR = encrypt_decrypt("decrypt", $ENV_STR_ENCRYPTED);
 $ALL_ENV = json_decode($ENV_STR, true);
 $SERVER_MODE = $ALL_ENV['SERVER_MODE'];
@@ -63,6 +63,7 @@ $VARIABLES_STR = file_get_contents('../variables.json');
 $ALL_VARIABLES = json_decode($VARIABLES_STR, true);
 $VARIABLES_SERVER_MODE = $ALL_VARIABLES['SERVER_MODE'];
 $VARIABLES = $ALL_VARIABLES[$VARIABLES_SERVER_MODE];
+$VARIABLES['BASE_DIR'] = $VARIABLES['APP']['BASE_DIR'];
 
 define("DB_SERVER", $ENV['DB_SERVER']);
 define("DB_USERNAME", $ENV['DB_USERNAME']);
@@ -71,6 +72,8 @@ define("DB_DBNAME", $ENV['DB_DBNAME']);
 
 //## default directories ## //
 define("BASE_DIR", get_variable_value($VARIABLES, $VARIABLES['BASE_DIR']));
+define("DESKTOP_BASE_DIR", get_variable_value($VARIABLES, $VARIABLES['DESKTOP_BASE_DIR']));
+define("APP_BASE_DIR", get_variable_value($VARIABLES, $VARIABLES['APP_BASE_DIR']));
 define("LIB_DIR", get_variable_value($VARIABLES, $VARIABLES['LIB_DIR']));
 define("NAVIGATION_FILE", get_variable_value($VARIABLES, $VARIABLES['NAVIGATION_FILE']));
 define("UPLOADS_DIRNAME", get_variable_value($VARIABLES, $VARIABLES['UPLOADS_DIRNAME']));
