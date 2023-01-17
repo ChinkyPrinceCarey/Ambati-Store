@@ -20,6 +20,7 @@ RewriteCond %{HTTP_HOST} ^localhost$
 RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/app/
 RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/lib/
 RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/desktop/
+RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/staff/
 RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/.env
 RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/variables.json
 
@@ -31,6 +32,7 @@ RewriteCond %{HTTP_HOST} !^localhost$
 RewriteCond %{REQUEST_URI} !^/app/
 RewriteCond %{REQUEST_URI} !^/lib/
 RewriteCond %{REQUEST_URI} !^/desktop/
+RewriteCond %{REQUEST_URI} !^/staff/
 RewriteCond %{REQUEST_URI} !^/.env
 RewriteCond %{REQUEST_URI} !^/variables.json
 
