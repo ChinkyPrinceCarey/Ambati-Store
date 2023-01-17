@@ -22,8 +22,8 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- /Import Fonts Web [or] Local -->
 
-    <link rel="stylesheet" href="./css/main.css?v=32">
-    <link rel="stylesheet" href="./css/login.css?v=32">
+    <link rel="stylesheet" href="./css/main.css?v=33">
+    <link rel="stylesheet" href="./css/login.css?v=33">
 
     <!-- Content Render -->
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/template7/1.4.1/template7.min.js"></script>
@@ -125,15 +125,15 @@
                             
                             <img class="lazy" 
                                 {{#if image[0].thumb}}
-                                    data-src="https://www.ambatitastyfoods.com/{{image[0].thumb}}"
+                                    data-src="{{image[0].thumb}}"
                                 {{else}}
-                                    data-src="https://www.ambatitastyfoods.com/uploads/no-image.jpg" 
+                                    data-src="imgs/no-image.jpg"
                                 {{/if}}
                             >
                             {{#if image[0].thumb}}
                                 <div class="d-none previews">
                                     {{#each image}}
-                                        <img src="https://www.ambatitastyfoods.com/{{thumb}}">
+                                        <img src="{{thumb}}">
                                     {{/each}}
                                 </div>
                             {{/if}}
@@ -329,8 +329,8 @@
     <script type="text/javascript" src='//cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
     <script type="text/javascript" src="./js/custom_event.js"></script>
-    <script type="text/javascript" src="./js/home.js?v=32"></script>
-    <script type="text/javascript" src="./js/main.js?v=32"></script>
-    <script type="text/javascript" src="./js/parse_data.js?v=32"></script>
+    <script type="text/javascript" src="./js/home.js?v=33"></script>
+    <script type="text/javascript" src="./js/main.js?v=33"></script>
+    <script type="text/javascript" src="./js/parse_data.js?v=33"></script>
 </body>
 </html>

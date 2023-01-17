@@ -3,7 +3,11 @@ target.addListener("onApiReady", onPageReady);
 target.addListener("onApiReady", onScriptReady);
 
 function onScriptReady(){
-  $('.lazy').Lazy();
+  $('.lazy').Lazy({
+    onError: function(element){
+      element.attr('src', 'imgs/image-not-found.jpg')
+    }
+  });
 
   $('.menu-item').click(function(e){
     let item = $(this);

@@ -374,7 +374,9 @@ function onPageReady(){
   });
 
   $('.catalogue-item .section-1 .img').click(function(){
-    initPreview(this);
+    if($(this).find('.previews').length){
+      initPreview(this);
+    }
   });
 
   $('.image-preview-container').click(function(e){
@@ -625,15 +627,19 @@ function initPreview(selector){
   previews.each(function(index, img){
     if(index == 0){
       preview_main_img.append('<img class="lazyPreview no-preloader" data-src="'+ img.src +'" src="imgs/loading.svg" alt="">');
-      preview_side_imgs.append('<img class="lazyPreview active" src="'+ img.src +'" width="100" height="100">');
+      preview_side_imgs.append('<img class="lazyPreview active" data-src="'+ img.src +'" width="100" height="100">');
     }else{
-      preview_side_imgs.append('<img class="lazyPreview" src="'+ img.src +'" width="100" height="100">');
+      preview_side_imgs.append('<img class="lazyPreview" data-src="'+ img.src +'" width="100" height="100">');
     }
   });
 
   $(".image-preview-container").removeClass("d-none");
   $("#imgPreviewWrapper").addClass("animate-zoom-in");
-  $('.lazyPreview').Lazy();
+  $('.lazyPreview').Lazy({
+    onError: function(element){
+      element.attr('src', 'imgs/image-not-found.jpg')
+    }
+  });
 }
 
 $(document).on('click', '#previewSideImgs img:not(.active)', function(){
