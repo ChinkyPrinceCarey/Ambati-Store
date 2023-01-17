@@ -1,5 +1,3 @@
-let API_ENDPOINT = "https://ambatitastyfoods.com/v2/"; //for remote server
-
 function smallModal(header, content, buttons, options){
   let main_container = $('.small.modal');
   let buttons_container = "";

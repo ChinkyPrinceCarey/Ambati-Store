@@ -7,9 +7,6 @@ let cropper;
 let cropperDom;
 
 $(function(){
-
-    API_ENDPOINT = ""; //that reset the api to local server
-
     cropperDom = $(".crop-container");
     cropperDom.hide();
     $("#cropBtn").click(cropButton);
