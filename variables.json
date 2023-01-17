@@ -20,7 +20,7 @@
     "API_ENDPOINT": "https://beta.ambatitastyfoods.com",
     "LIB_API_ENDPOINT": "{API_ENDPOINT}/lib",
     "DESKTOP" : {
-      "BASE_DIR": "C:/wamp64/www/beta.ambatitastyfoods.com"
+      "BASE_DIR": "C:/wamp64/www/beta.ambatitastyfoods.com/beta"
     },
     "APP" : {
       "BASE_DIR": "/home/u916003822/domains/ambatitastyfoods.com/public_html/beta"

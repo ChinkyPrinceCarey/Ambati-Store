@@ -17,13 +17,13 @@ RewriteEngine on
 # Check if domain is "localhost"
 RewriteCond %{HTTP_HOST} ^localhost$
 
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/app/
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/lib/
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/desktop/
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/.env
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/variables.json
+RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/app/
+RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/lib/
+RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/desktop/
+RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/.env
+RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/variables.json
 
-RewriteRule ^(.*)$ /beta.ambatitastyfoods.com/app/$1 [L]
+RewriteRule ^(.*)$ /beta.ambatitastyfoods.com/beta/app/$1 [L]
 
 # Check if domain is not "localhost"
 RewriteCond %{HTTP_HOST} !^localhost$
