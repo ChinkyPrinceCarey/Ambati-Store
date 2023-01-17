@@ -7,3 +7,10 @@ RewriteEngine On
 ErrorDocument 403 http://%{HTTP_HOST}/ambati_sms/v2/index.html?error=403
 ErrorDocument 404 http://%{HTTP_HOST}/ambati_sms/v2/index.html?error=404
 ErrorDocument 500 http://%{HTTP_HOST}/ambati_sms/v2/index.html?error=505
+
+#code not working
+#<Directory /beta.ambatitastyfoods.com/beta/desktop>
+    #Order Deny, Allow
+    #Deny from all
+    #Allow from 106.208.101.153
+#</Directory>
