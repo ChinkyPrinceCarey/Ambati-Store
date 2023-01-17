@@ -3,9 +3,6 @@ var editor;
 var tableDom;
 
 $(function(){
-
-    API_ENDPOINT = ""; //that reset the api to local server
-
     $.fn.search.settings.showNoResults = false;
 
     tableDom = 
