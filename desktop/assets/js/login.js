@@ -14,7 +14,7 @@ $(function(){
         onSuccess: function(event, fields){
             event.preventDefault();
             $(this).addClass("loading");
-            ajaxPostCall(this, {action: "read", data: fields}, function(response){
+            ajaxPostCall(`${LIB_API_ENDPOINT}/login.php`, {action: "read", data: fields}, function(response){
                 console.log(response);
                 if(response.status){
                     loginState(response.status, response.statusText);
