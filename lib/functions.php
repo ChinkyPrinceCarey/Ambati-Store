@@ -108,7 +108,7 @@ function sanitize_the_value($_value, $_sanitize_rule){
             $imagename = "{$timestamp}_{$type}.jpg";
 
             $path = UPLOADS_DIRNAME . "/" . $imagename;
-            $imageSavePath = BASE_DIR . "/" . $path;
+            $imageSavePath = APP_BASE_DIR . "/" . $path;
 
             if(file_put_contents($imageSavePath, file_get_contents($data)) !== FALSE){
 							$data = $path;
