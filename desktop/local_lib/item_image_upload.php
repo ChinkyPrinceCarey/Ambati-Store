@@ -10,7 +10,7 @@ header('Content-Type: application/json');
 
 function image_upload($imagename, $data){
   $local_path = UPLOADS_DIR . "/" . $imagename;
-  $local_imageSavePath = BASE_DIR . $local_path;
+  $local_imageSavePath = DESKTOP_BASE_DIR . $local_path;
   file_put_contents($local_imageSavePath, file_get_contents($data));
 }
 ?>
