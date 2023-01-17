@@ -783,7 +783,7 @@ function initTrackingId(){
             data: itemsShortcode
         }
     
-        ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
+        ajaxPostCall(`${LIB_API_ENDPOINT}/items.php`, data_param, function(response){
             let modal_body; let modal_title = "Parsing Error";
             if(response.status){
                 modal_body = response.status + ": " + response.statusText;
