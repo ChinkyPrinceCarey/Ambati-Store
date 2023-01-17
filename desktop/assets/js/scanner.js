@@ -722,6 +722,12 @@ function scan_items_bulk(){
 	}, 1000);
 }
 
+function sumPropertyValues(array, prop){
+    return array.reduce( function(a, b){
+        return a + b[prop];
+    }, 0);
+}
+
 /*begin: OFFER */
 $(document).on('keyup', '#input_offer_percentage, #input_offer_amount', function(e){
     scanner_data.evaluateOffer(e.target.id);
