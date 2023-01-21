@@ -1,39 +1,4 @@
-Options -Indexes
+RewriteEngine On
 
-# php -- BEGIN cPanel-generated handler, do not edit
-# Set the “ea-php74” package as the default “PHP” programming language.
-#<IfModule mime_module>
-  #AddHandler application/x-httpd-ea-php74___lsphp .php .php7 .phtml
-#</IfModule>
-# php -- END cPanel-generated handler, do not edit
-
-<Files .htaccess>
-order allow,deny
-deny from all
-</Files>
-
-RewriteEngine on
-
-# Check if domain is "localhost"
-RewriteCond %{HTTP_HOST} ^localhost$
-
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/app/
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/lib/
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/desktop/
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/staff/
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/.env
-RewriteCond %{REQUEST_URI} !^/beta.ambatitastyfoods.com/beta/variables.json
-
-RewriteRule ^(.*)$ /beta.ambatitastyfoods.com/beta/app/$1 [L]
-
-# Check if domain is not "localhost"
-RewriteCond %{HTTP_HOST} !^localhost$
-
-RewriteCond %{REQUEST_URI} !^/app/
-RewriteCond %{REQUEST_URI} !^/lib/
-RewriteCond %{REQUEST_URI} !^/desktop/
-RewriteCond %{REQUEST_URI} !^/staff/
-RewriteCond %{REQUEST_URI} !^/.env
-RewriteCond %{REQUEST_URI} !^/variables.json
-
-RewriteRule ^(.*)$ /app/$1 [L]
+RewriteCond %{REQUEST_URI} !^/beta/(app|desktop|lib|staff|.env|variables.json)
+RewriteRule ^(.*)$ app/$1 [L]
