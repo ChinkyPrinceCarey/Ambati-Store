@@ -69,10 +69,6 @@
     var editor; // use a global for the submit and return data rendering in the examples
  
     $(document).ready(function() {
-      API_ENDPOINT = "";
-      if(window.location.hostname == "betastaff.ambatitastyfoods.com"){
-        API_ENDPOINT = "https://beta.ambatitastyfoods.com";
-      }
       editor = new $.fn.dataTable.Editor({
         table: "#example",
         fields: [
@@ -128,7 +124,7 @@
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  `${API_ENDPOINT}/lib/customers.php`,
+                url:  "lib/customers.php",
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -207,7 +203,7 @@
             { extend: "remove", editor: editor }
         ],
         "ajax": {
-            "url": `${API_ENDPOINT}/lib/customers.php`,
+            "url": "lib/customers.php",
             "type": "POST",
             "data" : {"action": "fetch_all", "data": "random_data"},
             "dataType": 'json',
