@@ -1,4 +1,0 @@
-#SSLProxyEngine needs to be set to "on" in the site's Apache conf file.
-#RewriteEngine On
-#RewriteCond %{HTTP_HOST} ^betastaff\.ambatitastyfoods\.com$ [NC]
-#RewriteRule ^lib/(.*)$ https://ambatitastyfoods.com/lib/$1 [P,NC]
