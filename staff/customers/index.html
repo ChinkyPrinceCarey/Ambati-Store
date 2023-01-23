@@ -64,7 +64,7 @@
   <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/datetime/1.1.2/js/dataTables.dateTime.min.js"></script>
-  <script type="text/javascript" src="dataTables.editor.js"></script>
+  <script type="text/javascript" src="https://staff.ambatitastyfoods.com/customers/dataTables.editor.js"></script>
   <script type="text/javascript">
     var editor; // use a global for the submit and return data rendering in the examples
  
@@ -124,7 +124,7 @@
         ajax: function(method, url, data, success, error){
             $.ajax({
                 type: "POST",
-                url:  "lib/customers.php",
+                url:  "/lib/customers.php",
                 data: data,
                 dataType: "json",
                 success: function(json){
@@ -203,7 +203,7 @@
             { extend: "remove", editor: editor }
         ],
         "ajax": {
-            "url": "lib/customers.php",
+            "url": "/lib/customers.php",
             "type": "POST",
             "data" : {"action": "fetch_all", "data": "random_data"},
             "dataType": 'json',

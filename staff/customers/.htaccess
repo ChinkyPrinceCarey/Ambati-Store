@@ -1,4 +1,27 @@
-AuthUserFile /home/u916003822/domains/ambatitastyfoods.com/public_html/beta/staff/customers/.htpasswd
-AuthType Basic
-AuthName "My Secret Folder"
-Require valid-user
+#<If "%{HTTP_HOST} == 'betastaff.ambatitastyfoods.im'">
+#AuthUserFile C:/wamp64/www/domains/ambatitastyfoods.com/public_html/.htpasswd
+#AuthType Basic
+#AuthName "My Secret Folder"
+#Require valid-user
+#</If>
+#
+#<If "%{HTTP_HOST} == 'staff.ambatitastyfoods.im'">
+#  AuthUserFile C:/wamp64/www/domains/ambatitastyfoods.com/public_html/.htpasswd
+#  AuthType Basic
+#  AuthName "My Secret Folder"
+#  Require valid-user
+#</If>
+#
+#<If "%{HTTP_HOST} == 'betastaff.ambatitastyfoods.com'">
+#  AuthUserFile /domains/ambatitastyfoods.com/public_html/.htpasswd
+#  AuthType Basic
+#  AuthName "My Secret Folder"
+#  Require valid-user
+#</If>
+#  
+#<If "%{HTTP_HOST} == 'staff.ambatitastyfoods.com'">
+#  AuthUserFile /domains/ambatitastyfoods.com/public_html/.htpasswd
+#  AuthType Basic
+#  AuthName "My Secret Folder"
+#  Require valid-user
+#</If>
