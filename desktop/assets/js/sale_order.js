@@ -681,15 +681,15 @@ function sale_items(){
                 <table>
                     <tr>
                         <td>Total Price of</td>
-                        <td><b>${sale_data.billing.total.toFixed(2)}</b></td>
+                        <td><b>${sale_data.billing.total}</b></td>
                     </tr>
                     <tr>
                         <td>Total Making Cost of</td>
-                        <td><b>${sale_data.billing.making_cost.toFixed(2)}</b></td>
+                        <td><b>${sale_data.billing.making_cost}</b></td>
                     </tr>
                     <tr>
                         <td>Profit of</td>
-                        <td><b>${(sale_data.billing.total - sale_data.billing.making_cost).toFixed(2)}</b></td>
+                        <td><b>${get_decimal(sale_data.billing.total - sale_data.billing.making_cost)}</b></td>
                     </tr>
                     <tr>
                         <td>Offer ${sale_data.billing.offer_percentage}%</td>

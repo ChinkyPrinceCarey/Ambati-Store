@@ -251,7 +251,7 @@ function initValues(){
     stock_data = {...stock_data, ...stock_obj_methods};
     sale_data = {...sale_data, ...sale_obj_methods};
 
-    stock_data.cottonScanning = false;
+    stock_data.cottonScanning = true;
 
     stock_data.sale_obj = sale_data;
     sale_data.stock_obj = stock_data;
@@ -317,15 +317,15 @@ function sale_items(){
                 <table>
                     <tr>
                         <td>Total Price of</td>
-                        <td><b>${sale_data.billing.total.toFixed(2)}</b></td>
+                        <td><b>${sale_data.billing.total}</b></td>
                     </tr>
                     <tr>
                         <td>Total Making Cost of</td>
-                        <td><b>${sale_data.billing.making_cost.toFixed(2)}</b></td>
+                        <td><b>${sale_data.billing.making_cost}</b></td>
                     </tr>
                     <tr>
                         <td>Profit of</td>
-                        <td><b>${(sale_data.billing.total - sale_data.billing.making_cost).toFixed(2)}</b></td>
+                        <td><b>${get_decimal(sale_data.billing.total - sale_data.billing.making_cost)}</b></td>
                     </tr>
                     <tr>
                         <td>Offer ${sale_data.billing.offer_percentage}%</td>
