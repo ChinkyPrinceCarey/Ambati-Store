@@ -100,9 +100,9 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
             if($type == "summary"){
                 $extra_column = array(
-                    "SUM(`making_cost`) AS `total_making_cost`",
-                    "SUM(`retailer_cost`) AS `total_retailer_cost`",
-                    "SUM(`wholesale_cost`) AS `total_wholesale_cost`",
+                    "ROUND(SUM(`making_cost`), 2) AS `total_making_cost`",
+                    "ROUND(SUM(`retailer_cost`), 2) AS `total_retailer_cost`",
+                    "ROUND(SUM(`wholesale_cost`), 2) AS `total_wholesale_cost`",
                     "COUNT(`shortcode`) AS `no_of_items`"
                 );
 
@@ -116,9 +116,9 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $extra_column = array(
                     "date_format(`row_date`, '%M %Y') AS `month`",
                     "COUNT(`shortcode`) AS `no_of_items`",
-                    "SUM(`making_cost`) AS `total_making_cost`",
-                    "SUM(`retailer_cost`) AS `total_retailer_cost`",
-                    "SUM(`wholesale_cost`) AS `total_wholesale_cost`"
+                    "ROUND(SUM(`making_cost`), 2) AS `total_making_cost`",
+                    "ROUND(SUM(`retailer_cost`), 2) AS `total_retailer_cost`",
+                    "ROUND(SUM(`wholesale_cost`), 2) AS `total_wholesale_cost`"
                 );
 
                 $group_by = "GROUP BY YEAR(`row_date`), MONTH(`row_date`)";
@@ -195,7 +195,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 `retailer_cost` AS `unit_price`,
                 COUNT(`shortcode`) AS `quantity`,
                 '0' AS `sold_quantity`,
-                SUM(`retailer_cost`) AS `total_price`
+                ROUND(SUM(`retailer_cost`), 2) AS `total_price`
             FROM `$table` 
             GROUP BY `shortcode`, `retailer_cost`
             ";
@@ -217,10 +217,10 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $query_text = 
             "
             SELECT 
-            SUM(`making_cost`) AS `making_cost`,
-            SUM(`retailer_cost`) AS `sub_total`,
+            ROUND(SUM(`making_cost`), 2) AS `making_cost`,
+            ROUND(SUM(`retailer_cost`), 2) AS `sub_total`,
             '0' AS `tax`,
-            SUM(`retailer_cost`) AS `total`,
+            ROUND(SUM(`retailer_cost`), 2) AS `total`,
             '0' AS `offer_percentage`,
             '0' AS `offer_amount`
             FROM `$table`

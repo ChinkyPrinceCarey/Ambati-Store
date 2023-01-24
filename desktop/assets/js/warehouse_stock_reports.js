@@ -259,7 +259,7 @@ $(function(){
             console.log(`footerCallback`)
             var api = this.api();
 
-            updateSumOnFooter(api, 7, ""); //quantity
+            updateSumOnFooter(api, 7, false, ""); //quantity
             updateSumOnFooter(api, 8); //making_cost
             updateSumOnFooter(api, 9); //retailer_cost
             updateSumOnFooter(api, 10); //wholesale_cost
@@ -306,7 +306,7 @@ $(function(){
             console.log(`footerCallback`)
             var api = this.api();
 
-            updateSumOnFooter(api, 5, ""); //no_of_items
+            updateSumOnFooter(api, 5, false, ""); //no_of_items
             updateSumOnFooter(api, 6); //making_cost
             updateSumOnFooter(api, 7); //retailer_cost
             updateSumOnFooter(api, 8); //wholesale_cost
@@ -385,19 +385,6 @@ $(function(){
         table.ajax.reload();
     })
 })
-
-function updateSumOnFooter(api, column_index, prefix = "₹"){
-    let total_sum = 0;
-    if(api.column(column_index, { search:'applied' }).data().length){
-        total_sum = api
-           .column(column_index, { search:'applied' } )
-           .data()
-           .reduce( function (a, b) {
-              return parseInt(a) + parseInt(b);
-           });
-    }
-    $(api.column(column_index).footer()).html(`${prefix} ${total_sum}`);  
-}
 
 function initCalendar(){
 
