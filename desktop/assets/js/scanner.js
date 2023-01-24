@@ -371,12 +371,14 @@ function update_summary(_action, _item){
 
             if(_action == "add"){
                 if(item_index >= 0){
-                    let item_table_row = table_body.children(`tr[data-item=${data_item}]`);
+                    let item_table_row = table_body.children(`tr[data-item='${data_item}']`);
                     if(item_table_row){
     
                         let updated_quantity = parseInt(this.summary[item_index].quantity) + 1;
-                        let updated_total_price = parseInt(this.summary[item_index].total_price) + parseInt(_item.unit_price);
-    
+                        let updated_total_price = get_decimal(this.summary[item_index].total_price) + get_decimal(_item.unit_price);
+                        
+                        updated_total_price = get_decimal(updated_total_price);
+                        
                         this.summary[item_index].quantity = updated_quantity;
                         this.summary[item_index].total_price = updated_total_price;
             
@@ -392,11 +394,11 @@ function update_summary(_action, _item){
                         {
                             item: _item.item,
                             shortcode: _item.shortcode,
-                            making_cost: parseInt(_item.making_cost),
-                            unit_price: parseInt(_item.unit_price),
+                            making_cost: get_decimal(_item.making_cost),
+                            unit_price: get_decimal(_item.unit_price),
                             quantity: 1,
                             sold_quantity: 0,
-                            total_price: parseInt(_item.unit_price)
+                            total_price: get_decimal(_item.unit_price)
                         }
                     );
             
@@ -413,7 +415,7 @@ function update_summary(_action, _item){
             }else{
                 /* --------------- ACTION_REMOVE --------------- */
                 if(item_index >= 0){
-                    let sale_summary_item_table_row = table_body.children(`tr[data-item=${data_item}]`);
+                    let sale_summary_item_table_row = table_body.children(`tr[data-item='${data_item}']`);
                     if(sale_summary_item_table_row){
                         if(this.summary[item_index].quantity > 1){
                             this.summary[item_index].quantity = this.summary[item_index].quantity - 1;
@@ -446,31 +448,34 @@ function update_summary(_action, _item){
 
 function update_billing(_action, _item){
     if(!(this.billing === false)){
-        if(typeof this.billing != "object") this.billing = JSON.parse(JSON.stringify(billing_template_obj));;
+        if(typeof this.billing != "object") this.billing = JSON.parse(JSON.stringify(billing_template_obj));
         if(scanner_state.isEnabled){
             for(let prop in this.billing){
                 if(typeof this.billing[prop] == "string"){
-                    this.billing[prop] = parseFloat(this.billing[prop])
+                    this.billing[prop] = get_decimal(this.billing[prop])
                 }
             }
 
             if(_action == "add"){
-                this.billing.sub_total += parseInt(_item.unit_price);
-                this.billing.making_cost += parseInt(_item.making_cost);
+                this.billing.sub_total += get_decimal(_item.unit_price);
+                this.billing.making_cost += get_decimal(_item.making_cost);
             }else{
-                this.billing.sub_total -= parseInt(_item.unit_price);
-                this.billing.making_cost -= parseInt(_item.making_cost);
+                this.billing.sub_total -= get_decimal(_item.unit_price);
+                this.billing.making_cost -= get_decimal(_item.making_cost);
             }
 
-            //billing.tax = parseFloat(((billing.sub_total * 18) / 100).toFixed(2)); //18% GST
+            //billing.tax = get_decimal((billing.sub_total * 18) / 100); //18% GST
             this.billing.tax = 0;
-            this.billing.total = parseFloat((this.billing.sub_total + this.billing.tax).toFixed(2));
+            this.billing.total = get_decimal(this.billing.sub_total + this.billing.tax);
+
+            this.billing.sub_total = get_decimal(this.billing.sub_total);
+            this.billing.making_cost = get_decimal(this.billing.making_cost);
 
             let table_foot;
             
             if(this.data_table){
                 if(table_foot){
-                    table_foot.add(this.data_table.children('tfoot'));
+                    table_foot = table_foot.add(this.data_table.children('tfoot'));
                 }else{
                     table_foot = this.data_table.children('tfoot');
 
@@ -479,7 +484,7 @@ function update_billing(_action, _item){
             
             if(this.summary_table){
                 if(table_foot){
-                    table_foot.add(this.summary_table.children('tfoot'));
+                    table_foot = table_foot.add(this.summary_table.children('tfoot'));
                 }else{
                     table_foot = this.summary_table.children('tfoot');
                 }
@@ -828,9 +833,9 @@ function evaluateOffer(offer_input_id, _sale_data){
     let offer_message_limit_percentage = $("#offer_message_content #limit_percentage");
     let offer_message_limit_amount = $("#offer_message_content #limit_amount");
 
-    let making_cost = parseInt(_sale_data.billing.making_cost);
-    let sub_total = parseInt(_sale_data.billing.sub_total);
-    let pre_profit = parseInt(sub_total - making_cost);
+    let making_cost = get_decimal(_sale_data.billing.making_cost);
+    let sub_total = get_decimal(_sale_data.billing.sub_total);
+    let pre_profit = get_decimal(sub_total - making_cost);
 
     let offer_limit_percentage = 15;
     let offer_limit_amount = parseInt((offer_limit_percentage/100) * (pre_profit));

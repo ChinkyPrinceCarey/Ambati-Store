@@ -840,8 +840,8 @@ function initOrder(){
               <td class="slno collapsing"></td>
               <td class="item_shortcode">${item.item}[${item.shortcode}]</td>
               <td class="quantity right aligned collapsing">${item.quantity}</td>
-              <td class="unit_price right aligned collapsing">${item.unit_price}</td>
-              <td class="total_price right aligned collapsing">${item.total_price}</td>
+              <td class="unit_price right aligned collapsing">${get_decimal(item.unit_price)}</td>
+              <td class="total_price right aligned collapsing">${get_decimal(item.total_price)}</td>
               <td class="tracking_id right aligned collapsing loading"></td>
           </tr>
       `)
