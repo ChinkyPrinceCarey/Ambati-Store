@@ -769,6 +769,8 @@ function clearTables(){
     tables.children('tfoot').children("tr").children("#sub_total").text('');
     tables.children('tfoot').children("tr").children("#tax").text('');
     tables.children('tfoot').children("tr").children("#total").text('');
+
+    table_order_summary_after.DataTable().destroy();
 }
 
 function initTrackingId(){
@@ -796,6 +798,7 @@ function initTrackingId(){
                    .find("td.tracking_id")
                    .text(element.tracking_id);
                 });
+                sortTrackingId();
             }else{
                 modal_body = response.info;
             }
@@ -823,6 +826,13 @@ function initTrackingId(){
             }
         });
     }
+}
+
+function sortTrackingId(){
+    table_order_summary_after.DataTable({
+        "dom": 't',
+        "order": [[5, 'asc']],
+    });
 }
 
 function initOrder(){
