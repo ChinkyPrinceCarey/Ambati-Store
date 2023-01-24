@@ -661,6 +661,12 @@ function sound_notification(){
                 case "scan_fail":
                     notifyAudio.src = default_audio_dir + "error_adding_item.mp3";
                 break;
+                case "wrong_item":
+                    notifyAudio.src = default_audio_dir + "loud.mp3";
+                break;
+                case "all_scanned":
+                    notifyAudio.src = default_audio_dir + "success.mp3";
+                break;
                 default:
                     notifyAudio.pause();
                     return;

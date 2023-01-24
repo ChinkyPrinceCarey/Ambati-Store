@@ -576,10 +576,11 @@ function initValues(){
                             if(!order_summary_after.summary.length){
                                 scanner_state.isEnabled = false;
                                 scanner_state.reason = 'All Order Items are scanned, Kindly verify and Sale Order';
+                                sound_notification("all_scanned");
                             }
                         }
                     }else{
-                        sound_notification("scan_fail");
+                        sound_notification("wrong_item");
                         smallModal(
                             "Wrong Item Scanned", 
                             "The item you're scanned is not in Order Summary, Kindly scan items which are in Order Summary", 
