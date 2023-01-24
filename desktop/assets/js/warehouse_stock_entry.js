@@ -556,14 +556,12 @@ function generateBarcodes(data){
             $(`#barcode_${i}`).append(`
                 <g class="custom_data">
                     <line x1="0" y1="38" x2="100%" y2="38" stroke="black"></line>
-                    <text style="font: 7px Arial; font-weight:600" x="5" y="45">${currentDate}${data.shortcode}${currentItemNumber}-${currentItemNumber + data.quantity}</text>
+                    <text style="font: 7px Arial; font-weight:600" x="5" y="45">${currentDate}${data.shortcode}${currentItemNumber - data.quantity} - ${currentItemNumber}</text>
                 </g>
             `);   
         }
     }else{
         GENERATEID("new");
-        
-        data.no_of_barcodes = parseInt(data.no_of_barcodes);
         
         let barcodeTrackText = "";
         if(data.tracking_id) barcodeTrackText = `|${data.tracking_id}`;
