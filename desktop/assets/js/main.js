@@ -578,6 +578,28 @@ function allowDecimalValue(){
     }, 1);
 }
 
+function updateSumOnFooter(api, column_index, is_decimal = true, prefix = "₹"){
+    let total_sum = 0;
+    if(api.column(column_index, { search:'applied' }).data().length){
+        total_sum = api
+           .column(column_index, { search:'applied' } )
+           .data()
+           .reduce(function(a, b){
+                if(is_decimal){
+                    return get_decimal(a) + get_decimal(b);
+                }else{
+                    return parseInt(a) + parseInt(b);
+                }
+           });
+    }
+    $(api.column(column_index).footer()).html(`${prefix} ${total_sum}`);  
+}
+
+function get_decimal(_val){
+    if(typeof _val != "number") _val = parseFloat(_val);
+    return parseFloat(_val.toFixed(2));
+}
+
 function toIsoString(date) {
     var tzo = -date.getTimezoneOffset(),
         dif = tzo >= 0 ? '+' : '-',
