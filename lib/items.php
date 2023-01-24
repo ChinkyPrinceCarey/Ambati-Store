@@ -235,6 +235,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 SELECT * FROM (
                     SELECT $all_columns FROM `items_live_stock` 
                         WHERE `priority` != 'default'
+                            AND `cost` > 0  
                             AND `available_stock` > 0  
                             AND `in_stock` = 1
                         ORDER BY `datetime` DESC
@@ -246,14 +247,14 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             
             SELECT * FROM 
             (
-                SELECT $all_columns FROM `items_live_stock` WHERE `priority` = 'default' AND `available_stock` > 0  AND `in_stock` = 1 ORDER BY rand()
+                SELECT $all_columns FROM `items_live_stock` WHERE `priority` = 'default' AND `cost` > 0 AND `available_stock` > 0  AND `in_stock` = 1 ORDER BY rand()
             ) AS `t3`
             
             UNION 
             
             SELECT * FROM 
             (
-                SELECT $except_one_column, '2' AS `in_stock` FROM `items_live_stock` WHERE `priority` = 'default' AND `available_stock` IS NULL  OR `in_stock` = 2 ORDER BY rand()
+                SELECT $except_one_column, '2' AS `in_stock` FROM `items_live_stock` WHERE `priority` = 'default' AND `cost` > 0 AND `available_stock` IS NULL  OR `in_stock` = 2 ORDER BY rand()
             ) AS `t4`
             ";
 			
