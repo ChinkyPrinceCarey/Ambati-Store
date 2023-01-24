@@ -215,8 +215,8 @@ $(function(){
         footerCallback: function( tfoot, data, start, end, display ) {
             var api = this.api();
 
-            updateSumOnFooter(api, 6, ""); //no of items
-            updateSumOnFooter(api, 7, ""); //no of units
+            updateSumOnFooter(api, 6, false, ""); //no of items
+            updateSumOnFooter(api, 7, false, ""); //no of units
             updateSumOnFooter(api, 8); //making_cost
             updateSumOnFooter(api, 9); //total_price
             updateSumOnFooter(api, 10); //profit
@@ -275,7 +275,7 @@ $(function(){
             var api = this.api();
 
             updateSumOnFooter(api, 7); //unit price
-            updateSumOnFooter(api, 8, ""); //quantity
+            updateSumOnFooter(api, 8, false, ""); //quantity
             updateSumOnFooter(api, 9); //making_cost
             updateSumOnFooter(api, 10); //total_price
             updateSumOnFooter(api, 11); //profit
@@ -397,21 +397,6 @@ function updateProfitPercentage(profit_index, total_price_index){
 
 function calculateProfit(_profit, _total_price){
     return `(${((_profit/_total_price) * 100).toFixed(2)}%)`;
-}
-
-function updateSumOnFooter(api, column_index, prefix = "₹"){
-    let total_sum = 0;
-    if(api.column(column_index, { search:'applied' }).data().length){
-        total_sum = api
-           .column(column_index, { search:'applied' } )
-           .data()
-           .reduce( function (a, b) {
-               return Math.round(a) + Math.round(b);
-           });
-    }
-
-    $(api.column(column_index).footer()).html(`${prefix} ${total_sum}`);
-    $(api.column(column_index).footer()).attr('data-value', total_sum);
 }
 
 function initCalendar(){
