@@ -22,10 +22,10 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
         $query_table = "stock";
 
         if($action == "stock_entry"){
-            $fields_def = array(MATERIAL, ITEM, SHORTCODE, TYPE, UNIT, QUANTITY, MAKING_COST, RETAILER_COST, WHOLESALE_COST);
+            $fields_def = array(MATERIAL, ITEM, SHORTCODE, TYPE, UNIT, QUANTITY, MAKING_COST, RETAILER_COST, WHOLESALE_COST, CURRENT_ITEM_NO);
             $fields_data = validate_fields($_POST, $fields_def);
 
-            if($fields_data['result']){
+						if($fields_data['result']){
 							//$query_table defined earlier
 							$query_type = "insert";
 							$query_columns = 	array(
@@ -50,14 +50,14 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 												);
 
 							if($fields_data['data']['is_cotton']){
-									$quantity = (int) $fields_data['data']['quantity'];
-									$combinedMaking_cost = (int) $fields_data['data']['making_cost'];
-									$combinedRetailer_cost = (int) $fields_data['data']['retailer_cost'];
-									$combinedWholesale_cost = (int) $fields_data['data']['wholesale_cost'];
+									$quantity = $fields_data['data']['quantity'];
+									$combinedMaking_cost = $fields_data['data']['making_cost'];
+									$combinedRetailer_cost = $fields_data['data']['retailer_cost'];
+									$combinedWholesale_cost = $fields_data['data']['wholesale_cost'];
 
-									$individualMaking_cost = (int) ($combinedMaking_cost / $quantity);
-									$individualRetailer_cost = (int) ($combinedRetailer_cost / $quantity);
-									$individualWholesale_cost = (int) ($combinedWholesale_cost / $quantity);
+									$individualMaking_cost = get_decimal($combinedMaking_cost / $quantity);
+									$individualRetailer_cost = get_decimal($combinedRetailer_cost / $quantity);
+									$individualWholesale_cost = get_decimal($combinedWholesale_cost / $quantity);
 
 									$query_columns[] = "quantity";
 									$query_values[] = "1";
@@ -114,38 +114,13 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 								$current_item_no++;
 							}
 
-							$no_of_items = count($fields_data['data']['barcodes']);
-
-							$stock_history_query_type = "insert";
-							$stock_history_query_table = "stock_history";
-							$stock_history_query_columns = array("generate_id", "date", "material", "item", "shortcode", "type", "unit", "quantity", "making_cost", "retailer_cost", "wholesale_cost", "profit");
-							$stock_history_query_values = array(
-													$fields_data['data']['generate_id'][0],
-													$fields_data['data']['date'],
-													$fields_data['data']['material'],
-													$fields_data['data']['item'],
-													$fields_data['data']['shortcode'],
-													$fields_data['data']['type'],
-													$fields_data['data']['unit'],
-													$no_of_items,
-													($fields_data['data']['making_cost'] * $no_of_items),
-													($fields_data['data']['retailer_cost'] * $no_of_items),
-													($fields_data['data']['wholesale_cost'] * $no_of_items),
-													'0'
-							);
-							$stock_history_query = get_query($stock_history_query_type, $stock_history_query_table, $stock_history_query_columns, $stock_history_query_values);
-
-							$queries_to_execute[] = array("insert" => $stock_history_query);
-							
 							$trasaction_result = execute_transactions($queries_to_execute);
-							
-							//$return['queries'] = $queries_to_execute;
+							$return['queries'] = $queries_to_execute;
 							
 							if($trasaction_result['result']){
 								$return['result'] = true;
 								$return['info'] .= "stock added successfully";
 								$return['data'] = "";
-								$return['usage'] = get_memory();
 							}else{
 									$return['info'] .= "error adding stock";
 									$return['additional_info'] .= $trasaction_result['additional_information'];

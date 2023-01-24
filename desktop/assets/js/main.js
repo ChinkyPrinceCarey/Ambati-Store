@@ -550,7 +550,7 @@ document.addEventListener("wheel", function(event){
 });
 
 //allow only number input on number input element
-$(document).on('keypress', 'input[type=number]', enterNumbers);
+$(document).on('keypress', 'input[type=number]:not(.allow_decimal)', enterNumbers);
 
 function enterNumbers(event){
   if((event.code == 'ArrowLeft') || (event.code == 'ArrowRight') ||
@@ -560,6 +560,22 @@ function enterNumbers(event){
   }else if(event.key.search(/\d/) == -1){
     event.preventDefault();
   }
+}
+
+//allow deccimal number input on number input element
+$(document).on('keydown', 'input.allow_decimal', allowDecimalValue);
+
+function allowDecimalValue(){
+    var input = $(this);
+    var oldVal = input.val();
+    var regex = new RegExp(input.attr('pattern'), 'g');
+
+    setTimeout(function(){
+        var newVal = input.val();
+        if(!regex.test(newVal)){
+            input.val(oldVal); 
+        }
+    }, 1);
 }
 
 function toIsoString(date) {

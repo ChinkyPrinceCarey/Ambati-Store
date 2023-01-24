@@ -52,8 +52,9 @@ function sanitize_field_data($_type, $_data, $_sanitize_rules){
 	}elseif($_type == "name"){
 		$_sanitize_rules[] = "lr_trim";
 	}elseif($_type == "digits"){
-		$_sanitize_rules[] = "all_trim";
-		$_sanitize_rules[] = "special_chars_remove";
+		$_sanitize_rules[] = "digits";
+	}elseif($_type == "decimal_digits"){
+		$_sanitize_rules[] = "decimal_digits";
 	}elseif($_type == "text"){
 		$_sanitize_rules[] = "lr_trim";
 	}elseif($_type == "image"){
@@ -88,6 +89,14 @@ function sanitize_the_value($_value, $_sanitize_rule){
 
 		case 'toUpper':
 			return strtoupper($_value);
+			break;
+
+		case 'digits':
+			return (int) $_value;
+			break;
+
+		case 'decimal_digits':
+			return get_decimal($_value);
 			break;
 		
 		case 'upload_and_return_path':
@@ -153,6 +162,10 @@ function is_field_valid($_data, $_type, $_validation_rules){
     }
 
     return $return;
+}
+
+function get_decimal($_value){
+	return round($_value, 2);
 }
 
 function has_contains($_str, $_match){

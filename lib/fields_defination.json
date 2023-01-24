@@ -113,7 +113,7 @@
 	{
 		"variable": "MAKING_COST",
 		"name": "making_cost",
-		"type": "digits",
+		"type": "decimal_digits",
 		"validation": [
 			{
 				"maxlength": 6
@@ -123,7 +123,7 @@
 	{
 		"variable": "RETAILER_COST",
 		"name": "retailer_cost",
-		"type": "digits",
+		"type": "decimal_digits",
 		"validation": [
 			{
 				"maxlength": 6
@@ -133,7 +133,7 @@
 	{
 		"variable": "WHOLESALE_COST",
 		"name": "wholesale_cost",
-		"type": "digits",
+		"type": "decimal_digits",
 		"validation": [
 			{
 				"maxlength": 6
@@ -143,7 +143,7 @@
 	{
 		"variable": "PROFIT",
 		"name": "profit",
-		"type": "digits",
+		"type": "decimal_digits",
 		"validation": [
 			{
 				"maxlength": 6
@@ -153,6 +153,16 @@
 	{
 		"variable": "ITEM_NUMBER",
 		"name": "item_number",
+		"type": "digits",
+		"validation": [
+			{
+				"maxlength": 5
+			}
+		]
+	},
+	{
+		"variable": "CURRENT_ITEM_NO",
+		"name": "current_item_no",
 		"type": "digits",
 		"validation": [
 			{
@@ -306,7 +316,7 @@
 	{
 		"variable": "TOTAL_PRICE",
 		"name": "total_price",
-		"type": "digits",
+		"type": "decimal_digits",
 		"validation": [
 			{
 				"maxlength": 6
