@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta http-equiv="cache-control" content="max-age=0" />
+  <meta http-equiv="cache-control" content="no-cache" />
+  <meta http-equiv="expires" content="0" />
+  <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+  <meta http-equiv="pragma" content="no-cache" />
+  
+  <title>Orders Return</title>
+
+  <!--Begin: Main Stylesheets-->
+  <link rel="stylesheet" type="text/css" href="/desktop/assets/font/montserrat/font.css">
+  <link rel="stylesheet" type="text/css" href="/desktop/assets/library/semantic/2.4.2/semantic_mod.css">
+  <!--End: Main Stylesheets-->
+
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+  <main>
+
+    <div class="card" id="scanner">
+        <div class="wrapper">
+            <div class="torch"><i class="lightbulb icon"></i></div>
+            <div class="camera"></div>
+        </div>
+    </div>
+
+    <div class="card" id="scanner_form">
+        <div class="wrapper">
+              <form class="ui form">
+                  <div class="inline fields">
+                      <div class="twelve wide field">
+                        <div class="field">
+                            <i id="barcode" class="barcode icon"></i>
+                        </div>
+                        <div class="ui action input">
+                            <input type="text" id="barcode_input" name="barcode" placeholder="barcode">
+                            <button type="submit" class="tiny ui red button" id="scanner_btn">
+                                REMOVE ITEM
+                            </button>
+                        </div>
+                      </div>
+                  </div>
+              </form>
+        </div>
+    </div>
+
+    <div class="card" id="details">
+      <div class="wrapper">
+          <h4 class="ui dividing header aligned">Order Id: <span></span></h4>
+          <input type="checkbox" name="order_details_toggle" id="order_details_toggle">
+          <label for="order_details_toggle"></label>
+          <form class="ui form" id="search_form">
+              <div class="right aligned three fields">
+                  <div class="field opacity-1">
+                      <div class="ui action input">
+                        <input type="text" id="order_id" placeholder="Order Id#">
+                        <button type="submit" class="ui primary button" id="search_order_btn">
+                            Search
+                        </button>
+                      </div>
+                  </div>
+              </div>
+              <div class="four fields" id="order_fields">
+                  <div class="field disabled opacity-1">
+                      <label>Date</label>
+                      <input type="text" id="input_date" placeholder="date">
+                  </div>
+                  <div class="field disabled opacity-1">
+                      <label>Username</label>
+                      <input type="text" id="username" placeholder="username">
+                  </div>
+                  <div class="field disabled opacity-1">
+                      <label>Name</label>
+                      <input type="text" id="name" placeholder="name">
+                  </div>
+                  <div class="field disabled opacity-1">
+                      <label>Mobile Number</label>
+                      <input type="text" id="mobile_number" placeholder="mobile_number">
+                  </div>
+                  <div class="field disabled opacity-1">
+                      <label>Address</label>
+                      <input type="text" id="address" placeholder="address">
+                  </div>
+              </div>
+              <div class="action-buttons">
+                <button type="button" class="tiny ui purple labeled icon button" id="return_order_btn">
+                    <i class="shipping fast icon large"></i>
+                    RETURN ORDER
+                </button>
+              </div>
+          </form>
+      </div>
+    </div>
+
+    <div class="ui blue segment" id="return_invoice">
+        <div class="ui small center blue header">RETURN ORDER</div>
+        <input type="checkbox" name="return_invoice_toggle" id="return_invoice_toggle" checked>
+        <label for="return_invoice_toggle"></label>
+
+        <div class="card">
+            <div class="wrapper">
+                <h4 class="ui dividing header center pink">Return Sale List</h4>
+                <input type="checkbox" name="return_sale_list_toggle" id="return_sale_list_toggle" checked>
+                <label for="return_sale_list_toggle"></label>
+                <div class="table_container">
+                    <table id="sale-list" class="ui celled striped violet table small table unstackable dsc-serial-counter">
+                        <thead>
+                        <tr>
+                            <th>Slno</th>
+                            <th>Item[Shortcode]</th>
+                            <th>Barcode</th>
+                            <th>Unit Price</th>
+                            <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2">Sub Total</th>
+                                <th id="sub_total" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
+                                <th id="tax" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2">Total</th>
+                                <th id="total" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="wrapper">
+                <h4 class="ui dividing header center violet">Return Sale Summary</h4>
+                <input type="checkbox" name="return_sale_summary_toggle" id="return_sale_summary_toggle" checked>
+                <label for="return_sale_summary_toggle"></label>
+                <div class="table_container">
+                    <table id="sale-summary" class="ui celled striped pink table small table unstackable asc-serial-counter">
+                        <thead>
+                        <tr>
+                            <th>Slno</th>
+                            <th>Item[Shortcode]</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3">Sub Total</th>
+                                <th id="sub_total" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
+                                <th id="tax" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3">Total</th>
+                                <th id="total" class="right aligned">0</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="ui horizontal divider header">
+        <i class="icon"></i>
+    </h4>
+
+    <div class="ui red segment" id="current_invoice">
+        <div class="ui small center red header">CURRENT ORDER</div>
+        <input type="checkbox" name="current_invoice_toggle" id="current_invoice_toggle">
+        <label for="current_invoice_toggle"></label>
+
+        <div class="card">
+            <div class="wrapper">
+                <h4 class="ui dividing header center pink">Current Sale List</h4>
+                <input type="checkbox" name="current_sale_list_toggle" id="current_sale_list_toggle">
+                <label for="current_sale_list_toggle"></label>
+                <div class="table_container">
+                    <table id="sale-list" class="ui celled striped violet small table unstackable dsc-serial-counter">
+                        <thead>
+                        <tr>
+                            <th>Slno</th>
+                            <th>Item[Shortcode]</th>
+                            <th>Barcode</th>
+                            <th>Unit Price</th>
+                            <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2">Sub Total</th>
+                                <th id="sub_total" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
+                                <th id="tax" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2">Total</th>
+                                <th id="total" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="wrapper">
+                <h4 class="ui dividing header center violet">Current Sale Summary</h4>
+                <input type="checkbox" name="current_sale_summary_toggle" id="current_sale_summary_toggle" checked>
+                <label for="current_sale_summary_toggle"></label>
+                <div class="table_container">
+                    <table id="sale-summary" class="ui celled striped pink small table unstackable asc-serial-counter">
+                        <thead>
+                        <tr>
+                            <th>Slno</th>
+                            <th>Item[Shortcode]</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3">Sub Total</th>
+                                <th id="sub_total" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
+                                <th id="tax" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3">Total</th>
+                                <th id="total" class="right aligned">0</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="ui horizontal divider header">
+        <i class="icon"></i>
+    </h4>
+
+    <div class="ui green segment" id="earlier_invoice">
+        <div class="ui small center green header">EARLIER ORDER</div>
+        <input type="checkbox" name="earlier_invoice_toggle" id="earlier_invoice_toggle" checked>
+        <label for="earlier_invoice_toggle"></label>
+        <div class="card">
+            <div class="wrapper">
+                <h4 class="ui dividing header center violet">Earlier Sale Summary</h4>
+                <input type="checkbox" name="earlier_sale_summary_toggle" id="earlier_sale_summary_toggle">
+                <label for="earlier_sale_summary_toggle"></label>
+                <div>
+                    <table id="sale-summary" class="ui celled striped pink small table unstackable asc-serial-counter">
+                        <thead>
+                        <tr>
+                            <th>Slno</th>
+                            <th>Item[Shortcode]</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3">Sub Total</th>
+                                <th id="sub_total" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
+                                <th id="tax" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="3">Total</th>
+                                <th id="total" class="right aligned">0</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th id="offer_percentage" class="right aligned" colspan="3">Offer(%)</th>
+                                <th id="offer_amount" class="right aligned">0</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="wrapper">
+                <h4 class="ui dividing header center pink">Earlier Sale List</h4>
+                <input type="checkbox" name="earlier_sale_list_toggle" id="earlier_sale_list_toggle" checked>
+                <label for="earlier_sale_list_toggle"></label>
+                <div>
+                    <table id="sale-list" class="ui celled striped violet small table unstackable dsc-serial-counter">
+                        <thead>
+                        <tr>
+                            <th>Slno</th>
+                            <th>Item[Shortcode]</th>
+                            <th>Barcode</th>
+                            <th>Unit Price</th>
+                            <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2">Sub Total</th>
+                                <th id="sub_total" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
+                                <th id="tax" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="right aligned" colspan="2">Total</th>
+                                <th id="total" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th id="offer_percentage" class="right aligned" colspan="2">Offer(%)</th>
+                                <th id="offer_amount" class="right aligned">0</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+  </main>
+
+  <div class="empty-div"></div>
+
+    <div class="ui modal small">
+        <div class="header"></div>
+        <div class="content">
+        <p></p>
+        </div>
+        <div class="actions"></div>
+    </div>
+  
+  <!--Begin: Main Scripts-->
+  <script type="text/javascript" src="/desktop/assets/library/jquery/3.6.0/jquery.min.js"></script>
+  <script type="text/javascript" src="/desktop/assets/library/semantic/2.4.2/semantic.min.js"></script>
+  <script type="text/javascript" src="/desktop/assets/library/js-cookie/js.cookie.min.js"></script>
+  <!--End: Main Scripts-->
+
+  <script type="text/javascript" src="assets/library/quaggaJS-v0.12.1/quagga.min.js"></script>
+
+  <script type="text/javascript" src="assets/js/main.js"></script>
+  <script type="text/javascript" src="/desktop/assets/js/scanner.js"></script>
+  <script type="text/javascript" src="assets/js/return_order.js"></script>
+</body>
+</html>

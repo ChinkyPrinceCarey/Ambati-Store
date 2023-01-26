@@ -133,6 +133,10 @@
                         <i class="undo icon large"></i>
                         ORDER RETURN
                     </button>
+                    <button type="button" class="ui green labeled icon button" id="cotton_barcode_print_btn">
+                        <i class="print icon large"></i>
+                        COTTON BARCODE PRINT
+                    </button>
                 </form>
             </div>
         </div>
@@ -194,6 +198,99 @@
                     <h4 class="ui dividing header center violet">Cancelled Sale Summary</h4>
                     <input type="checkbox" name="cancelled_sale_summary_toggle" id="cancelled_sale_summary_toggle">
                     <label for="cancelled_sale_summary_toggle"></label>
+                    <div class="table_container">
+                        <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
+                            <thead>
+                            <tr>
+                                <th>Slno</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3">Sub Total</th>
+                                    <th id="sub_total" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3"><strike>Tax(12% GST)</strike></th>
+                                    <th id="tax" class="right aligned">0</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="3">Total</th>
+                                    <th id="total" class="right aligned">0</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="ui horizontal divider header">
+            <i class="icon"></i>
+        </h4>
+        
+        <div class="ui blue segment" id="return_invoice">
+            <div class="ui small center blue header">RETURN ORDER</div>
+            <input type="checkbox" name="return_invoice_toggle" id="return_invoice_toggle">
+            <label for="return_invoice_toggle"></label>
+
+            <div class="card">
+                <div class="wrapper">
+                    <h4 class="ui dividing header center pink">Return Sale List</h4>
+                    <input type="checkbox" name="return_sale_list_toggle" id="return_sale_list_toggle">
+                    <label for="return_sale_list_toggle"></label>
+                    <div class="table_container">
+                        <table id="sale-list" class="ui celled striped violet table dsc-serial-counter">
+                            <thead>
+                            <tr>
+                                <th>Slno</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Barcode</th>
+                                <th>Unit Price</th>
+                                <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2">Sub Total</th>
+                                    <th id="sub_total" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2"><strike>Tax(12% GST)</strike></th>
+                                    <th id="tax" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="right aligned" colspan="2">Total</th>
+                                    <th id="total" class="right aligned">0</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="wrapper">
+                    <h4 class="ui dividing header center violet">Return Sale Summary</h4>
+                    <input type="checkbox" name="return_sale_summary_toggle" id="return_sale_summary_toggle">
+                    <label for="return_sale_summary_toggle"></label>
                     <div class="table_container">
                         <table id="sale-summary" class="ui celled striped pink table asc-serial-counter">
                             <thead>
@@ -427,7 +524,7 @@
         </div>
 	</main>
 	
-	<iframe class="my-iframe d-none" id="myframe" src="invoice_sample.html" onload="iframeLoaded()"></iframe>
+	<iframe class="my-iframe d-none" id="myframe" src="sample_print_barcode_iframe.html" onload="iframeLoaded()"></iframe>
 
     <footer>
         <div class="copyright">

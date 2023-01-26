@@ -1,7 +1,11 @@
 API_ENDPOINT = "";
+LIB_API_ENDPOINT = "";
 if(window.location.hostname == "betastaff.ambatitastyfoods.com"){
     API_ENDPOINT = "https://beta.ambatitastyfoods.com";
+}else{
+    API_ENDPOINT = "https://ambatitastyfoods.com";
 }
+LIB_API_ENDPOINT = API_ENDPOINT + "/lib";
 
 function smallModal(header, content, buttons, options){
   let main_container = $('.small.modal');
@@ -66,4 +70,34 @@ function toIsoString(date) {
       ':' + pad(date.getSeconds()) +
       dif + pad(tzo / 60) +
       ':' + pad(tzo % 60);
+}
+
+function updateSumOnFooter(api, column_index, is_decimal = true, prefix = "₹"){
+    let total_sum = 0;
+    if(api.column(column_index, { search:'applied' }).data().length){
+        total_sum = api
+           .column(column_index, { search:'applied' } )
+           .data()
+           .reduce(function(a, b){
+                if(is_decimal){
+                    return get_decimal(a) + get_decimal(b);
+                }else{
+                    return parseInt(a) + parseInt(b);
+                }
+           });
+    }
+    $(api.column(column_index).footer()).html(`${prefix} ${total_sum}`);  
+}
+
+function get_decimal(_val){
+    if(typeof _val != "number") _val = parseFloat(_val);
+    return parseFloat(_val.toFixed(2));
+}
+
+function getCurrentPage(){
+    let url = window.location.href;
+    let url_arr = url.split("/");
+    url_arr = url_arr[url_arr.length - 1];
+    url_arr = url_arr.split('?');
+    return url_arr[0];
 }

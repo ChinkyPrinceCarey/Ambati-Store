@@ -638,6 +638,37 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             }else{
                 $return['info'] .= "no cancelled invoice ";
             }
+        }elseif($action == "return_order_mobile"){
+            if(array_key_exists('items_details', $_POST['data'])){
+                $order_details = $_POST['order_data'];
+                $order_id = $order_details['order_id'];
+
+                $query_type = "update";
+                $query_set = array(
+                    "no_of_items=" . $_POST['data']['no_of_items'],
+                    "no_of_units=" . $_POST['data']['no_of_units'],
+                    "making_cost=" . $_POST['data']['making_cost'],
+                    "sub_total=" . $_POST['data']['sub_total'],
+                    "total_price=" . $_POST['data']['total_price'],
+                    "items_details=" . $_POST['data']['items_details']
+                );
+                $update_where = "`order_id` LIKE '$order_id'";
+
+                $update_query = get_query($query_type, $query_table, $query_set, $update_where);
+                $return['query'] = $update_query; //for debugging
+                
+                $update_result = update_query($update_query);
+
+                if($update_result['result']){
+                    $return['result'] = true;
+                    $return['order_id'] = $order_id;
+                    $return['info'] .= "Successfully Items Returned in the Order ";
+                }else{
+                    $return['info'] .= $update_result['additional_information'];
+                }
+            }else{
+                $return['info'] .= "null return order [or] current order data";
+            }
         }elseif($action == "fetch_for_app"){
             $data = $_POST['data'];
             $username = $_POST['username'];

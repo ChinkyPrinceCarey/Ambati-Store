@@ -1,6 +1,7 @@
 let save_details_btn;
 let edit_details_btn;
 let sale_cancel_btn;
+let cotton_barcode_print_btn;
 
 let search_form;
 let input_invoice_id;
@@ -23,6 +24,11 @@ let cancelled_sale_summary_table;
 let cancelled_sale_list_table;
 let cancelled_sale_billing_table;
 
+let return_sale;
+let return_sale_summary_table;
+let return_sale_list_table;
+let return_sale_billing_table;
+
 let current_sale;
 let current_sale_summary_table;
 let current_sale_list_table;
@@ -34,10 +40,12 @@ $(function(){
     save_details_btn = $("#save_details_btn");
     edit_details_btn = $("#edit_details_btn");
     sale_cancel_btn = $("#sale_cancel_btn");
+    cotton_barcode_print_btn = $("#cotton_barcode_print_btn");
 
     save_details_btn.hide();
     edit_details_btn.hide();
     sale_cancel_btn.hide();
+    cotton_barcode_print_btn.hide();
 
     search_form = $("#search_form");
     input_invoice_id = $("#invoice_id");
@@ -57,6 +65,11 @@ $(function(){
     cancelled_sale_list_table = $("#cancelled_invoice .card .wrapper div table#sale-list");
     cancelled_sale_billing_table =  cancelled_sale_summary_table.children('tfoot')
                                         .add(cancelled_sale_list_table.children('tfoot'));
+
+    return_sale_summary_table = $("#return_invoice .card .wrapper div table#sale-summary");
+    return_sale_list_table = $("#return_invoice .card .wrapper div table#sale-list");
+    return_sale_billing_table =  return_sale_summary_table.children('tfoot')
+                                        .add(return_sale_list_table.children('tfoot'));
 
     current_sale_summary_table = $("#current_invoice .card .wrapper div table#sale-summary");
     current_sale_list_table = $("#current_invoice .card .wrapper div table#sale-list");
@@ -81,6 +94,7 @@ $(function(){
         save_details_btn.hide();
         edit_details_btn.hide();
         sale_cancel_btn.hide();
+        cotton_barcode_print_btn.hide();
 
         let invoice_id = input_invoice_id.val();
         resetData();
@@ -130,11 +144,18 @@ $(function(){
                       search_invoice_btn.parent().addClass('disabled');
                       edit_details_btn.show();
                       sale_cancel_btn.show();
+                      cotton_barcode_print_btn.show();
                       
                       if(parseInt(invoice_data.is_confirmed)){
                         current_sale.data = invoice_data.items_details.list;
                         current_sale.summary = invoice_data.items_details.summary;
                         current_sale.billing = invoice_data.items_details.billing;
+
+                        if('return_order' in invoice_data.items_details){
+                            return_sale.data = invoice_data.items_details.return_order.list;
+                            return_sale.summary = invoice_data.items_details.return_order.summary;
+                            return_sale.billing = invoice_data.items_details.return_order.billing;
+                        }
 
                         earlier_sale.data = JSON.parse(JSON.stringify(current_sale.data));
                         earlier_sale.summary = JSON.parse(JSON.stringify(current_sale.summary));
@@ -236,6 +257,7 @@ $(function(){
 
                     edit_details_btn.hide();
                     sale_cancel_btn.hide();
+                    cotton_barcode_print_btn.hide();
 
                     resetData();
 
@@ -277,7 +299,7 @@ $(function(){
                     }
                 }
             );
-        }else if((current_sale.data.length + cancelled_sale.data.length) == (earlier_sale.data.length)){
+        }else if((cancelled_sale.data.length + return_sale.data.length) != (current_sale.data.length)){
             smallModal(
                 "Are you sure want to return?",
                 `
@@ -347,6 +369,75 @@ $(function(){
             );
         }
     })
+
+    cotton_barcode_print_btn.on('click', function(){
+        cotton_barcode_print_btn.addClass('loading');
+
+        let modal_title;
+        let modal_body;
+        if(return_sale.data.length){
+            let cottonItems = getCottonItems();
+            if(cottonItems.length){
+                generateCottonBarcodes(cottonItems);
+                smallModal(
+                    "Confirm to Print Cotton Items Barcodes",
+                    `Found <b>${cottonItems.length}</b> cotton items barcodes in the return order, would you like to print?`,
+                    [
+                        {
+                            "class": "ui positive approve button",
+                            "id": "",
+                            "text": "Print",
+                        },
+                        {
+                            "class": "ui negative deny button",
+                            "id": "",
+                            "text": "Cancel",
+                        }
+                    ],
+                    {
+                        closable: false,
+                        onApprove: function(){
+                            printLabels(function(isCompleted){
+                                return true;    
+                            });
+                            cotton_barcode_print_btn.removeClass('loading');
+                            return true;
+                        },
+                        onDeny: function(){
+                            return true;
+                        }
+                    }
+                );
+            }else{
+                modal_title = 'No Cotton Items for the Return Order';
+                modal_body = 'There are no cotton items in the return order list';
+            }
+        }else{
+            modal_title = 'No Items for the Return Order';
+            modal_body = 'Empty Return Order';
+        }
+
+        if(modal_body){
+            smallModal(
+                modal_title,
+                modal_body,
+                [
+                    {
+                        "class": "ui positive approve button",
+                        "id": "",
+                        "text": "Okay",
+                    }
+                ],
+                {
+                    closable: false,
+                    onApprove: function(){
+                        cotton_barcode_print_btn.removeClass('loading');
+                        return true;
+                    }
+                }
+            );
+        }
+    });
 });
 
 function initValues(){
@@ -370,6 +461,15 @@ function initValues(){
         billing: true,
         stock_obj: true
     };
+    
+    return_sale = {
+        data: [],
+        data_table: true,
+        summary: true,
+        summary_table: true,
+        billing: true,
+        stock_obj: true
+    };
 
     earlier_sale = {
         data: [],
@@ -380,23 +480,23 @@ function initValues(){
         sale_obj: false
     };
 
-    current_sale = {...current_sale, ...stock_obj_methods};
-    current_sale.data_table = current_sale_list_table;
-    current_sale.summary_table = current_sale_summary_table;
-    current_sale.includeMakingCostInSummary = true;
+    return_sale = {...return_sale, ...stock_obj_methods};
+    return_sale.data_table = return_sale_list_table;
+    return_sale.summary_table = return_sale_summary_table;
+    return_sale.includeMakingCostInSummary = true;
 
     cancelled_sale = {...cancelled_sale, ...sale_obj_methods};
     cancelled_sale.data_table = cancelled_sale_list_table;
     cancelled_sale.summary_table = cancelled_sale_summary_table;
     cancelled_sale.includeMakingCostInSummary = true;
 
-    current_sale.sale_obj = cancelled_sale;
-    cancelled_sale.stock_obj = current_sale;
+    return_sale.sale_obj = cancelled_sale;
+    cancelled_sale.stock_obj = return_sale;
 
 
     scanner_data = {
         method(action, barcode){
-            current_sale.update_data(action, barcode);
+            return_sale.update_data(action, barcode);
         },
         checkItem(barcode){
            cancelled_sale.isItemExist(barcode);
@@ -404,23 +504,85 @@ function initValues(){
     }
 }
 
+function getCottonItems(){
+    let items = [];
+    return_sale.data.forEach(element => {
+        if(element.is_cotton == "1"){
+            items.push(element);
+        }
+    });
+
+    return items;
+}
+
+function generateCottonBarcodes(itemsList){
+    $("#barcodes-list").parent().parent().remove();
+    
+    $(`
+    <div class="card d-none">
+        <div class="wrapper">
+            <div id="barcodes-list"></div>
+        </div>
+    </div>
+    `).appendTo('body');
+
+    let i = 1;
+    itemsList.forEach(element =>{
+        $('#barcodes-list').append(`
+            <div class="barcode">
+                <svg    id="barcode_${i}"
+                        jsbarcode-width="1"
+                        jsbarcode-height="20"
+                        jsbarcode-textmargin="1"
+                        jsbarcode-fontsize="10"
+                        jsbarcode-fontoptions="bold"
+                        jsbarcode-text=${element.barcode}-${element.retailer_cost}
+                        jsbarcode-value=${element.barcode}
+                ></svg>
+            </div>`
+        );
+            
+        JsBarcode(`#barcode_${i}`).init();
+
+        $(`#barcode_${i} g`).attr('transform', 'translate(10, 4)');
+        $(`#barcode_${i}`).append(`
+            <g class="custom_data">
+                <line x1="0" y1="38" x2="100%" y2="38" stroke="black"></line>
+                <text style="font: 7px Arial; font-weight:600" x="5" y="45">${element.item}</text>
+            </g>
+        `);
+        i++;
+    });
+
+    let barcodes_data = $('#barcodes-list div:nth-of-type(1)').parent().parent().html();
+    $('#barcodes-list').empty();
+    $('#barcodes-list').html(barcodes_data);
+}
 
 function order_return(){
+    let current_invoice = {
+        summary: current_sale.summary, 
+        list: current_sale.data, 
+        billing: current_sale.billing,
+        no_of_units: sumPropertyValues(current_sale.summary, 'quantity')
+    };
+
+    if(return_sale.data.length){
+        current_invoice.return_order = {summary: return_sale.summary, list: return_sale.data, billing: return_sale.billing};
+    }
+
+    let cancelled_invoice = {
+        summary: cancelled_sale.summary, 
+        list: cancelled_sale.data, 
+        billing: cancelled_sale.billing,
+        no_of_units: sumPropertyValues(cancelled_sale.summary, 'quantity')
+    }
+
     let data_param = {
         action: "order_return",
         data: invoice_details,
-        current_invoice: {
-            summary: current_sale.summary, 
-            list: current_sale.data, 
-            billing: current_sale.billing,
-            no_of_units: sumPropertyValues(current_sale.summary, 'quantity')
-        },
-        cancelled_invoice: {
-            summary: cancelled_sale.summary, 
-            list: cancelled_sale.data, 
-            billing: cancelled_sale.billing,
-            no_of_units: sumPropertyValues(cancelled_sale.summary, 'quantity')
-        }
+        current_invoice: current_invoice,
+        cancelled_invoice: cancelled_invoice
     }
 
     ajaxPostCall(`${LIB_API_ENDPOINT}/orders.php`, data_param, function(response){
@@ -440,34 +602,9 @@ function order_return(){
                 response.success_content,
                 [   
                     {
-                        "class": "ui approve small violet button",
-                        "id": "cancelledInvoiceSummaryBtn",
-                        "text": "Cancelled Invoice Summary",
-                    },
-                    {
-                        "class": "ui approve small blue button",
-                        "id": "currentInvoiceSummaryBtn",
-                        "text": "Current Invoice Summary",
-                    },
-                    {
-                        "class": "ui approve small purple button",
-                        "id": "earlierInvoiceSummaryBtn",
-                        "text": "Earlier Invoice Summary",
-                    },
-                    {
-                        "class": "ui approve small violet button",
-                        "id": "cancelledInvoiceListBtn",
-                        "text": "Cancelled Invoice List",
-                    },
-                    {
-                        "class": "ui approve small blue button",
-                        "id": "currentInvoiceListBtn",
-                        "text": "Current Invoice List",
-                    },
-                    {
-                        "class": "ui approve small purple button",
-                        "id": "earlierInvoiceListBtn",
-                        "text": "Earlier Invoice List",
+                        "class": "ui positive approve button",
+                        "id": "modalCloseBtn",
+                        "text": "Okay",
                     },
                     {
                         "class": "ui negative deny button",
@@ -477,39 +614,7 @@ function order_return(){
                 ], 
                 {
                     closable: false,
-                    onApprove: function(e){
-                        let buttonId = e.attr('id');
-                        if(buttonId == "cancelledInvoiceSummaryBtn"){
-                            $("#cancelledInvoiceSummaryBtn").addClass("loading")
-                            printInvoice(table_cancelled_sale_summary.parent(), "cancelled summary", response, function(isCompleted){
-                                $("#cancelledInvoiceSummaryBtn").removeClass("loading")
-                            });
-                        }else if(buttonId == "cancelledInvoiceListBtn"){
-                            $("#cancelledInvoiceListBtn").addClass("loading")
-                            printInvoice(table_cancelled_sale_list.parent(), "cancelled list", response, function(isCompleted){
-                                $("#cancelledInvoiceListBtn").removeClass("loading")
-                            });
-                        }else if(buttonId == "currentInvoiceSummaryBtn"){
-                            $("#currentInvoiceSummaryBtn").addClass("loading")
-                            printInvoice(current_sale_summary_table.parent(), "summary", response, function(isCompleted){
-                                $("#currentInvoiceSummaryBtn").removeClass("loading")
-                            });
-                        }else if(buttonId == "currentInvoiceListBtn"){
-                            $("#currentInvoiceListBtn").addClass("loading")
-                            printInvoice(current_sale_list_table.parent(), "list", response, function(isCompleted){
-                                $("#currentInvoiceListBtn").removeClass("loading")
-                            });
-                        }else if(buttonId == "earlierInvoiceSummaryBtn"){
-                            $("#earlierInvoiceSummaryBtn").addClass("loading")
-                            printInvoice(earlier_sale_summary_table.parent(), "earlier summary", response, function(isCompleted){
-                                $("#earlierInvoiceSummaryBtn").removeClass("loading")
-                            });
-                        }else if(buttonId == "earlierInvoiceListBtn"){
-                            $("#earlierInvoiceListBtn").addClass("loading")
-                            printInvoice(earlier_sale_list_table.parent(), "earlier list", response, function(isCompleted){
-                                $("#earlierInvoiceListBtn").removeClass("loading")
-                            });
-                        }else{}
+                    onApprove: function(){
                         return false;
                     },
                     onDeny: function(){
@@ -561,8 +666,64 @@ function resetData(){
 }
 
 function initInvoices(){
-    $("#current_invoice").addClass("loading");
-    $("#earlier_invoice").addClass("loading");
+    $("#return_invoice")
+    .add("#current_invoice")
+    .add("#earlier_invoice")
+    .addClass("loading");
+
+    if(return_sale.data.length){
+        /* -------------------- Begin: Return Order -------------------- */
+            /* -------------------- Summary -------------------- */
+        return_sale_summary_table.children("tbody").empty();
+        return_sale_summary_table.children('tfoot').children("tr").children("#sub_total").text('')
+        return_sale_summary_table.children('tfoot').children("tr").children("#tax").text('')
+        return_sale_summary_table.children('tfoot').children("tr").children("#total").text('')
+    
+        for(let item of return_sale.summary){
+            return_sale_summary_table
+            .children("tbody")
+            .append(`
+                <tr data-item="${item.shortcode}_${item.unit_price}_${item.making_cost}">
+                    <td class="slno collapsing"></td>
+                    <td class="item_shortcode">${item.item}[${item.shortcode}]</td>
+                    <td class="quantity right aligned collapsing">${item.quantity}</td>
+                    <td class="unit_price right aligned collapsing">${item.unit_price}</td>
+                    <td class="total_price right aligned collapsing">${item.total_price}</td>
+                </tr>
+            `)
+        }
+    
+        return_sale_summary_table.children('tfoot').children("tr").children("#sub_total").text(return_sale.billing.sub_total)
+        return_sale_summary_table.children('tfoot').children("tr").children("#tax").text(return_sale.billing.tax)
+        return_sale_summary_table.children('tfoot').children("tr").children("#total").text(return_sale.billing.total)
+    
+            /* -------------------- List -------------------- */
+        return_sale_list_table.children("tbody").empty();
+        return_sale_list_table.children('tfoot').children("tr").children("#sub_total").text('')
+        return_sale_list_table.children('tfoot').children("tr").children("#tax").text('')
+        return_sale_list_table.children('tfoot').children("tr").children("#total").text('')
+    
+        for(let item of return_sale.data){
+            return_sale_list_table
+            .children("tbody")
+            .append(`
+                <tr data-barcode="${item.barcode}">
+                    <td class="collapsing"></td>
+                    <td>${item.item}[${item.shortcode}]</td>
+                    <td>${item.barcode}</td>
+                    <td class="right aligned collapsing">${item.unit_price}</td>
+                    <td class="right aligned collapsing">
+                        <!--<i class="large trash icon remove-item"></i>-->
+                    </td>
+                </tr>
+            `)
+        }
+    
+        return_sale_list_table.children('tfoot').children("tr").children("#sub_total").text(return_sale.billing.sub_total)
+        return_sale_list_table.children('tfoot').children("tr").children("#tax").text(return_sale.billing.tax)
+        return_sale_list_table.children('tfoot').children("tr").children("#total").text(return_sale.billing.total)
+      }
+      /* -------------------- End: Return Order -------------------- *    
 
     /* -------------------- Summary -------------------- */
     current_sale_summary_table.children("tbody").empty();
@@ -647,7 +808,10 @@ function initInvoices(){
     /* -------------------- end: ReInitialise Variable Values -------------------- */
 
 
-    $("#current_invoice").removeClass("loading");
-    $("#earlier_invoice").removeClass("loading");
+    $("#return_invoice")
+    .add("#current_invoice")
+    .add("#earlier_invoice")
+    .removeClass("loading");
+
     search_form.removeClass("loading");
 }

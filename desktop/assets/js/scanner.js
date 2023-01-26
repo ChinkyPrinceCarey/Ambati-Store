@@ -56,7 +56,7 @@ $(function(){
                 if(_action == "add"){
                     let sale_item = this.sale_obj.update_data('remove', _barcode);
                     if(sale_item) this.data.push(sale_item);
-                    this.update_data_table(_action, sale_item); //ignores if no table is present
+                    this.update_data_table(_action, sale_item, this.trashIconForActionAdd, this.trashIconForActionClass); //ignores if no table is present
                     this.update_summary(_action, sale_item); //ignores if summary object is null
                     this.update_billing(_action, sale_item); //ignores if summary object is null
 
@@ -140,7 +140,9 @@ $(function(){
         update_billing: update_billing,
         isItemExist: isItemExist,
         includeMakingCostInSummary: false,
-        cottonScanning: false
+        cottonScanning: false,
+        trashIconForActionAdd: false,
+        trashIconForActionClass: "remove-item"
     }
 
     sale_obj_methods = {
@@ -312,13 +314,13 @@ $(function(){
     });
 });
 
-function update_data_table(_action, _item, _show_trash_row = false){
+function update_data_table(_action, _item, _show_trash_row = false, _trash_icon_class = "remove-item"){
     if(!(this.data_table === false)){
         if(scanner_state.isEnabled){
             let table_body = this.data_table.children('tbody');
 
             if(_action == "add"){
-                let table_trash_row = _show_trash_row ? `<i class="large trash icon remove-item"></i>` : '';
+                let table_trash_row = _show_trash_row ? `<i class="large trash icon ${_trash_icon_class}"></i>` : '';
                 table_body.prepend(`
                     <tr data-barcode="${_item.barcode}">
                         <td class="collapsing"></td>
@@ -884,7 +886,16 @@ function offer_dialogue(
     callback, 
     _sale_data, 
     _show_offer = true,
-    _modal_data = {title: "Verify and Confirm Sale", desc: "Sale Items Overview", primary_btn_title: "Sale Stock"}
+    _modal_data = {title: "Verify and Confirm Sale", desc: "Sale Items Overview", primary_btn_title: "Sale Stock"},
+    _summary_data = {
+       show_items_summary: true,
+       show_items_units: true,
+       show_making_cost: true,
+       show_sub_total: true,
+       show_tax: true,
+       show_total: true,
+       show_profit: true
+    }
 ){
     scanner_state.isKeyPressEnable = false;
     let offer_dom = '';
@@ -925,42 +936,78 @@ function offer_dialogue(
     let dialogue_title = _modal_data.title;
     let dialogue_desc = _modal_data.desc;
     let primary_button_title = _modal_data.primary_btn_title;
+
+    let dialogue_body = "";
+    
+    if(_summary_data.show_items_summary){
+        dialogue_body += `
+        <tr>
+            <td>Total No.of. Items</td>
+            <td><b>${_sale_data.summary.length ? _sale_data.summary.length : "0"}</b></td>
+        </tr>   
+        `;
+    }
+    
+    if(_summary_data.show_items_units){
+        dialogue_body += `
+        <tr>
+            <td>Total No.of. Units</td>
+            <td><b>${_sale_data.data.length ? _sale_data.data.length : "0"}</b></td>
+        </tr>
+        `;
+    }
+    
+    if(_summary_data.show_making_cost){
+        dialogue_body += `
+        <tr>
+            <td>Total Making Cost <i class="toggle-visibility eye icon"></i></td>
+            <td><b class="opacity-0">${_sale_data.billing.making_cost ? _sale_data.billing.making_cost : "0"}</b></td>
+        </tr>
+        `;
+    }
+    
+    if(_summary_data.show_sub_total){
+        dialogue_body += `
+        <tr>
+            <td>Sub Total</td>
+            <td><b>${_sale_data.billing.sub_total ? _sale_data.billing.sub_total : "0"}</b></td>
+        </tr>
+        `;
+    }
+    
+    if(_summary_data.show_tax){
+        dialogue_body += `
+        <tr>
+            <td>Tax</td>
+            <td><b>${_sale_data.billing.tax ? _sale_data.billing.tax : "0"}</b></td>
+        </tr>
+        `;
+    }
+    
+    if(_summary_data.show_total){
+        dialogue_body += `
+        <tr>
+            <td>Total</td>
+            <td><b>${_sale_data.billing.total ? _sale_data.billing.total : "0"}</b></td>
+        </tr>
+        `;
+    }
+    
+    if(_summary_data.show_profit){
+        dialogue_body += `
+        <tr>
+            <td>Profit <i class="toggle-visibility eye icon"></i></td>
+            <td><b class="opacity-0">${_sale_data.billing.total - _sale_data.billing.making_cost}</b></td>
+        </tr>
+        `;
+    }
     
     smallModal(
         `${dialogue_title}`,
         `
         <p><b>${dialogue_desc}</b></p>
         <table border="1" id="sale_items_overview">
-            <tr>
-                <td>Total No.of. Items</td>
-                <td><b>${_sale_data.summary.length ? _sale_data.summary.length : "0"}</b></td>
-            </tr>
-            <tr>
-                <td>Total No.of. Units</td>
-                <td><b>${_sale_data.data.length ? _sale_data.data.length : "0"}</b></td>
-            </tr>
-            <tr><td colspan="2"></td></tr>
-            <tr>
-                <td>Total Making Cost <i class="toggle-visibility eye icon"></i></td>
-                <td><b class="opacity-0">${_sale_data.billing.making_cost ? _sale_data.billing.making_cost : "0"}</b></td>
-            </tr>
-            <tr>
-                <td>Sub Total</td>
-                <td><b>${_sale_data.billing.sub_total ? _sale_data.billing.sub_total : "0"}</b></td>
-            </tr>
-            <tr>
-                <td>Tax</td>
-                <td><b>${_sale_data.billing.tax ? _sale_data.billing.tax : "0"}</b></td>
-            </tr>
-            <tr>
-                <td>Total</td>
-                <td><b>${_sale_data.billing.total ? _sale_data.billing.total : "0"}</b></td>
-            </tr>
-            <tr>
-                <td>Profit <i class="toggle-visibility eye icon"></i></td>
-                <td><b class="opacity-0">${_sale_data.billing.total - _sale_data.billing.making_cost}</b></td>
-            </tr>
-            <tr><td colspan="2"></td></tr>
+            ${dialogue_body}
         </table>
         </br>
         ${offer_dom}

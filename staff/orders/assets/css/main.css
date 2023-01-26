@@ -19,18 +19,21 @@ main .card{
   overflow-x: auto;
 }
 
-.card .wrapper{
+.card .wrapper,
+.segment{
   position: relative;
 }
 
-.card .wrapper input[type=checkbox]{
+.card .wrapper input[type=checkbox],
+.segment input[type=checkbox]{
   position: absolute;
   top: 0;
   right: 0;
   display: none;
 }
 
-.card .wrapper input[type=checkbox] + label{
+.card .wrapper input[type=checkbox] + label,
+.segment input[type=checkbox] + label{
   position: absolute;
   top: 0;
   right: 0;
@@ -49,11 +52,13 @@ main .card{
   font-size: 1.3em;
 }
 
-.card .wrapper input[type=checkbox] + label::before{
+.card .wrapper input[type=checkbox] + label::before,
+.segment input[type=checkbox] + label::before{
   content: "\f067";
 }
 
-.card .wrapper input[type=checkbox]:checked + label::before{
+.card .wrapper input[type=checkbox]:checked + label::before,
+.segment input[type=checkbox]:checked + label::before{
   content: "\f068"
 }
 
@@ -64,6 +69,32 @@ main .card{
 
 .card .wrapper input[type=checkbox]:checked + label + div,
 .card .wrapper input[type=checkbox]:checked + label + form{
+  display: none;
+}
+
+.segment.red > input[type=checkbox] + label{
+  color: #DB2828;
+}
+
+.segment.green > input[type=checkbox] + label{
+  color: #21BA45;
+}
+
+.segment.blue > input[type=checkbox] + label{
+  color: #2185D0;
+}
+
+.segment.violet > input[type=checkbox] + label{
+  color: #6435C9;
+}
+
+.segment input[type=checkbox] + label + .card,
+.segment input[type=checkbox] + label + .card + .card{
+  display: block;
+}
+
+.segment input[type=checkbox]:checked + label + .card,
+.segment input[type=checkbox]:checked + label + .card + .card{
   display: none;
 }
 
@@ -143,7 +174,8 @@ main.camera-enabled{
   z-index: 10;
 }
 
-main .card:last-child{
+main > .card:last-child,
+main .segment:last-child{
   margin-bottom: 95px;
 }
 
