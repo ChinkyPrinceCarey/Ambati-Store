@@ -592,7 +592,8 @@ function updateSumOnFooter(api, column_index, is_decimal = true, prefix = "₹")
                 }
            });
     }
-    $(api.column(column_index).footer()).html(`${prefix} ${total_sum}`);  
+    $(api.column(column_index).footer()).html(`${prefix} ${total_sum}`);
+    $(api.column(column_index).footer()).attr('data-value', total_sum);
 }
 
 function get_decimal(_val){
