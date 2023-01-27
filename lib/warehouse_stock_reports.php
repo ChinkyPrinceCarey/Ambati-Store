@@ -93,7 +93,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
             $where_clause = array("1");
             if($start && $end){
-                $where_clause = "`$date_column` BETWEEN '$start' AND '$end'";
+                $where_clause = "`$date_column` BETWEEN '$start 00:00:00' AND '$end 23:59:59'";
             }
 
             $extra_column = null;
