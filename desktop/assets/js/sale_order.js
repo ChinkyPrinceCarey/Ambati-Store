@@ -833,6 +833,7 @@ function sortTrackingId(){
     table_order_summary_after.DataTable({
         "dom": 't',
         "order": [[5, 'asc']],
+        "paging": false
     });
 }
 
