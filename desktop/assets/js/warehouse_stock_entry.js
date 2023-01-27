@@ -312,7 +312,7 @@ $(function(){
                 data_param = {
                     action: "stock_entry",
                     data: "random_data",
-                    date: getCurrentDate(),
+                    date: getCurrentDate("ymdt"),
                     generate_id: GENERATEID("all"),
                     material: dropdown_material.dropdown('get value'),
                     type: selected_type,
