@@ -186,7 +186,7 @@ function get_variable(_arr, _str){
         for(currly_variable of currly_variables){
             let currly_value = _arr[currly_variable];
             if(currly_value){
-                _str = _str.replaceAll('{'+currly_variable+'}', currly_value);
+                _str = _str.replace('{'+currly_variable+'}', currly_value);
             }
         }
         if(_str.match(currly_var_pattern)){
