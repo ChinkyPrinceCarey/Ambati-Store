@@ -620,25 +620,28 @@ function toIsoString(date) {
   }
   
 
-function getCurrentDate(format="ymd"){
-	var dt = new Date();
+function getCurrentDate(format = "ymd"){
+	let dt = new Date();
 	
     let date = toIsoString(dt).slice(0, 10);
     let dateArr = date.split('-');
 
-    if(format == "ymd"){
-        return date;
-    }else if(format == "dmy"){
-        return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-    }else if(format == "dm"){
-		return `${dateArr[2]}${dateArr[1]}`;
-	}else if(format == "dmt"){
-		return toIsoString(dt).slice(0, 19).replace(/[-T:]/gm, '');
-	}else if(format == "d/m/y"){
-        return `${dateArr[2]}/${dateArr[1]}/${dateArr[0]}`;
+    switch (format) {
+        case "ymd":
+            return date;
+        case "ymdt":
+            return toIsoString(dt).slice(0, 19).replace("T", " ");
+        case "dmy":
+            return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
+        case "dm":
+            return `${dateArr[2]}${dateArr[1]}`;
+        case "dmt":
+            return toIsoString(dt).slice(0, 19).replace(/[-T:]/gm, '');
+        case 'd/m/y':
+            return `${dateArr[2]}/${dateArr[1]}/${dateArr[0]}`;
+        default:
+            return date;
     }
-
-    return date;
 }
 
 //for leading zeros
