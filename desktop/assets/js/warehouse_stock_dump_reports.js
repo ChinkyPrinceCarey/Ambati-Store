@@ -29,8 +29,8 @@ $(function(){
     rangestart_input = $("#rangestart_input");
     rangeend_input = $("#rangeend_input");
 
-    rangestart_input.val(getCurrentDate());
-    rangeend_input.val(getCurrentDate());
+    rangestart_input.val(getDate());
+    rangeend_input.val(getDate());
 
     summary = $("#summary");
     monthly = $("#monthly");
@@ -165,10 +165,10 @@ $(function(){
                     extend: 'copy', className: "violet ui button"
                 },
                 {
-                    extend: 'csv', className: "blue ui button", filename: function(){ return `Stock_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'csv', className: "blue ui button", filename: function(){ return `Stock_Reports_${getDate("ymdt")}` }
                 },
                 {
-                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Stock_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Stock_Reports_${getDate("ymdt")}` }
                 }
             ],
         },
@@ -284,10 +284,10 @@ $(function(){
                     extend: 'copy', className: "violet ui button"
                 },
                 {
-                    extend: 'csv', className: "blue ui button", filename: function(){ return `Dump_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'csv', className: "blue ui button", filename: function(){ return `Dump_Reports_${getDate("ymdt")}` }
                 },
                 {
-                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Dump_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Dump_Reports_${getDate("ymdt")}` }
                 }
             ],
         },
@@ -330,10 +330,10 @@ $(function(){
                     extend: 'copy', className: "violet ui button"
                 },
                 {
-                    extend: 'csv', className: "blue ui button", filename: function(){ return `Dump_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'csv', className: "blue ui button", filename: function(){ return `Dump_Reports_${getDate("ymdt")}` }
                 },
                 {
-                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Dump_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Dump_Reports_${getDate("ymdt")}` }
                 }
             ],
         },

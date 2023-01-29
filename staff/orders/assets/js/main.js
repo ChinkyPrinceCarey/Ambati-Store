@@ -33,43 +33,38 @@ function ajaxPostCall(param1, param2, callback){
         jqxhr.fail(callback);
 }
 
-function getCurrentDate(format="ymd"){
-	var dt = new Date();
-	
-    let date = toIsoString(dt).slice(0, 10);
-    let dateArr = date.split('-');
+function getDate(format = "y-m-d", when = "today"){
+    var date = new Date();
 
-    if(format == "ymd"){
-        return date;
-    }else if(format == "dmy"){
-        return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-    }else if(format == "dm"){
-		return `${dateArr[2]}${dateArr[1]}`;
-	}else if(format == "dmt"){
-		return toIsoString(dt).slice(0, 19).replace(/[-T:]/gm, '');
-	}else if(format == "d/m/y"){
-        return `${dateArr[2]}/${dateArr[1]}/${dateArr[0]}`;
+    if(when == "yesterday"){
+        date.setDate(date.getDate() - 1);
+    }else if(typeof when == "number"){
+        date.setDate(date.getDate() + when);
     }
 
-    return date;
-}
-
-function toIsoString(date) {
-  var tzo = -date.getTimezoneOffset(),
-      dif = tzo >= 0 ? '+' : '-',
-      pad = function(num) {
-          var norm = Math.floor(Math.abs(num));
-          return (norm < 10 ? '0' : '') + norm;
-      };
-
-  return date.getFullYear() +
-      '-' + pad(date.getMonth() + 1) +
-      '-' + pad(date.getDate()) +
-      'T' + pad(date.getHours()) +
-      ':' + pad(date.getMinutes()) +
-      ':' + pad(date.getSeconds()) +
-      dif + pad(tzo / 60) +
-      ':' + pad(tzo % 60);
+    var year = date.getFullYear();
+    var month = (1 + date.getMonth()).toString().padStart(2, '0');
+    var day = date.getDate().toString().padStart(2, '0');
+    var hours = date.getHours().toString().padStart(2, '0');
+    var minutes = date.getMinutes().toString().padStart(2, '0');
+    var seconds = date.getSeconds().toString().padStart(2, '0');
+  
+    switch(format){
+      case "y-m-d":
+        return year + "-" + month + "-" + day;
+      case "y-m-d t":
+        return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+      case "d-m-y":
+        return day + "-" + month + "-" + year;
+      case "dm":
+        return day + month;
+      case "ymdt":
+        return year + month + day + hours + minutes + seconds;
+      case "d/m/y":
+        return day + "/" + month + "/" + year;
+      default:
+        return "Invalid format";
+    }
 }
 
 function updateSumOnFooter(api, column_index, is_decimal = true, prefix = "₹"){

@@ -601,46 +601,37 @@ function get_decimal(_val){
     return parseFloat(_val.toFixed(2));
 }
 
-function toIsoString(date) {
-    var tzo = -date.getTimezoneOffset(),
-        dif = tzo >= 0 ? '+' : '-',
-        pad = function(num) {
-            var norm = Math.floor(Math.abs(num));
-            return (norm < 10 ? '0' : '') + norm;
-        };
-  
-    return date.getFullYear() +
-        '-' + pad(date.getMonth() + 1) +
-        '-' + pad(date.getDate()) +
-        'T' + pad(date.getHours()) +
-        ':' + pad(date.getMinutes()) +
-        ':' + pad(date.getSeconds()) +
-        dif + pad(tzo / 60) +
-        ':' + pad(tzo % 60);
-  }
-  
+function getDate(format = "y-m-d", when = "today"){
+    var date = new Date();
 
-function getCurrentDate(format = "ymd"){
-	let dt = new Date();
-	
-    let date = toIsoString(dt).slice(0, 10);
-    let dateArr = date.split('-');
+    if(when == "yesterday"){
+        date.setDate(date.getDate() - 1);
+    }else if(typeof when == "number"){
+        date.setDate(date.getDate() + when);
+    }
 
-    switch (format) {
-        case "ymd":
-            return date;
-        case "ymdt":
-            return toIsoString(dt).slice(0, 19).replace("T", " ");
-        case "dmy":
-            return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-        case "dm":
-            return `${dateArr[2]}${dateArr[1]}`;
-        case "dmt":
-            return toIsoString(dt).slice(0, 19).replace(/[-T:]/gm, '');
-        case 'd/m/y':
-            return `${dateArr[2]}/${dateArr[1]}/${dateArr[0]}`;
-        default:
-            return date;
+    var year = date.getFullYear();
+    var month = (1 + date.getMonth()).toString().padStart(2, '0');
+    var day = date.getDate().toString().padStart(2, '0');
+    var hours = date.getHours().toString().padStart(2, '0');
+    var minutes = date.getMinutes().toString().padStart(2, '0');
+    var seconds = date.getSeconds().toString().padStart(2, '0');
+  
+    switch(format){
+      case "y-m-d":
+        return year + "-" + month + "-" + day;
+      case "y-m-d t":
+        return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+      case "d-m-y":
+        return day + "-" + month + "-" + year;
+      case "dm":
+        return day + month;
+      case "ymdt":
+        return year + month + day + hours + minutes + seconds;
+      case "d/m/y":
+        return day + "/" + month + "/" + year;
+      default:
+        return "Invalid format";
     }
 }
 
@@ -673,12 +664,12 @@ exampleSocket.onmessage = function (event) {
             console.log('open connection')
         }else{
             console.log('received message')
-			timestamp_param = `timestamp=${getCurrentDate('dmt')}`;
+			timestamp_param = `timestamp=${getDate("ymdt")}`;
             url = window.location.href;
 			
 			if(url.includes("?")){
 				if(url.includes("timestamp=")){
-					url = url.replaceAll(/[\d]{14}(?<!(timestamp=))/gm, getCurrentDate('dmt'));
+					url = url.replaceAll(/[\d]{14}(?<!(timestamp=))/gm, getDate("ymdt"));
 				}else{
 					url += `&&${timestamp_param}`;
 				}

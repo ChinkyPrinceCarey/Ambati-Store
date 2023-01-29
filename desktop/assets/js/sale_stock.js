@@ -26,7 +26,7 @@ let table_sale_list;
 
 $(function(){
 
-    $("span#date").text(getCurrentDate("dmy"));
+    $("span#date").text(getDate("d-m-y"));
 
     table_sale_list = $("#sale-list");
     table_sale_summary = $("#sale-summary");

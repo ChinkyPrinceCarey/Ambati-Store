@@ -33,7 +33,7 @@ let final_invoice;
 
 $(function(){
 
-    $("span#date").text(getCurrentDate("dmy"));
+    $("span#date").text(getDate("d-m-y"));
 
     input_invoice_id = $("#invoice_id");
     input_invoice_date = $("#invoice_date");

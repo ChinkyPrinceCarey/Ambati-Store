@@ -34,7 +34,7 @@ let track;
 
 $(function(){
 
-    $("span#date").text(getCurrentDate("dmy"));
+    $("span#date").text(getDate("d-m-y"));
 
     barcode_icon = $(".barcode.icon");
 

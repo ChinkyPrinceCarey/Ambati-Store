@@ -34,7 +34,7 @@ let table_order_summary_after;
 
 $(function(){
 
-    $("span#date").text(getCurrentDate("dmy"));
+    $("span#date").text(getDate("d-m-y"));
 
     table_scanned_list = $("#scanned-list");
     table_scanned_summary = $("#scanned-summary");

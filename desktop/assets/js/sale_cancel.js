@@ -32,7 +32,7 @@ let current_sale_list_table;
 let current_sale_billing_table;
 
 $(function(){
-    $("span#date").text(getCurrentDate("dmy"));
+    $("span#date").text(getDate("d-m-y"));
 
     save_details_btn = $("#save_details_btn");
     edit_details_btn = $("#edit_details_btn");

@@ -30,8 +30,8 @@ $(function(){
     rangestart_input = $("#rangestart_input");
     rangeend_input = $("#rangeend_input");
 
-    rangestart_input.val(getCurrentDate());
-    rangeend_input.val(getCurrentDate());
+    rangestart_input.val(getDate());
+    rangeend_input.val(getDate());
 
     dropdown_fetch_orders_filter = $("#dropdown_fetch_orders_filter");
     dropdown_fetch_orders_filter.dropdown();
@@ -102,13 +102,13 @@ $(function(){
                     extend: 'copy', className: "blue ui button"
                 },
                 {
-                    extend: 'csv', className: "violet ui button", filename: function(){ return `Sale_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'csv', className: "violet ui button", filename: function(){ return `Sale_Reports_${getDate("ymdt")}` }
                 },
                 {
-                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Sale_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Sale_Reports_${getDate("ymdt")}` }
                 },
                 {
-                    extend: 'excel', className: "pink ui button", filename: function(){ return `Sale_Reports_${getCurrentDate("dmt")}` }
+                    extend: 'excel', className: "pink ui button", filename: function(){ return `Sale_Reports_${getDate("ymdt")}` }
                 }
             ]
         },

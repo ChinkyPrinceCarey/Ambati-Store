@@ -14,7 +14,7 @@ let unscanned_data = {};
 
 $(function(){
 
-    $("span#date").text(getCurrentDate("dmy"));
+    $("span#date").text(getDate("d-m-y"));
 
     scanned_data_table_summary = $("#scanned_data .card .wrapper div table#sale-summary");
     scanned_data_table_list = $("#scanned_data .card .wrapper div table#sale-list");

@@ -678,7 +678,7 @@ function cropButton(){
         <i class="arrow alternate circle right icon move-image-right"></i>
     </div>`;
 
-    let timestamp = getCurrentDate("dmt");
+    let timestamp = getDate("ymdt");
 
     previewContainer
         .addClass('s-200px')

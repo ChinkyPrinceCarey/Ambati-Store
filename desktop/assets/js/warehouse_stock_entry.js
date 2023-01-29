@@ -39,7 +39,7 @@ let GenerateId = [];
 let inProcess;
 
 $(function(){
-	$("span#date").text(getCurrentDate("dmy"));
+	$("span#date").text(getDate("d-m-y"));
 
     loadMaterial();
 
@@ -95,7 +95,7 @@ $(function(){
     jQuery('.dropdown.is-cotton-field').dropdown('setting','onChange', dropdownIsCottonChange);
     dropdownIsCottonChange("no"); //this will hide quantity by default
 
-    //input_manufactured_date.val(getCurrentDate("d/m/y")); //not required
+    //input_manufactured_date.val(getDate("d/m/y")); //not required
 
     calendar_manufactured_date
     .calendar({
@@ -312,7 +312,7 @@ $(function(){
                 data_param = {
                     action: "stock_entry",
                     data: "random_data",
-                    date: getCurrentDate("ymdt"),
+                    date: getDate("ymdt"),
                     generate_id: GENERATEID("all"),
                     material: dropdown_material.dropdown('get value'),
                     type: selected_type,
@@ -481,7 +481,7 @@ function GENERATEID(){
         switch(arguments[0]){
             case 'new':
                 wait(1000);
-                let newGenerateId = getCurrentDate("dmt");
+                let newGenerateId = getDate("ymdt");
                 GenerateId.push(newGenerateId);
                 return newGenerateId;
 
@@ -514,7 +514,7 @@ function generateBarcodes(data){
 	//console.log(data.no_of_barcodes);
 	
 	let currentItemNumber = parseInt(field_current_item_no.val());
-    let currentDate = getCurrentDate('dm');
+    let currentDate = getDate("dm");
     let custom_data = getCustomData();
 
     data.no_of_barcodes = parseInt(data.no_of_barcodes);
@@ -875,7 +875,7 @@ function populateFields(item_data){
         field_retailer_cost.val('').val(item_data.retailer_cost)
         field_wholesale_cost.val('').val(item_data.wholesale_cost)
 
-        if(getCurrentDate() == item_data.date){
+        if(getDate() == item_data.date){
             field_current_item_no.val('').val(parseInt(item_data.item_number) + 1);
         }else{
             field_current_item_no.val('').val(1);

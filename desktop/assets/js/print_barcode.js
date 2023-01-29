@@ -2,7 +2,7 @@ let get_data_form;
 let print_barcode_btn;
 
 $(function(){
-    $("span#date").text(getCurrentDate("dmy"));
+    $("span#date").text(getDate("d-m-y"));
 
     get_data_form = $("#get_data");
     print_barcode_btn = $("#print_barcode_btn");

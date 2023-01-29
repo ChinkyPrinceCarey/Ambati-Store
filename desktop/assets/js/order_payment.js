@@ -22,7 +22,7 @@ let table_items_summary;
 
 $(function(){
 
-    $("span#date").text(getCurrentDate("dmy"));
+    $("span#date").text(getDate("d-m-y"));
 
     table_items_list = $("#items-list");
     table_items_summary = $("#items-summary");
