@@ -586,7 +586,7 @@ function updateSumOnFooter(api, column_index, is_decimal = true, prefix = "₹")
            .data()
            .reduce(function(a, b){
                 if(is_decimal){
-                    return get_decimal(a) + get_decimal(b);
+                    return get_decimal(get_decimal(a) + get_decimal(b));
                 }else{
                     return parseInt(a) + parseInt(b);
                 }
