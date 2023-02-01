@@ -4,7 +4,7 @@
     "API_ENDPOINT": "https://ambatitastyfoods.com",
     "LIB_API_ENDPOINT": "{API_ENDPOINT}/lib",
     "DESKTOP" : {
-      "BASE_DIR": "C:/wamp64/www/ambati_sms/v1"
+      "BASE_DIR": "C:/wamp64/www/domains/ambatitastyfoods.com/public_html/prod"
     },
     "APP" : {
       "BASE_DIR": "/home/u916003822/domains/ambatitastyfoods.com/public_html/"
@@ -20,7 +20,7 @@
     "API_ENDPOINT": "https://beta.ambatitastyfoods.com",
     "LIB_API_ENDPOINT": "{API_ENDPOINT}/lib",
     "DESKTOP" : {
-      "BASE_DIR": "C:/wamp64/www/beta.ambatitastyfoods.com/beta"
+      "BASE_DIR": "C:/wamp64/www/domains/ambatitastyfoods.com/public_html/beta"
     },
     "APP" : {
       "BASE_DIR": "/home/u916003822/domains/ambatitastyfoods.com/public_html/beta"
