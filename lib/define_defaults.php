@@ -88,5 +88,7 @@ if(file_exists($fields_defination_path)){
     foreach($fields_defination as $field_def){
         define($field_def['variable'], $field_def);
     }
+}else{
+  die("Defination file not exist");
 }
 ?>
