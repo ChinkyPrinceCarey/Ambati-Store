@@ -342,21 +342,23 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             "
             SELECT 
                 `items`.`material`, `items`.`item`, `items`.`shortcode`, `items`.`unit`, `items`.`type`, `items`.`tracking_id`,  
-                `stock_and_stock_nouse`.`making_cost`, `stock_and_stock_nouse`.`retailer_cost`, `stock_and_stock_nouse`.`wholesale_cost`, `stock_and_stock_nouse`.`item_number`, `stock_and_stock_nouse`.`date`
+                `stock_and_related_tables`.`making_cost`, `stock_and_related_tables`.`retailer_cost`, `stock_and_related_tables`.`wholesale_cost`, `stock_and_related_tables`.`item_number`, `stock_and_related_tables`.`date`
             FROM `items`
 
             LEFT JOIN (
-            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock` WHERE `shortcode`= '$shortcode'
+                SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock` WHERE `shortcode`= '$shortcode'
             UNION
-            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_nouse` WHERE `shortcode`= '$shortcode'
+                SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_deleted` WHERE `shortcode`= '$shortcode'
             UNION
-            SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_deleted` WHERE `shortcode`= '$shortcode'
-            ) AS `stock_and_stock_nouse`
-            ON `items`.`shortcode` = `stock_and_stock_nouse`.`shortcode`
+                SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_dump` WHERE `shortcode`= '$shortcode'
+            UNION
+                SELECT `shortcode`, `making_cost`, `retailer_cost`, `wholesale_cost`, `item_number`, `date` FROM `stock_sold` WHERE `shortcode`= '$shortcode'
+            ) AS `stock_and_related_tables`
+            ON `items`.`shortcode` = `stock_and_related_tables`.`shortcode`
 
             WHERE `items`.`shortcode` = '$shortcode'
 
-            ORDER BY `stock_and_stock_nouse`.`date` DESC, `stock_and_stock_nouse`.`item_number` DESC LIMIT 1
+            ORDER BY `stock_and_related_tables`.`date` DESC, `stock_and_related_tables`.`item_number` DESC LIMIT 1
             ";
 
             $select_query = get_query($query_type, $query_table, $query_text);

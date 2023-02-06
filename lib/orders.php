@@ -34,7 +34,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                         USERNAME, NAME, MOBILE_NUMBER, ADDRESS
                     );
         $_post_data = is_numeric($id) ? $_POST['data'][$id] : null ;
-
+        $date = get_date("y-m-d t");
         if($action == "create"){
             $fields_data = validate_fields($_POST, $fields_def);
             if($fields_data['result']){
@@ -54,7 +54,6 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
                     if(json_last_error() === JSON_ERROR_NONE){
                         if(count($items_data)){
-                            $date = date('Y-m-d H:i:s');
                             $sale_type = "order";
                             $username = $fields_data['username'];
                             $name = $fields_data['name'];
@@ -302,29 +301,40 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $new_order_id = null;
 
                 if(count($scanned_data['list'])){
-                    //1. insert item in `stock_nouse`
+                    //1. insert item in `stock_sold`
                     $scanned_items_list = $scanned_data['list'];
-                    $scanned_items_barcodes =   array_map(function($item){
-                                                    return $item['barcode'];
-                                                }, $scanned_items_list);
-                    $barcodes_in_string = "'" . implode("','", $scanned_items_barcodes) . "'";
-
-                    $stock_nouse_query_type = "custom";
-                    $stock_nouse_table = "stock_nouse";
-                    $stock_nouse_query_text = 
+                    $barcodes_arr = getBarcodesData($scanned_items_list, "fetch_from_items");
+                    $barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
+                    $shortcode_unit_price_data = getBarcodesData($scanned_data['summary'], "shortcode_unit_price");
+                    $case_query_text = getCaseQueryText($shortcode_unit_price_data);
+            
+                    $stock_sold_query_type = "custom";
+                    $stock_sold_table = "stock_sold";
+                    $stock_sold_query_text = 
                     "
-                        INSERT INTO `stock_nouse` SELECT NULL AS `row_id`, `stock`.* FROM `stock` WHERE `barcode` IN ($barcodes_in_string);
+                        INSERT INTO `stock_sold` 
+                        SELECT 
+                            NULL AS `row_id`, 
+                            '$date' AS `row_date`, 
+                            'order' AS `sold_type`, 
+                            '$order_id' AS `sold_id`, 
+                            `stock`.*, 
+                            $case_query_text,
+                            NULL AS `is_restored`, 
+                            NULL AS `affected_time` 
+                        FROM `stock` 
+                        WHERE `barcode` IN ($barcodes_str);
                     ";
 
-                    $stock_nouse_query = get_query($stock_nouse_query_type, $stock_nouse_table, $stock_nouse_query_text);
-                    $transaction_queries[] = array("insert" => $stock_nouse_query);
+                    $stock_sold_query = get_query($stock_sold_query_type, $stock_sold_table, $stock_sold_query_text);
+                    $transaction_queries[] = array("insert" => $stock_sold_query);
 
                     //2. delete item from `stock`
                     $stock_delete_query_type = "custom";
                     $stock_delete_table = "stock";
                     $stock_delete_query_text = 
                     "
-                        DELETE FROM `stock` WHERE `barcode` IN ($barcodes_in_string);
+                        DELETE FROM `stock` WHERE `barcode` IN ($barcodes_str);
                     ";
 
                     $stock_delete_query = get_query($stock_delete_query_type, $stock_delete_table, $stock_delete_query_text);
@@ -468,7 +478,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                     "barcode",
                     "custom_data"
                 );
-
+                
                 foreach($cancelled_invoice['list'] as $cancelled_item){
                     $stock_insert_values =	array(
                         $cancelled_item['generate_id'],
@@ -490,6 +500,18 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                     $stock_insert_query = get_query($stock_insert_type, $stock_insert_table, $stock_insert_columns, $stock_insert_values);
                     $transaction_queries[] = array("insert" => $stock_insert_query);
                 }
+
+                $barcodes_arr = getBarcodesData($cancelled_invoice['list'], "fetch_from_items");
+                $barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
+
+                //update on `stock_sold`
+                $stock_sold_type = "update";
+                $stock_sold_table = "stock_sold";
+                $stock_sold_set = array("is_restored=1", "affected_time=$date");
+                $stock_sold_where = "`barcode` IN ($barcodes_str) AND `is_restored` = '0' AND `sold_type` = 'order' AND `sold_id` = '$order_id'";
+                
+                $stock_sold_query = get_query($stock_sold_type, $stock_sold_table, $stock_sold_set, $stock_sold_where);
+                $transaction_queries[] = array("update" => $stock_sold_query);
 
                 /*
                     scenario: 1

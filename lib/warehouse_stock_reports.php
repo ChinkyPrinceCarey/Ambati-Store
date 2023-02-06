@@ -20,37 +20,24 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
     if(isset($_POST['action']) && !empty($_POST['action'])){
         $action = $_POST['action'];
         $query_table = "stock";
-        
+        $date = get_date("y-m-d t");
         if($action == "remove"){
-
             /*
                 OPERATIONS
                 ==>insert the row in `stock_deleted`
-                ==>insert the row in `stock_nouse`
                 ==>delete the row from `stock`
             */
-
             $data = $_POST['data'];
-
-            $query_where = array();
-            foreach($data as $iter_data){
-                $query_where[] = "`id`='" . $iter_data['id'] . "'";
-            }
-            $where_str = join(" || ", $query_where);
+            $barcodes_arr = getBarcodesData($data, "fetch_from_items");
+            $barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
+            $where_str = "`barcode` IN ($barcodes_str)";
 
             $stock_deleted_query_type = "custom";
             $stock_deleted_query_table = "stock_deleted";
-            $stock_deleted_query_text = "INSERT INTO `stock_deleted` SELECT NULL AS `row_id`, DATE_ADD(NOW(), INTERVAL 330 MINUTE) AS `row_date`, `stock`.* FROM `stock` WHERE $where_str";
+            $stock_deleted_query_text = "INSERT INTO `stock_deleted` SELECT NULL AS `row_id`, '$date' AS `row_date`, `stock`.*, NULL AS `is_restored`, NULL AS `affected_time` FROM `stock` WHERE $where_str";
 
             $stock_deleted_query = get_query($stock_deleted_query_type, $stock_deleted_query_table, $stock_deleted_query_text);
             
-
-            $stock_nouse_query_type = "custom";
-            $stock_nouse_query_table = "stock_nouse";
-            $stock_nouse_query_text = "INSERT INTO `stock_nouse` SELECT NULL AS `row_id`, `stock`.* FROM `stock` WHERE $where_str";
-
-            $stock_nouse_query = get_query($stock_nouse_query_type, $stock_nouse_query_table, $stock_nouse_query_text);
-
             $stock_query_type = "custom";
             $stock_query_table = $query_table;
             $stock_query_text = "DELETE FROM `stock` WHERE $where_str";
@@ -58,7 +45,6 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 
             $transaction_arr =  array(
                                     array("insert" => $stock_deleted_query),
-                                    array("insert" => $stock_nouse_query),
                                     array("delete" => $stock_query)
                                 );
             
@@ -71,6 +57,50 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $return['data'] = "";
             }else{
                 $return['info'] .= "error removing stock";
+                $return['additional_info'] .= $trasaction_result['additional_information'];
+            }
+        }elseif($action == "undelete"){
+            /*
+                OPERATIONS
+                ==>insert the row in `stock`
+                ==>update the row in `stock_deleted`
+            */
+
+            $data = $_POST['data'];
+            $barcodes_arr = getBarcodesData($data, "fetch_from_items");
+            $barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
+
+            $columns_list_arr = getTableDefaultColumns("stock", false, true);
+            $columns_list_str = join(", ", $columns_list_arr);
+
+            $where_str = "`barcode` IN ($barcodes_str)";
+            $where_str .= " AND `is_restored` = '0'";
+
+            $stock_query_type = "custom";
+            $stock_query_table = "stock";
+            $stock_query_text = "INSERT INTO `stock` SELECT $columns_list_str FROM `stock_deleted` WHERE $where_str";
+            $stock_query = get_query($stock_query_type, $stock_query_table, $stock_query_text);
+
+            $stock_deleted_type = "update";
+            $stock_deleted_table = "stock_deleted";
+            $stock_deleted_set = array("is_restored=1", "affected_time=$date");
+            $stock_deleted_where = $where_str;
+            $stock_deleted_query = get_query($stock_deleted_type, $stock_deleted_table, $stock_deleted_set, $stock_deleted_where);
+
+            $transaction_arr =  array(
+                                    array("insert" => $stock_query),
+                                    array("update" => $stock_deleted_query)
+                                );
+            
+            $trasaction_result = execute_transactions($transaction_arr);
+            $return['queries'] = $transaction_arr;
+            
+            if($trasaction_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "restored stock from deleted stock successfully!";
+                $return['data'] = "";
+            }else{
+                $return['info'] .= "error restoring stock from deleted stock";
                 $return['additional_info'] .= $trasaction_result['additional_information'];
             }
         }elseif($action == "fetch_all"){
@@ -96,7 +126,20 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 $where_clause = "`$date_column` BETWEEN '$start 00:00:00' AND '$end 23:59:59'";
             }
 
+            $conditions = array_key_exists('conditions', $_POST['data']) ? $_POST['data']['conditions'] : null;
+            if($conditions){
+                if(is_array($where_clause)){
+                    $where_clause = $conditions;
+                }else{
+                    $where_clause .= " AND $conditions";
+                }
+            }
+
             $extra_column = null;
+
+            if($query_table != "stock"){
+                $extra_column = array("DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') AS `row_date`");
+            }
 
             if($type == "summary"){
                 $extra_column = array(
@@ -114,7 +157,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 }
             }elseif($type == "monthly"){
                 $extra_column = array(
-                    "date_format(`row_date`, '%M %Y') AS `month`",
+                    "DATE_FORMAT(`row_date`, '%M %Y') AS `month`",
                     "COUNT(`shortcode`) AS `no_of_items`",
                     "ROUND(SUM(`making_cost`), 2) AS `total_making_cost`",
                     "ROUND(SUM(`retailer_cost`), 2) AS `total_retailer_cost`",
@@ -241,109 +284,111 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             /*
                 OPERATIONS
                 ==>insert the row in `stock_dump`
-                ==>insert the row in `stock_nouse`
                 ==>delete the row from `stock`
             */
 
-            $data_str = $_POST['data'];
-            $data = json_decode($data_str, true);
+            $data = json_decode($_POST['data'], true);
+            $barcodes_arr = getBarcodesData($data, "fetch_from_items");
+            $barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
+            $where_str = "`barcode` IN ($barcodes_str)";
 
-            if (json_last_error() === JSON_ERROR_NONE){
-                $date = date('Y-m-d');
+            $stock_dump_query_type = "custom";
+            $stock_dump_query_table = "stock_dump";
+            $stock_dump_query_text = "INSERT INTO `stock_dump` SELECT NULL AS `row_id`, '$date' AS `row_date`, `stock`.*, NULL AS `is_restored`, NULL AS `affected_time` FROM `stock` WHERE $where_str";
 
-                $query_where = array();
-                foreach($data as $iter_data){
-                    $query_where[] = "`barcode`='" . $iter_data['barcode'] . "'";
-                }
-                $where_str = join(" || ", $query_where);
+            $stock_dump_query = get_query($stock_dump_query_type, $stock_dump_query_table, $stock_dump_query_text);
+            
+            $stock_query_type = "custom";
+            $stock_query_table = $query_table;
+            $stock_query_text = "DELETE FROM `stock` WHERE $where_str";
+            $stock_query = get_query($stock_query_type, $stock_query_table, $stock_query_text);
 
-                $stock_dump_query_type = "custom";
-                $stock_dump_query_table = "stock_dump";
-                $stock_dump_query_text = "INSERT INTO `stock_dump` SELECT NULL AS `row_id`, '$date' AS `row_date`, `stock`.* FROM `stock` WHERE $where_str";
-
-                $stock_dump_query = get_query($stock_dump_query_type, $stock_dump_query_table, $stock_dump_query_text);
-                
-
-                $stock_nouse_query_type = "custom";
-                $stock_nouse_query_table = "stock_nouse";
-                $stock_nouse_query_text = "INSERT INTO `stock_nouse` SELECT NULL AS `row_id`, `stock`.* FROM `stock` WHERE $where_str";
-
-                $stock_nouse_query = get_query($stock_nouse_query_type, $stock_nouse_query_table, $stock_nouse_query_text);
-
-                $stock_query_type = "custom";
-                $stock_query_table = "stock";
-                $stock_query_text = "DELETE FROM `stock` WHERE $where_str";
-                $stock_query = get_query($stock_query_type, $stock_query_table, $stock_query_text);
-
-                $transaction_arr =  array(
-                                        array("insert" => $stock_dump_query),
-                                        array("insert" => $stock_nouse_query),
-                                        array("delete" => $stock_query)
-                                    );
-                
-                $trasaction_result = execute_transactions($transaction_arr);
-                $return['queries'] = $transaction_arr;
-                
-                if($trasaction_result['result']){
-                    $return['result'] = true;
-                    $return['info'] .= "stock dumped successfully";
-                    $return['data'] = "";
-                }else{
-                    $return['info'] .= "error dumping stock";
-                    $return['additional_info'] .= $trasaction_result['additional_information'];
-                }
+            $transaction_arr =  array(
+                                    array("insert" => $stock_dump_query),
+                                    array("delete" => $stock_query)
+                                );
+            
+            $trasaction_result = execute_transactions($transaction_arr);
+            $return['queries'] = $transaction_arr;
+            
+            if($trasaction_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "stock dumped successfully";
+                $return['data'] = "";
             }else{
-                $return['info'] .= "invalid data";
+                $return['info'] .= "error dumping stock";
+                $return['additional_info'] .= $trasaction_result['additional_information'];
             }
-        }elseif($action == "restore_stock"){
+        }elseif($action == "undump"){
             /*
                 OPERATIONS
                 ==>insert the row in `stock`
-                ==>delete the row from `stock_dump`
+                ==>update the row in `stock_dump`
             */
 
-            $data_str = $_POST['data'];
-            $data = json_decode($data_str, true);
+            $data = is_array($_POST['data']) ? $_POST['data'] : json_decode($_POST['data'], true);
+            $barcodes_arr = getBarcodesData($data, "fetch_from_items");
+            $barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
 
-            if (json_last_error() === JSON_ERROR_NONE){
+            $columns_list_arr = getTableDefaultColumns("stock", false, true);
+            $columns_list_str = join(", ", $columns_list_arr);
 
-                $columns_list_arr = getTableDefaultColumns("stock", false, true);
-                $columns_list_str = join(", ", $columns_list_arr);
+            $where_str = "`barcode` IN ($barcodes_str)";
+            $where_str .= " AND `is_restored` = '0'";
 
-                $query_where = array();
-                foreach($data as $iter_data){
-                    $query_where[] = "`barcode`='" . $iter_data['barcode'] . "'";
-                }
-                $where_str = join(" || ", $query_where);
+            $stock_query_type = "custom";
+            $stock_query_table = "stock";
+            $stock_query_text = "INSERT INTO `stock` SELECT $columns_list_str FROM `stock_dump` WHERE $where_str";
+            $stock_query = get_query($stock_query_type, $stock_query_table, $stock_query_text);
 
-                $stock_query_type = "custom";
-                $stock_query_table = "stock";
-                $stock_query_text = "INSERT INTO `stock` SELECT $columns_list_str FROM `stock_dump` WHERE $where_str";
-                $stock_query = get_query($stock_query_type, $stock_query_table, $stock_query_text);
+            $stock_dump_type = "update";
+            $stock_dump_table = "stock_dump";
+            $stock_dump_set = array("is_restored=1", "affected_time=$date");
+            $stock_dump_where = $where_str;
+            $stock_dump_query = get_query($stock_dump_type, $stock_dump_table, $stock_dump_set, $stock_dump_where);
 
-                $stock_dump_query_type = "custom";
-                $stock_dump_query_table = "stock_dump";
-                $stock_dump_query_text = "DELETE FROM `stock_dump` WHERE $where_str";
-                $stock_dump_query = get_query($stock_dump_query_type, $stock_dump_query_table, $stock_dump_query_text);
-                
-                $transaction_arr =  array(
-                                        array("insert" => $stock_query),
-                                        array("delete" => $stock_dump_query)
-                                    );
-                
-                $trasaction_result = execute_transactions($transaction_arr);
-                $return['queries'] = $transaction_arr;
-                
-                if($trasaction_result['result']){
-                    $return['result'] = true;
-                    $return['info'] .= "stock restored successfully";
-                    $return['data'] = "";
+            $transaction_arr =  array(
+                                    array("insert" => $stock_query),
+                                    array("update" => $stock_dump_query)
+                                );
+            
+            $trasaction_result = execute_transactions($transaction_arr);
+            $return['queries'] = $transaction_arr;
+            
+            if($trasaction_result['result']){
+                $return['result'] = true;
+                $return['info'] .= "restored stock from dump stock successfully!";
+                $return['data'] = "";
+            }else{
+                $return['info'] .= "error restoring stock from dump stock";
+                $return['additional_info'] .= $trasaction_result['additional_information'];
+            }
+        }elseif($action == "barcode_history"){
+            $barcodes_list = array();
+            
+            if(preg_match('/^\d*$/', $_POST['data'])){
+                $fetchedBarcodesList = getBarcodesfromGenerateId($_POST['data']);
+                if($fetchedBarcodesList['result']){
+                    $barcodes_list = getBarcodesData($fetchedBarcodesList['data'], "fetch_from_items");
                 }else{
-                    $return['info'] .= "error restoring stock";
-                    $return['additional_info'] .= $trasaction_result['additional_information'];
+                    $return['info'] .= $fetchedBarcodesList['info'];
                 }
             }else{
-                $return['info'] .= "invalid data";
+                $barcodes_list[] = $_POST['data'];
+            }
+
+            if(count($barcodes_list)){
+                foreach($barcodes_list as $barcode){
+                    $barcodeHistory = getBarcodeHistory($barcode);
+                    if($barcodeHistory['result']){
+                        $return['result'] = true;
+                        $return['data'][] = $barcodeHistory['data'];
+                    }else{
+                        $return['result'] = false;
+                        $return['info'] .= $barcodeHistory['info'];
+                        break;
+                    }
+                }
             }
         }else{
             $return['info'] .= "action: $action does not exist";

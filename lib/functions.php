@@ -397,8 +397,8 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "profit";
 			$columns[]  = "item_number";
 			$columns[]  = "barcode";
-			$columns[]  = "custom_data";
 			$columns[]  = "is_cotton";
+			$columns[]  = "custom_data";
 			return $columns;
 		break;
 		
@@ -420,7 +420,9 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 		
 		case 'stock_dump':
 			$columns[]  = "row_id";
-			$columns[]  = "row_date";
+			$columns[]  = "NULL AS `sold_type`";
+			$columns[]  = "NULL AS `sold_id`";
+			$columns[]  = "id";
 			$columns[]  = "generate_id";
 			$columns[]  = "date";
 			$columns[]  = "material";
@@ -435,11 +437,18 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "profit";
 			$columns[]  = "item_number";
 			$columns[]  = "barcode";
+			$columns[]  = "is_cotton";
 			$columns[]  = "custom_data";
+			$columns[]  = "NULL AS `unit_price`";
+			$columns[]  = "is_restored";
 			return $columns;
 		break;
 		
 		case 'stock_deleted':
+			$columns[]  = "row_id";
+			$columns[]  = "NULL AS `sold_type`";
+			$columns[]  = "NULL AS `sold_id`";
+			$columns[]  = "id";
 			$columns[]  = "generate_id";
 			$columns[]  = "date";
 			$columns[]  = "material";
@@ -454,7 +463,62 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "profit";
 			$columns[]  = "item_number";
 			$columns[]  = "barcode";
+			$columns[]  = "is_cotton";
 			$columns[]  = "custom_data";
+			$columns[]  = "NULL AS `unit_price`";
+			$columns[]  = "is_restored";
+			return $columns;
+		break;
+		
+		case 'stock_for_tracking':
+			$columns[]  = "NULL AS `row_id`";
+			$columns[]  = "NULL AS `sold_type`";
+			$columns[]  = "NULL AS `sold_id`";
+			$columns[]  = "id";
+			$columns[]  = "generate_id";
+			$columns[]  = "date";
+			$columns[]  = "material";
+			$columns[]  = "item";
+			$columns[]  = "shortcode";
+			$columns[]  = "type";
+			$columns[]  = "unit";
+			$columns[]  = "quantity";
+			$columns[]  = "making_cost";
+			$columns[]  = "retailer_cost";
+			$columns[]  = "wholesale_cost";
+			$columns[]  = "profit";
+			$columns[]  = "item_number";
+			$columns[]  = "barcode";
+			$columns[]  = "is_cotton";
+			$columns[]  = "custom_data";
+			$columns[]  = "NULL AS `unit_price`";
+			$columns[]  = "NULL AS `is_restored`";
+			return $columns;
+		break;
+
+		case 'stock_sold':
+			$columns[]  = "row_id";
+			$columns[]  = "sold_type";
+			$columns[]  = "sold_id";
+			$columns[]  = "id";
+			$columns[]  = "generate_id";
+			$columns[]  = "date";
+			$columns[]  = "material";
+			$columns[]  = "item";
+			$columns[]  = "shortcode";
+			$columns[]  = "type";
+			$columns[]  = "unit";
+			$columns[]  = "quantity";
+			$columns[]  = "making_cost";
+			$columns[]  = "retailer_cost";
+			$columns[]  = "wholesale_cost";
+			$columns[]  = "profit";
+			$columns[]  = "item_number";
+			$columns[]  = "barcode";
+			$columns[]  = "is_cotton";
+			$columns[]  = "custom_data";
+			$columns[]  = "unit_price";
+			$columns[]  = "is_restored";
 			return $columns;
 		break;
 
@@ -530,6 +594,118 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 		default:
 			return $columns;
 	}
+}
+
+function getBarcodesfromGenerateId($generate_id){
+	$return = array();
+	$return['result'] = false;
+	$return['info'] = "getBarcodesfromGenerateId(): ";
+	
+	$query_type = "custom";
+	$query_table = "stock";
+	$query_text = 
+	"
+	SELECT DISTINCT `barcode` AS `barcode` FROM (
+		SELECT `generate_id`, `barcode` FROM `stock` WHERE `generate_id` = '$generate_id'
+		UNION
+		SELECT `generate_id`, `barcode` FROM `stock_deleted` WHERE `generate_id` = '$generate_id'
+		UNION
+		SELECT `generate_id`, `barcode` FROM `stock_dump` WHERE `generate_id` = '$generate_id'
+		UNION
+		SELECT `generate_id`, `barcode` FROM `stock_sold` WHERE `generate_id` = '$generate_id'
+	) AS `t5`;
+	";
+	$query = get_query($query_type, $query_table, $query_text);
+	$query_result = select_query($query);
+	if($query_result['result']){
+		if(count($query_result['additional_data'])){
+			$return['result'] = true;
+			$return['info'] .= "fetched all barcodes ";
+			$return['data'] = $query_result['additional_data'];
+		}else{
+			$return['info'] .= "no barcodes exist with provided generate_id ";
+		}
+	}else{
+		$return['info'] .= $query_result['additional_info'];
+	}
+
+	return $return;
+}
+
+function getBarcodeHistory($barcode){
+	$return = array();
+	$return['result'] = false;
+	$return['info'] = "getBarcodeHistory(): ";
+
+	$stock_deleted_columns_str = getDefaultColumnsQueryStr("stock_deleted");
+	$stock_dump_columns_str = getDefaultColumnsQueryStr("stock_dump");
+	$stock_sold_columns_str = getDefaultColumnsQueryStr("stock_sold");
+	$stock_columns_str = getDefaultColumnsQueryStr("stock_for_tracking");
+
+	$custom_query_type = "custom";
+	$custom_query_table = "stock";
+	$custom_query_text = 
+	"
+	SELECT * FROM (
+		SELECT $stock_deleted_columns_str, DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'deleted' as `action` FROM `stock_deleted` WHERE `is_restored` = 0 AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_deleted_columns_str, DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'deleted' as `action` FROM `stock_deleted` WHERE `is_restored` = 1 AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_deleted_columns_str, DATE_FORMAT(`affected_time`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'un-deleted' as `action` FROM `stock_deleted` WHERE `is_restored` = 1 AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_dump_columns_str, DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'dumped' as `action` FROM `stock_dump` WHERE `is_restored` = 0 AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_dump_columns_str, DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'dumped' as `action` FROM `stock_dump` WHERE `is_restored` = 1 AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_dump_columns_str, DATE_FORMAT(`affected_time`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'un-dumped' as `action` FROM `stock_dump` WHERE `is_restored` = 1 AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_sold_columns_str, DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'app_order' as `action` FROM `stock_sold` WHERE `is_restored` = 0 AND `sold_type` = 'order' AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_sold_columns_str, DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'app_order' as `action` FROM `stock_sold` WHERE `is_restored` = 1 AND `sold_type` = 'order' AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_sold_columns_str, DATE_FORMAT(`affected_time`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'app_order_return' as `action` FROM `stock_sold` WHERE `is_restored` = 1 AND `sold_type` = 'order' AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_sold_columns_str, DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'company_sale' as `action` FROM `stock_sold` WHERE `is_restored` = 0 AND `sold_type` = 'sale' AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_sold_columns_str, DATE_FORMAT(`row_date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'company_sale' as `action` FROM `stock_sold` WHERE `is_restored` = 1 AND `sold_type` = 'sale' AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_sold_columns_str, DATE_FORMAT(`affected_time`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'company_sale_return' as `action` FROM `stock_sold` WHERE `is_restored` = 1 AND `sold_type` = 'sale' AND `barcode` = '$barcode'
+		UNION
+		SELECT $stock_columns_str, DATE_FORMAT(`date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'in_stock' as `action` FROM `stock` WHERE `barcode` = '$barcode'
+	) AS `t1`
+	ORDER BY `row_date` ASC
+	;
+	";
+
+	$custom_query = get_query($custom_query_type, $custom_query_table, $custom_query_text);
+	$custom_query_result = select_query($custom_query);
+
+	if($custom_query_result['result']){
+		if(count($custom_query_result['additional_data'])){
+			$return['result'] = true;
+			$return['info'] .= "fetched barcode history";
+			$return['data'] = $custom_query_result['additional_data'];
+		}else{
+			$return['info'] .= "no barcodes exist with provided generate_id ";
+		}
+	}else{
+		$return['info'] .= $custom_query_result['additional_info'];
+	}
+
+	return $return;
+}
+
+function getDefaultColumnsQueryStr($table_name){
+	$table_columns_arr = getTableDefaultColumns($table_name, false, false);
+	$table_columns_str = join("`, `", $table_columns_arr);
+	
+	$table_columns_str = "`$table_columns_str`";
+
+	$table_columns_str = str_replace("`NULL", "NULL", $table_columns_str);
+	$table_columns_str = str_replace("``", "`", $table_columns_str);
+
+
+	return $table_columns_str;
 }
 
 function fetchRecord($table, $manual_columns = array(), $where_clause = array("1"), $slno = true, $includeId = true, $returnQueryResult = false){
@@ -625,23 +801,40 @@ function shouldExecludeNavItem($item, $requested_user_type){
 }
 /* End: Navigation Functions */
 
-function get_date($type, $format = "default"){
-	$date = date('d-m-Y H:i:s');
-	switch($type){
-		case 'today':
-			$date = date('Y-m-d');
-		break;
+function get_date($format = "y-m-d", $when = "today"){
+	$date = new DateTime();
 
+	switch($when){
+		case 'yesterday':
+			$date->modify('-1 day');
+			break;
 		case 'this_month':
-			$date = date('Y-m-01');
-		break;
-
+			$date->setDate($date->format('Y'), $date->format('m'), 1);
+			break;
 		case 'this_year':
-			$date = date('Y-01-01');
-		break;
+			$date->setDate($date->format('Y'), 1, 1);
+			break;
+		case is_numeric($when):
+			$date->modify("+$when day");
+			break;
 	}
 
-	return $date;
+	switch($format){
+		case "y-m-d":
+		  return $date->format("Y-m-d");
+		case "y-m-d t":
+		  return $date->format("Y-m-d H:i:s");
+		case "d-m-y":
+		  return $date->format("d-m-Y");
+		case "dm":
+		  return $date->format("dm");
+		case "ymdt":
+		  return $date->format("YmdHis");
+		case "d/m/y":
+		  return $date->format("d/m/Y");
+		default:
+		  return "Invalid format";
+	}
 }
 
 function getOrderId(){
@@ -716,10 +909,16 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 	$return['info'] = "sale_stock(): ";
 	$return['additional_info'] = "sale_stock(): ";
 
+	$date = get_date("y-m-d t");
+
 	$query_table = "sales";
 	
 	$last_record = fetchRecord($query_table, null, "1 ORDER BY `invoice_id` DESC LIMIT 1", false, false, true);
 	if($last_record['result']){
+		$last_record = count($last_record['data']) ? $last_record['data'][0] : array("invoice_id" => 0);
+		$last_invoice_id = $last_record['invoice_id'];
+		$new_invoice_id = generateInvoiceId($last_invoice_id);
+						
 		$items_data = $_fields_data['data']['data'];
 		$items_data = json_decode($items_data, true);
 
@@ -733,34 +932,46 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 					if(!$return_data){
 						/**--------------------GETS EXECUTED ON SALE[or]STOCK_SHIFT--------------------**/
 						/* OPERATIONS:
-							==>insert the row in `stock_nouse`
+							==>insert the row in `stock_sold`
 							==>delete the row in `stock`
 						*/
 
-						$items_list = array_key_exists('current_sale_list', $items_data) ? 
-														$items_data['current_sale_list'] : 
-														$items_data['list'];
+						$items_list = $items_data['list'];
+						$items_summary = $items_data['summary'];
 
-						$where_data = array();
-						foreach($items_list as $item){
-							$where_data[] = "`barcode`='" . $item['barcode'] . "'";
-						}
+						$barcodes_arr = getBarcodesData($items_list, "fetch_from_items");
+						$barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
+						$where_str = "`barcode` IN ($barcodes_str)";
 
-						$stock_nouse_query_type = "custom";
-						$stock_nouse_table = "stock_nouse";
-						$stock_nouse_query_text = 
+						$shortcode_unit_price_data = getBarcodesData($items_summary, "shortcode_unit_price");
+						$case_query_text = getCaseQueryText($shortcode_unit_price_data);
+				
+						$stock_sold_query_type = "custom";
+						$stock_sold_table = "stock_sold";
+						$stock_sold_query_text = 
 						"
-						INSERT INTO `stock_nouse` SELECT NULL AS `row_id`, `stock`.* FROM `stock` WHERE ". implode(" OR ",$where_data) .";
+							INSERT INTO `stock_sold` 
+							SELECT 
+								NULL AS `row_id`, 
+								'$date' AS `row_date`, 
+								'sale' AS `sold_type`, 
+								'$new_invoice_id' AS `sold_id`, 
+								`stock`.*, 
+								$case_query_text,
+								NULL AS `is_restored`, 
+								NULL AS `affected_time` 
+							FROM `stock` 
+							WHERE $where_str;
 						";
 
-						$stock_nouse_query = get_query($stock_nouse_query_type, $stock_nouse_table, $stock_nouse_query_text);
-						$stock_related_queries[] = array("insert" => $stock_nouse_query);
+						$stock_sold_query = get_query($stock_sold_query_type, $stock_sold_table, $stock_sold_query_text);
+						$stock_related_queries[] = array("insert" => $stock_sold_query);
 
 						$stock_query_type = "custom";
 						$stock_table = "stock";
 						$stock_query_text = 
 						"
-						DELETE FROM `stock` WHERE ". implode(" OR ",$where_data) .";
+							DELETE FROM `stock` WHERE $where_str;
 						";
 
 						$stock_query = get_query($stock_query_type, $stock_table, $stock_query_text);
@@ -769,7 +980,8 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 						/**--------------------GETS EXECUTED ON SALE_CANCEL[or]RETURN_STOCK_SHIFT--------------------**/
 						/*
 							OPERATIONS:
-							==>insert the row to `stock` table
+							==>insert the row in `stock` table
+							==>update the row in `stock_sold` table
 						*/
 						$return_list = $return_data['data'];
 
@@ -791,6 +1003,18 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 								}
 								$stock_related_queries[] = array("insert" => get_query($stock_query_type, $stock_table, $stock_columns, $stock_values));
 							}
+
+							$barcodes_arr = getBarcodesData($return_list, "fetch_from_items");
+            				$barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
+							$where_str = "`barcode` IN ($barcodes_str)";
+            				$where_str .= " AND `is_restored` = '0'";
+
+							$stock_sold_type = "update";
+							$stock_sold_table = "stock_sold";
+							$stock_sold_set = array("is_restored=1", "affected_time=$date");
+							$stock_sold_where = $where_str;
+							$stock_sold_query = get_query($stock_sold_type, $stock_sold_table, $stock_sold_set, $stock_sold_where);
+							$stock_related_queries[] = array("update" => $stock_sold_query);
 						}
 					}
 				/*----------------------END: operations on `stock` table----------------------*/
@@ -823,10 +1047,7 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 							$_fields_data['data']['is_finished']
 						);
 						
-						$last_record = count($last_record['data']) ? $last_record['data'][0] : array("invoice_id" => 0);
-						$last_invoice_id = $last_record['invoice_id'];
-						
-						$_fields_data['data']['invoice_id'] = generateInvoiceId($last_invoice_id);
+						$_fields_data['data']['invoice_id'] = $new_invoice_id;
 
 						$sale_query_type = "insert";
 						//$query_table defined earlier
@@ -906,6 +1127,39 @@ function sale_stock($_fields_data, $_is_vehicle_shift){
 	}
 
 	return $return;
+}
+
+function getBarcodesData($data_arr, $action){
+	if($action == "fetch_from_items"){
+		return array_map(function($item){
+			return $item['barcode'];
+		}, $data_arr);
+	}elseif($action == "join_barcodes"){
+		return "'" . implode("','", $data_arr) . "'";
+	}elseif($action == "barcode_unit_price"){
+		$new_array = array();
+		foreach($data_arr as $row){
+		  $new_array[$row['barcode']] = $row['unit_price'];
+		}
+		return $new_array;
+	}elseif($action == "shortcode_unit_price"){
+		$new_array = array();
+		foreach($data_arr as $row){
+		  $new_array[$row['shortcode']] = $row['unit_price'];
+		}
+		return $new_array;
+	}else{
+		return null;
+	}
+}
+
+function getCaseQueryText($data_arr){
+	$query_text = "CASE `shortcode` ";
+	foreach ($data_arr as $shortcode => $unit_price) {
+		$query_text .= "WHEN '$shortcode' THEN '$unit_price' ";
+	}
+	$query_text .= "END as `unit_price` ";
+	return $query_text;
 }
 
 function get_memory(){

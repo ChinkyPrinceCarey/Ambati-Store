@@ -123,7 +123,7 @@ function initValues(){
 }
 
 function initLoadStock(_type, _table, callback){
-    ajaxPostCall(`${LIB_API_ENDPOINT}/warehouse_stock_reports.php`, {action: _type, table: _table, data: ["something_random"]}, function(response){
+    ajaxPostCall(`${LIB_API_ENDPOINT}/warehouse_stock_reports.php`, {action: _type, table: _table, data: {conditions: "`is_restored` = '0'"}}, function(response){
         let modal_title = "Loading Stock Error";
         let modal_body = null;
 
@@ -219,10 +219,9 @@ function initTables(){
 
 function restore_stock(){
     data_param = {
-        action: "restore_stock",
+        action: "undump",
         data: JSON.stringify(scanned_data.data)
     }
-
     ajaxPostCall(`${LIB_API_ENDPOINT}/warehouse_stock_reports.php`, data_param, function(response){
 
         let modal_body; let modal_title = "Data Error";

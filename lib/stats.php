@@ -18,9 +18,9 @@ $return['additional_info'] = "";
 
 if(isset($_POST['data']) && !empty($_POST['data'])){
 
-    $today_date = get_date("today");
-    $this_month_date = get_date("this_month");
-    //$this_year_date = get_date("this_year");
+    $today_date = get_date("y-m-d", "today");
+    $this_month_date = get_date("y-m-d", "this_month");
+    //$this_year_date = get_date("y-m-d", "this_year");
     $this_year_date = "2022-01-01";
     
     $query_type = "custom";

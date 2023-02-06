@@ -20,7 +20,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
     if(isset($_POST['action']) && !empty($_POST['action'])){
         $action = $_POST['action'];
         $query_table = "sales";
-
+		$date = get_date("y-m-d t");
         if($action == "sale_cancel"){
 
 					$id = $_POST['data']['id'];
@@ -40,6 +40,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 						1. update column `is_updated` to '1' of existing invoice
 						2. insert new invoice [only if there are any items left]
 						3. add back items to stock
+						4. update rows in `stock_sold`
 					*/
 
 					$queries_to_execute = 	array();
@@ -118,6 +119,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 												"wholesale_cost",
 												"item_number",
 												"barcode",
+												"is_cotton",
 												"custom_data"
 											);
 						
@@ -136,12 +138,26 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
 													$cancelled_item['wholesale_cost'],
 													$cancelled_item['item_number'],
 													$cancelled_item['barcode'],
+													$cancelled_item['is_cotton'],
 													$cancelled_item['custom_data']
 												);
 						
 						$stock_insert_query = get_query($stock_insert_type, $stock_insert_table, $stock_insert_columns, $stock_insert_values);
 						$queries_to_execute[] = array("insert" => $stock_insert_query);
 					}
+
+					/*4. update rows on `stock_sold` */
+					$barcodes_arr = getBarcodesData($_POST['cancelled_invoice']['list'], "fetch_from_items");
+					$barcodes_str = getBarcodesData($barcodes_arr, "join_barcodes");
+					$where_str = "`barcode` IN ($barcodes_str)";
+					$where_str .= " AND `is_restored` = '0' AND `sold_type` = 'sale' AND `sold_id` = '$invoice_id'";
+
+					$stock_sold_type = "update";
+					$stock_sold_table = "stock_sold";
+					$stock_sold_set = array("is_restored=1", "affected_time=$date");
+					$stock_sold_where = $where_str;
+					$stock_sold_query = get_query($stock_sold_type, $stock_sold_table, $stock_sold_set, $stock_sold_where);
+					$queries_to_execute[] = array("update" => $stock_sold_query);
 
 					$trasaction_result = execute_transactions($queries_to_execute);
 			

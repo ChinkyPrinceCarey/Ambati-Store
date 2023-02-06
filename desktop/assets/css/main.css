@@ -463,19 +463,23 @@ table.dsc-serial-counter tbody tr td:first-child:before{
     display: none;
 }
 
-.segment.red > input[type=checkbox] + label{
+.segment.red > input[type=checkbox] + label,
+.header.red + input[type=checkbox] + label{
     color: #DB2828;
 }
 
-.segment.green > input[type=checkbox] + label{
+.segment.green > input[type=checkbox] + label,
+.header.green + input[type=checkbox] + label{
     color: #21BA45;
 }
 
-.segment.blue > input[type=checkbox] + label{
+.segment.blue > input[type=checkbox] + label,
+.header.blue + input[type=checkbox] + label{
     color: #2185D0;
 }
 
-.segment.violet > input[type=checkbox] + label{
+.segment.violet > input[type=checkbox] + label,
+.header.violet + input[type=checkbox] + label{
     color: #6435C9;
 }
 
@@ -595,3 +599,11 @@ td > img.loading,
     background-image: url('../images/loading.svg');
 }
 /*End: Items Table Image*/
+
+.item-primary-details{
+    text-align: center;
+}
+
+.divider.violet{
+    color: #5829bb;
+}

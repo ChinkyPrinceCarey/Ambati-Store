@@ -1,15 +1,52 @@
 var table;
 var editor;
 var tableDom;
+var selectOptsArr = [{value: '', label: '', disabled: true}];
+
+let dropdown_reports_type;
+
+let span_reports_type;
+
+let rangestart_input;
+let rangeend_input;
+
+let summary;
+let list;
+
+let summary_datatable;
+let list_datatable;
+
 $(function(){
+
+    dropdown_reports_type = $('.ui.selection.dropdown.reports-type');
+    dropdown_reports_type
+        .dropdown()
+        .dropdown('set selected', 'summary')
+        .dropdown({ onChange: setTable});
+
+    span_reports_type = $("span#reports_type");
+
+    rangestart_input = $("#rangestart_input");
+    rangeend_input = $("#rangeend_input");
+
+    rangestart_input.val(getDate());
+    rangeend_input.val(getDate());
+
+    summary = $("#summary");
+    list = $("#list");
+
+    summary_datatable = summary.children("#example");
+    list_datatable = list.children("#listexample");
+
+    initCalendar();
 
     tableDom = 
     "<'ui stackable grid'"+
         "<'row'"+
-            "<'eight wide column'B>"+
         ">"+
         "<'row'"+
-            "<'eight wide column'l>"+
+            "<'two wide column'l>"+
+            "<'six wide column'B>"+
             "<'right aligned eight wide column'f>"+
         ">"+
         "<'row dt-table'"+
@@ -22,16 +59,38 @@ $(function(){
     ">";
 
     editor = new $.fn.dataTable.Editor({
+        table: "#listexample",
         ajax: function(method, url, data, success, error){
+            data.action = "undelete";
             $.ajax({
                 type: "POST",
-                url: `${LIB_API_ENDPOINT}/types.php`,
+                url: `${LIB_API_ENDPOINT}/warehouse_stock_reports.php`,
                 data: data,
                 dataType: "json",
                 success: function(json){
                     if(!json.result){
                         console.log("error", json.info)
                         error(json.info);
+                        
+                        //though it is not firing at the moment
+                        smallModal(
+                            "Error Un-Delete Stock", 
+                            json.info,
+                            [
+                                {
+                                    "class": "ui positive approve button",
+                                    "id": "",
+                                    "text": "Okay",
+                                }
+                            ], 
+                            {
+                                closable: false,
+                                onApprove: function(){
+                                    return true;
+                                }
+                            }
+                        );
+
                         return false;
                     }
                     success(json);
@@ -47,38 +106,12 @@ $(function(){
                 system: "Parsing error, please reload the page and report to the admin!"
             }
         },
-        table: "#example",
         idSrc: 'id',
-        fields: [
-            {
-                label: "Id",
-                name: "id"
-            },
-            {
-                label: "Slno",
-                name: "slno"
-            },
-            {
-                label: "Type Name",
-                name: "type",
-                attr: {
-                    required: true,
-                    name: 'type'
-                }
-            }
-        ],
     })
 
-    editor.on('opened', function(a, b, action){
-        //if(action == "create"){} //for future improvements commenting as of now group_name to focus for any fields
-        editor.field('id').hide();
-        editor.field('slno').hide();
-        editor.field('type').focus();
-    });
-
-    editor.on( 'preSubmit', function (e, data, action) {
+    editor.on('preSubmit', function (e, data, action) {
         if(action == "remove") return true;
-        
+
         return (function checkValidity(form, scope) {
             var input
             if (!form.checkValidity()) {
@@ -104,10 +137,8 @@ $(function(){
         this.error(xhr);
         return false;
     });
-
-    //this.error
-
-    table = $("#example").DataTable({
+    
+    default_datatable_options = {
         responsive: true,
         processing: true,
         serverSide: false, /* this will affect working of filtering */
@@ -127,14 +158,39 @@ $(function(){
             },
             buttons: [
                 {
-                    extend: 'remove', editor: editor, className: "negative ui button", text: 'Restore'
+                    extend: 'remove', editor: editor, className: "negative ui button", text: 'Un-Delete',
+                    formTitle: "Un-Delete Stock",
+                    formMessage: function(e, dt){
+                        var rows = dt.rows(e.modifier()).data().pluck('barcode');
+                        return `Are you sure you want to Un-Delete the following selected barcodes?
+                        <b><ul><li>${rows.join('</li><li>')}</li></ul></b>`;
+                    }
+                },
+                {
+                    extend: 'copy', className: "violet ui button"
+                },
+                {
+                    extend: 'csv', className: "blue ui button", filename: function(){ return `Stock_Deleted_Reports_${getDate("ymdt")}` }
+                },
+                {
+                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Stock_Deleted_Reports_${getDate("ymdt")}` }
                 }
             ],
         },
         "ajax": {
-            "url": `${LIB_API_ENDPOINT}/warehouse_stock_deleted.php`,
+            "url": `${LIB_API_ENDPOINT}/warehouse_stock_reports.php`,
             "type": "POST",
-            "data" : {"action": "fetch_all", "data": "random_data"},
+            "data": function(d){
+                d.action = "fetch_all";
+                d.table = "stock_deleted";
+                d.date_column = "row_date";
+                d.type = dropdown_reports_type.dropdown('get value');
+                d.data = {
+                    start: rangestart_input.val(), 
+                    end: rangeend_input.val(),
+                    conditions: "`is_restored` = '0'"
+                };
+            },
             "dataType": 'json',
             "dataSrc": function(json){
                 if(!json.result){
@@ -179,9 +235,16 @@ $(function(){
                 );
             }
         },
-        rowId: 'id',
+        rowId: 'row_id',
+        "init.dt": function(settings, json) {
+            console.log(settings, json);
+        }
+    };
+
+    list_datatable_options = {
         columns: [
             { data: "slno", "width": "2%" },
+            { data: "row_date" },
             { data: "generate_id" },
             { data: "date" },
             { data: "material" },
@@ -190,40 +253,269 @@ $(function(){
                     return `${row.item}[${row.shortcode}]`
                 }
             },
-            { data: "unit" },
             { data: "type" },
+            { data: "unit" },
             { data: "quantity" },
             { data: "making_cost" },
             { data: "retailer_cost" },
             { data: "wholesale_cost" },
             { data: "item_number" },
             { data: "barcode" }
-        ]
+        ],
+        footerCallback: function( tfoot, data, start, end, display ) {
+            console.log(`footerCallback`)
+            var api = this.api();
+
+            updateSumOnFooter(api, 8, false, ""); //quantity
+            updateSumOnFooter(api, 9); //making_cost
+            updateSumOnFooter(api, 10); //retailer_cost
+            updateSumOnFooter(api, 11); //wholesale_cost
+
+        }
+    };
+    
+    summary_datatable_options = {
+        buttons: {
+            dom: {
+                button: {
+                  tag: 'button',
+                  className: ''
+                }
+            },
+            buttons: [
+                {
+                    extend: 'copy', className: "violet ui button"
+                },
+                {
+                    extend: 'csv', className: "blue ui button", filename: function(){ return `Stock_Reports_${getDate("ymdt")}` }
+                },
+                {
+                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Stock_Reports_${getDate("ymdt")}` }
+                }
+            ],
+        },
+        columns: [
+            { data: "slno", "width": "2%" },
+            { data: "material" },
+            {   data: "item",
+                render: function ( data, type, row ) {
+                    return `${row.item}[${row.shortcode}]`
+                }
+            },
+            { data: "type" },
+            { data: "unit" },
+            { data: "no_of_items" },
+            { data: "total_making_cost" },
+            { data: "total_retailer_cost" },
+            { data: "total_wholesale_cost" }
+        ],
+        footerCallback: function(tfoot, data, start, end, display){
+            console.log(`footerCallback`)
+            var api = this.api();
+
+            updateSumOnFooter(api, 5, false, ""); //no_of_items
+            updateSumOnFooter(api, 6); //making_cost
+            updateSumOnFooter(api, 7); //retailer_cost
+            updateSumOnFooter(api, 8); //wholesale_cost
+        }
+    };
+
+    setTable();
+
+    $('#listexample').on('click', 'td.print-barcode i', function (e) {
+        e.preventDefault();
+
+        $('table#listexample').addClass('disable'); table.processing(true);
+
+        //console.log($(this).closest('tr').attr('id'));
+ 
+                        //icon   print-barcode   barcode
+        let barcode = $(this).closest('td').prev('td').text();
+
+        if(barcode){
+            window.location.replace(`print_barcode.html?barcode=${barcode}`);
+        }else{
+            smallModal(
+                "Error Getting Barcode for the Item", 
+                "Reload the Page and Try", 
+                [
+                    {
+                        "class": "ui positive approve button",
+                        "id": "",
+                        "text": "Okay",
+                    }
+                ], 
+                {
+                    closable: true
+                }
+            );
+
+            $('table#listexample').removeClass('disable'); table.processing(false);
+        }
     });
+
+    table.on('init.dt', function(){});
 
     //to disable `edit` button on when multiple rows selected
     table.on('select', function(e, f, g){
-        /*var buttons = table.buttons( ['.buttons-edit'] );
+        var buttons = table.buttons( ['.buttons-edit'] );
         var data = table.rows( { selected: true } ).data();
         if(data.length > 1){
             buttons.disable();
         }else{
             buttons.enable();
-        }*/
-        var buttons = table.buttons( ['.buttons-remove'] );
-        buttons.disable();
+        }
     });
 
-    // Edit a record
-    $('#example').on('click', 'td .actions .ellipse-action-edit', function(e){
-        e.preventDefault();
- 
-        editor.edit( $(this).closest('tr'),{
-            title: 'Edit Record',
-            buttons: 'Update'
-        });
-    });
+    $(".filters_container div button").click(function(){
+        table.draw();
+    })
 
-    //table.buttons().container().appendTo( $('div.eight.column:eq(0)', table.table().container()) );
-    table.buttons(0, null).container().removeClass('ui');
+    $("#calendar_search").click(function(){
+        table.ajax.reload();
+    })
 })
+
+function initCalendar(){
+
+    $('#rangestart').calendar({
+        type: 'date',
+        endCalendar: $('#rangeend'),
+        formatter: {
+            date: function (date, settings) {
+              if (!date) return '';
+              var day = date.getDate();
+              var month = date.getMonth() + 1;
+              var year = date.getFullYear();
+              return year + '-' + month.pad() + '-' + day.pad();
+            }
+        }
+      });
+      $('#rangeend').calendar({
+        type: 'date',
+        startCalendar: $('#rangestart'),
+        formatter: {
+            date: function (date, settings) {
+              if (!date) return '';
+              var day = date.getDate();
+              var month = date.getMonth() + 1;
+              var year = date.getFullYear();
+              return year + '-' + month.pad() + '-' + day.pad();
+            }
+        }
+      });
+}
+
+function setTable(value){
+    console.log(`value: ${value}`)
+    console.log(summary, list)
+    console.log(`value: ${value}`)
+    summary.hide();
+    list.hide();
+
+    if(table) table.clear().destroy();
+
+    if(!value) value = "summary";
+
+    $(".filters_container div input").val('') //clears previous filter input fields
+    $.fn.dataTable.ext.search = []; //clears previous filters
+
+    if(value == "summary"){
+        span_reports_type.text("[summary]");
+        summary.show();
+
+        table = summary_datatable.DataTable({...default_datatable_options, ...summary_datatable_options});
+
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex){
+
+                let summary_filters = $("#summary .filters_container");
+    
+                let filter_material_value = summary_filters.children("#filter_material").children("input").val();
+                let filter_item_shortcode_value = summary_filters.children("#filter_item_shortcode").children("input").val();
+                let filter_type_value = summary_filters.children("#filter_type").children("input").val();
+                let filter_unit_value = summary_filters.children("#filter_unit").children("input").val();
+                let filter_no_of_items_value = summary_filters.children("#filter_no_of_items").children("input").val();
+                let filter_making_cost_value = summary_filters.children("#filter_making_cost").children("input").val();
+                let filter_retailer_cost_value = summary_filters.children("#filter_retailer_cost").children("input").val();
+                let filter_wholesale_cost_value = summary_filters.children("#filter_wholesale_cost").children("input").val();
+                
+                let row_material = data[1];
+                let row_item_shortcode = data[2];
+                let row_type = data[3];
+                let row_unit = data[4];
+                let row_no_of_items = data[5];
+                let row_making_cost = data[6];
+                let row_retailer_cost = data[7];
+                let row_wholesale_cost = data[8];
+                
+                return_value =      ((!filter_material_value) || (filter_material_value == row_material))
+                                &&  ((!filter_item_shortcode_value) || (filter_item_shortcode_value == row_item_shortcode))
+                                &&  ((!filter_type_value) || (filter_type_value == row_type))
+                                &&  ((!filter_unit_value) || (filter_unit_value == row_unit))
+                                &&  ((!filter_no_of_items_value) || (filter_no_of_items_value == row_no_of_items))
+                                &&  ((!filter_making_cost_value) || (filter_making_cost_value == row_making_cost))
+                                &&  ((!filter_retailer_cost_value) || (filter_retailer_cost_value == row_retailer_cost))
+                                &&  ((!filter_wholesale_cost_value) || (filter_wholesale_cost_value == row_wholesale_cost))
+
+                return return_value;
+            }
+        );
+    }else{
+        span_reports_type.text("[list]");
+        list.show();
+        
+        table = list_datatable.DataTable({...default_datatable_options, ...list_datatable_options});
+
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex){
+
+                let list_filters = $("#list .filters_container");
+
+                let filter_generate_id_value = list_filters.children("#filter_generate_id").children("input").val();
+                let filter_date_value = list_filters.children("#filter_date").children("input").val();
+                let filter_material_value = list_filters.children("#filter_material").children("input").val();
+                let filter_item_shortcode_value = list_filters.children("#filter_item_shortcode").children("input").val();
+                let filter_type_value = list_filters.children("#filter_type").children("input").val();
+                let filter_unit_value = list_filters.children("#filter_unit").children("input").val();
+                let filter_quantity_value = list_filters.children("#filter_quantity").children("input").val();
+                let filter_making_cost_value = list_filters.children("#filter_making_cost").children("input").val();
+                let filter_retailer_cost_value = list_filters.children("#filter_retailer_cost").children("input").val();
+                let filter_wholesale_cost_value = list_filters.children("#filter_wholesale_cost").children("input").val();
+                let filter_item_no_value = list_filters.children("#filter_item_no").children("input").val();
+                let filter_barcode_value = list_filters.children("#filter_barcode").children("input").val();
+                
+                let row_generated_id = data[1];
+                let row_date = data[2];
+                let row_material = data[3];
+                let row_item_shortcode = data[4];
+                let row_type = data[5];
+                let row_unit = data[6];
+                let row_quantity = data[7];
+                let row_making_cost = data[8];
+                let row_retailer_cost = data[9];
+                let row_wholesale_cost = data[10];
+                let row_item_no = data[11];
+                let row_barcode = data[12];
+
+                return_value =      ((!filter_generate_id_value) || (filter_generate_id_value == row_generated_id))
+                                &&  ((!filter_date_value) || (filter_date_value == row_date))
+                                &&  ((!filter_generate_id_value) || (filter_generate_id_value == row_generated_id))
+                                &&  ((!filter_material_value) || (filter_material_value == row_material))
+                                &&  ((!filter_item_shortcode_value) || (filter_item_shortcode_value == row_item_shortcode))
+                                &&  ((!filter_type_value) || (filter_type_value == row_type))
+                                &&  ((!filter_unit_value) || (filter_unit_value == row_unit))
+                                &&  ((!filter_quantity_value) || (filter_quantity_value == row_quantity))
+                                &&  ((!filter_making_cost_value) || (filter_making_cost_value == row_making_cost))
+                                &&  ((!filter_retailer_cost_value) || (filter_retailer_cost_value == row_retailer_cost))
+                                &&  ((!filter_wholesale_cost_value) || (filter_wholesale_cost_value == row_wholesale_cost))
+                                &&  ((!filter_item_no_value) || (filter_item_no_value == row_item_no))
+                                &&  ((!filter_barcode_value) || (filter_barcode_value == row_barcode))
+
+                return return_value;
+            }
+        );
+    }
+
+    table.buttons(0, null).container().removeClass('ui'); //or else buttons styling won't be applied
+}

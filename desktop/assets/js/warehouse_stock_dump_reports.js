@@ -63,6 +63,7 @@ $(function(){
     editor = new $.fn.dataTable.Editor({
         table: "#listexample",
         ajax: function(method, url, data, success, error){
+            data.action = "undump";
             $.ajax({
                 type: "POST",
                 url: `${LIB_API_ENDPOINT}/warehouse_stock_reports.php`,
@@ -75,7 +76,7 @@ $(function(){
                         
                         //though it is not firing at the moment
                         smallModal(
-                            "Error Removing Stock", 
+                            "Error Un-Dump Stock", 
                             json.info,
                             [
                                 {
@@ -159,29 +160,38 @@ $(function(){
             },
             buttons: [
                 {
-                    extend: 'remove', editor: editor, className: "negative ui button"
+                    extend: 'remove', editor: editor, className: "negative ui button", text: "Un-Dump",
+                    formTitle: "Un-Dump Stock",
+                    formMessage: function(e, dt){
+                        var rows = dt.rows(e.modifier()).data().pluck('barcode');
+                        return `Are you sure you want to Un-Dump the following selected barcodes?
+                        <b><ul><li>${rows.join('</li><li>')}</li></ul></b>`;
+                    }
                 },
                 {
                     extend: 'copy', className: "violet ui button"
                 },
                 {
-                    extend: 'csv', className: "blue ui button", filename: function(){ return `Stock_Reports_${getDate("ymdt")}` }
+                    extend: 'csv', className: "blue ui button", filename: function(){ return `Dump_Reports_${getDate("ymdt")}` }
                 },
                 {
-                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Stock_Reports_${getDate("ymdt")}` }
+                    extend: 'pdf', className: "purple ui button", filename: function(){ return `Dump_Reports_${getDate("ymdt")}` }
                 }
             ],
         },
         "ajax": {
             "url": `${LIB_API_ENDPOINT}/warehouse_stock_reports.php`,
             "type": "POST",
-            //"data" : {"action": "fetch_all", "data": {from: rangestart_input.val(), end: rangeend_input.val()}},
             "data": function(d){
                 d.action = "fetch_all";
                 d.table = "stock_dump";
                 d.date_column = "row_date";
                 d.type = dropdown_reports_type.dropdown('get value');
-                d.data = {start: rangestart_input.val(), end: rangeend_input.val()};
+                d.data = {
+                    start: rangestart_input.val(), 
+                    end: rangeend_input.val(),
+                    conditions: "`is_restored` = '0'"
+                };
             },
             "dataType": 'json',
             "dataSrc": function(json){
@@ -227,7 +237,7 @@ $(function(){
                 );
             }
         },
-        rowId: 'id',
+        rowId: 'row_id',
         "init.dt": function(settings, json) {
             console.log(settings, json);
         }
@@ -236,6 +246,7 @@ $(function(){
     list_datatable_options = {
         columns: [
             { data: "slno", "width": "2%" },
+            { data: "row_date" },
             { data: "generate_id" },
             { data: "row_date" },
             { data: "material" },
@@ -251,22 +262,16 @@ $(function(){
             { data: "retailer_cost" },
             { data: "wholesale_cost" },
             { data: "item_number" },
-            { data: "barcode" },
-            {
-                data: null,
-                className: "dt-center print-barcode",
-                defaultContent: '<i class="print icon"></i>',
-                orderable: false
-            }
+            { data: "barcode" }
         ],
         footerCallback: function( tfoot, data, start, end, display ) {
             console.log(`footerCallback`)
             var api = this.api();
 
-            updateSumOnFooter(api, 7, false, ""); //quantity
-            updateSumOnFooter(api, 8); //making_cost
-            updateSumOnFooter(api, 9); //retailer_cost
-            updateSumOnFooter(api, 10); //wholesale_cost
+            updateSumOnFooter(api, 8, false, ""); //quantity
+            updateSumOnFooter(api, 9); //making_cost
+            updateSumOnFooter(api, 10); //retailer_cost
+            updateSumOnFooter(api, 11); //wholesale_cost
 
         }
     };

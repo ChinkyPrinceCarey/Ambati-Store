@@ -88,6 +88,12 @@
 						"title": "stock restore",
 						"link": "warehouse_stock_restore.html",
 						"access": ["admin", "seller", "operator"]
+					},
+					{
+						"icon": "info icon",
+						"title": "barcode tracker",
+						"link": "barcode_tracker.html",
+						"access": ["admin", "seller", "operator"]
 					}
 				]
 			},

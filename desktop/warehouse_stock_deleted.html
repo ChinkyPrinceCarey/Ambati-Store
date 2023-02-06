@@ -19,9 +19,13 @@
     <link rel="stylesheet" href="assets/library/DataTables/datetime/1.1.1/css/dataTables.dateTime.min.css">
     <link rel="stylesheet" href="assets/library/data-tables-editor/css/editor.semanticui.min.css">
     <!--End: Semantic DataTable Stylesheets -->
+    
+    <link rel="stylesheet" href="assets/library/fomantic/components/calendar.min.css">
+
 
     <link rel="stylesheet" type="text/css" href="assets/css/utility.css">
     <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/reports.css">
 </head>
 <body>
 
@@ -62,43 +66,212 @@
     <main>
         <div class="card">
             <div class="wrapper">
-                <h4 class="ui dividing header center">Warehouse Stock Deleted</h4>
-                <table id="example" class="ui selectable celled table" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Slno</th>
-                            <th>Generate Id#</th>
-                            <th>Date</th>
-                            <th>Material</th>
-                            <th>Item[Shortcode]</th>
-                            <th>Type</th>
-                            <th>Unit</th>
-                            <th>Quantity</th>
-                            <th>Making Cost</th>
-                            <th>Retailer Cost</th>
-                            <th>Wholesale Cost</th>
-                            <th>Item No.#</th>
-                            <th>Barcode</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Slno</th>
-                            <th>Generate Id#</th>
-                            <th>Date</th>
-                            <th>Material</th>
-                            <th>Item[Shortcode]</th>
-                            <th>Type</th>
-                            <th>Unit</th>
-                            <th>Quantity</th>
-                            <th>Making Cost</th>
-                            <th>Retailer Cost</th>
-                            <th>Wholesale Cost</th>
-                            <th>Item No.#</th>
-                            <th>Barcode</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div class="ui form reports-type-dropdown-container">
+                    <div class="two fields">
+                      <div class="field">
+                        <label>Reports Type</label>
+                        <div class="ui selection dropdown reports-type">
+                            <input type="hidden" name="reports_type">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">Reports Type</div>
+                            <div class="menu">
+                                <div class="item" data-value="list">List</div>
+                              <div class="item" data-value="summary">Summary</div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+                <h4 class="ui dividing header center">Warehouse Stock Deleted Reports <span id="reports_type"></span></h4>
+
+                <div class="ui form calendar-container">
+                    <div class="two fields">
+                      <div class="field">
+                        <label>Start date</label>
+                        <div class="ui calendar" id="rangestart">
+                          <div class="ui input left icon">
+                            <i class="calendar icon"></i>
+                            <input id="rangestart_input" type="text" placeholder="Start">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label>End date</label>
+                        <div class="ui calendar" id="rangeend">
+                          <div class="ui input left icon">
+                            <i class="calendar icon"></i>
+                            <input id="rangeend_input" type="text" placeholder="End">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label>-</label>
+                        <button id="calendar_search" class="ui primary button">
+                            Search
+                        </button>
+                      </div>
+                    </div>
+                </div>
+
+                <div id="summary">
+                    <div class="filters_container">
+                        <div class="ui action input" id="filter_material">
+                            <input class="w-150px" type="text" placeholder="Material">
+                            <button class="ui purple button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_item_shortcode">
+                            <input class="w-150px" type="text" placeholder="Item[Shortcode]">
+                            <button class="ui pink button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_type">
+                            <input class="w-150px" type="text" placeholder="Type">
+                            <button class="ui blue button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_unit">
+                            <input class="w-150px" type="text" placeholder="Unit">
+                            <button class="ui violet button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_no_of_items">
+                            <input class="w-150px" type="text" placeholder="No.of Items">
+                            <button class="ui purple button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_making_cost">
+                            <input class="w-150px" type="text" placeholder="Making Cost">
+                            <button class="ui pink button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_retailer_cost">
+                            <input class="w-150px" type="text" placeholder="Retailer Cost">
+                            <button class="ui blue button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_wholesale_cost">
+                            <input class="w-150px" type="text" placeholder="Wholesale Cost">
+                            <button class="ui violet button">Search</button>
+                        </div>
+                    </div>
+                    
+                    <table id="example" class="ui selectable celled table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Slno</th>
+                                <th>Material</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Type</th>
+                                <th>Unit</th>
+                                <th>No.of. Items</th>
+                                <th>Making Cost</th>
+                                <th>Retailer Cost</th>
+                                <th>Wholesale Cost</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Slno</th>
+                                <th>Material</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Type</th>
+                                <th>Unit</th>
+                                <th>No.of. Items</th>
+                                <th>Making Cost</th>
+                                <th>Retailer Cost</th>
+                                <th>Wholesale Cost</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div id="list">
+                    <div class="filters_container">
+                        <div class="ui action input" id="filter_generate_id">
+                            <input class="w-150px blue" type="text" placeholder="Generate Id#">
+                            <button class="ui blue button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_date">
+                            <input class="w-150px" type="text" placeholder="Date">
+                            <button class="ui violet button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_material">
+                            <input class="w-150px" type="text" placeholder="Material">
+                            <button class="ui purple button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_item_shortcode">
+                            <input class="w-150px" type="text" placeholder="Item[Shortcode]">
+                            <button class="ui pink button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_type">
+                            <input class="w-150px" type="text" placeholder="Type">
+                            <button class="ui blue button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_unit">
+                            <input class="w-150px" type="text" placeholder="Unit">
+                            <button class="ui violet button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_quantity">
+                            <input class="w-150px" type="text" placeholder="Quantity">
+                            <button class="ui purple button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_making_cost">
+                            <input class="w-150px" type="text" placeholder="Making Cost">
+                            <button class="ui pink button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_retailer_cost">
+                            <input class="w-150px" type="text" placeholder="Retailer Cost">
+                            <button class="ui blue button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_wholesale_cost">
+                            <input class="w-150px" type="text" placeholder="Wholesale Cost">
+                            <button class="ui violet button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_item_no">
+                            <input class="w-150px" type="text" placeholder="Item No.#">
+                            <button class="ui purple button">Search</button>
+                        </div>
+                        <div class="ui action input" id="filter_barcode">
+                            <input class="w-150px" type="text" placeholder="Barcode">
+                            <button class="ui pink button">Search</button>
+                        </div>
+                    </div>
+                    
+                    <table id="listexample" class="ui selectable celled table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Slno</th>
+                                <th>Stock Deleted Date</th>
+                                <th>Generate Id#</th>
+                                <th>Stock Entry Date</th>
+                                <th>Material</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Unit</th>
+                                <th>Type</th>
+                                <th>Quantity</th>
+                                <th>Making Cost</th>
+                                <th>Retailer Cost</th>
+                                <th>Wholesale Cost</th>
+                                <th>Item No.#</th>
+                                <th>Barcode</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Slno</th>
+                                <th>Stock Deleted Date</th>
+                                <th>Generate Id#</th>
+                                <th>Stock Entry Date</th>
+                                <th>Material</th>
+                                <th>Item[Shortcode]</th>
+                                <th>Unit</th>
+                                <th>Type</th>
+                                <th>Quantity</th>
+                                <th>Making Cost</th>
+                                <th>Retailer Cost</th>
+                                <th>Wholesale Cost</th>
+                                <th>Item No.#</th>
+                                <th>Barcode</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
             </div>
         </div>
     </main>
@@ -132,12 +305,23 @@
     <script type="text/javascript" src="assets/library/DataTables/DataTables-1.11.1/js/dataTables.semanticui.min.js"></script>
     <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/dataTables.buttons.min.js"></script>
     <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/buttons.semanticui.min.js"></script>
+    <script type="text/javascript" src="assets/library/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="assets/library/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="assets/library/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="assets/library/DataTables/Buttons/2.0.0/js/buttons.colVis.min.js"></script>
     <!--<script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/select.semanticui.min.js"></script>-->
     <script type="text/javascript" src="assets/library/DataTables/Select/1.3.3/js/dataTables.select.min.js"></script>
     <script type="text/javascript" src="assets/library/DataTables/DateTime/1.1.1/js/dataTables.dateTime.min.js"></script>
     <script type="text/javascript" src="assets/library/data-tables-editor/js/dataTables.editor.js"></script>
     <script type="text/javascript" src="assets/library/data-tables-editor/js/editor.semanticui.min.js"></script>
+    
+    <script type="text/javascript" src="assets/library/DataTables/Plugins/api/processing().js"></script>
     <!--End: DataTables-->
+    
+    <script type="text/javascript" src="assets/library/fomantic/components/calendar.min.js"></script>
+
 
     <script type="text/javascript" src="assets/js/main.js"></script>
     <script type="text/javascript" src="assets/js/warehouse_stock_deleted.js"></script>
