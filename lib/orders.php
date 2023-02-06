@@ -518,7 +518,8 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                     if all items are scanned in the order for return, 
                     
                     the `current_invoice` would be empty
-                    so, we will use update query to set `is_cancelled` = 1 for that order
+                    so, 1) we will update JSON object
+                    2) then we will use update query to set `is_cancelled` = 1 for that order
 
                     scenario: 2
                     if few items are unscanned in the order for return.
@@ -537,9 +538,16 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                                         );
                 
                 if($is_all_items_scanned){
+                    //update json column
                     //cancel that order
+                    $current_invoice_items_details = json_encode($_POST['current_invoice']);
+
                     $update_query_type = "update";
-                    $update_column_set = array("is_cancelled=1", "affected_reason=Order Return");
+                    $update_column_set = array(
+                                            "is_cancelled=1", 
+                                            "affected_reason=Order Return",
+                                            "items_details=$current_invoice_items_details"
+                                        );
                     $update_column_where = "`order_id` LIKE '$order_id'";
 
                     $update_query = get_query($update_query_type, $query_table, $update_column_set, $update_column_where);
