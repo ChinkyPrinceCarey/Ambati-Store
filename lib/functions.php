@@ -671,9 +671,9 @@ function getBarcodeHistory($barcode){
 		UNION
 		SELECT $stock_sold_columns_str, DATE_FORMAT(`affected_time`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'company_sale_return' as `action` FROM `stock_sold` WHERE `is_restored` = 1 AND `sold_type` = 'sale' AND `barcode` = '$barcode'
 		UNION
-		SELECT $stock_columns_str, DATE_FORMAT(`date`, '%d-%m-%Y %H:%i:%s') as `row_date`, 'in_stock' as `action` FROM `stock` WHERE `barcode` = '$barcode'
+		SELECT $stock_columns_str, NULL as `row_date`, 'in_stock' as `action` FROM `stock` WHERE `barcode` = '$barcode'
 	) AS `t1`
-	ORDER BY `row_date` ASC
+	ORDER BY STR_TO_DATE(`t1`.`row_date`, '%Y-%m-%d %H:%i:%s') ASC
 	;
 	";
 
