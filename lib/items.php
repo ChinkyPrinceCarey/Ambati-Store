@@ -342,7 +342,8 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             "
             SELECT 
                 `items`.`material`, `items`.`item`, `items`.`shortcode`, `items`.`unit`, `items`.`type`, `items`.`tracking_id`,  
-                `stock_and_related_tables`.`making_cost`, `stock_and_related_tables`.`retailer_cost`, `stock_and_related_tables`.`wholesale_cost`, `stock_and_related_tables`.`item_number`, `stock_and_related_tables`.`date`
+                `stock_and_related_tables`.`making_cost`, `stock_and_related_tables`.`retailer_cost`, `stock_and_related_tables`.`wholesale_cost`, `stock_and_related_tables`.`item_number`, 
+                DATE_FORMAT(`stock_and_related_tables`.`date`, '%Y-%m-%d') AS `date`
             FROM `items`
 
             LEFT JOIN (
