@@ -34,7 +34,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                         MATERIAL, ITEM, SHORTCODE, 
                         UNIT, TYPE, COUNTING, SUB_NAME, 
                         ACTUAL_COST, COST, LEVEL, 
-                        IN_STOCK, PRIORITY, IMAGE
+                        IN_STOCK, ADD_QUANTITY, PRIORITY, IMAGE
                     );
         $_post_data = is_numeric($id) ? $_POST['data'][$id] : null ;
 
@@ -226,7 +226,7 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
             $categories_query = get_query($query_type, $query_table, $categories_query_text);
             $categories_result = select_query($categories_query);
 
-            $except_one_column = "`id`, `datetime`, `material`, `item`, `shortcode`, `unit`, `type`, `counting`, `sub_name`, `company_name`, `flavour`, `denomination`, `actual_cost`, `cost`, `level`, `tracking_id`, `priority`, `image`, `t2_shortcode`, `available_stock`";
+            $except_one_column = "`id`, `datetime`, `material`, `item`, `shortcode`, `unit`, `type`, `counting`, `sub_name`, `company_name`, `flavour`, `denomination`, `actual_cost`, `cost`, `level`, `add_quantity`, `tracking_id`, `priority`, `image`, `t2_shortcode`, `available_stock`";
             $all_columns = $except_one_column . ", `in_stock`";
 			
 			$query_text = 

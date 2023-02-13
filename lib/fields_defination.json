@@ -385,6 +385,12 @@
 		"accept_null": true
 	},
 	{
+		"variable": "ADD_QUANTITY",
+		"name": "add_quantity",
+		"type": "name",
+		"accept_null": true
+	},
+	{
 		"variable": "PRIORITY",
 		"name": "priority",
 		"type": "name",

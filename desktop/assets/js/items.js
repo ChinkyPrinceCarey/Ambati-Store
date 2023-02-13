@@ -147,6 +147,36 @@ $(function(){
                 }
             },
             {
+                label: "Add Quantity",
+                name: "add_quantity",
+                type: "select",
+                options: [
+                    {label: "1", value: "1"},
+                    {label: "2", value: "2"},
+                    {label: "3", value: "3"},
+                    {label: "4", value: "4"},
+                    {label: "5", value: "5"},
+                    {label: "6", value: "6"},
+                    {label: "7", value: "7"},
+                    {label: "8", value: "8"},
+                    {label: "9", value: "9"},
+                    {label: "10", value: "10"},
+                    {label: "11", value: "11"},
+                    {label: "12", value: "12"},
+                    {label: "13", value: "13"},
+                    {label: "14", value: "14"},
+                    {label: "15", value: "15"},
+                    {label: "16", value: "16"},
+                    {label: "17", value: "17"},
+                    {label: "18", value: "18"},
+                    {label: "19", value: "19"},
+                    {label: "20", value: "20"}
+                ],
+                attr: {
+                    name: 'add_quantity'
+                }
+            },
+            {
                 label: "Tracking Id",
                 name: "tracking_id",
                 type: "select_two"
@@ -440,6 +470,7 @@ $(function(){
                 return `<div class="ui star rating" data-rating="${rating}" data-max-rating="5"></div>`;
             }
             },
+            { data: "add_quantity" },
             { data: "tracking_id" },
             { data: "in_stock",
             render: function(data, type, row){
@@ -472,7 +503,7 @@ $(function(){
     });
 
     editor.field('material').input().on( 'change', function (e) {
-        fields = ['counting', 'sub_name', 'actual_cost', 'cost', 'level', 'in_stock', 'priority']
+        fields = ['counting', 'sub_name', 'actual_cost', 'cost', 'level', 'add_quantity', 'in_stock', 'priority']
         if(this.value == "raw"){
             $.each(fields, function(){
                 editor.field(this).hide();

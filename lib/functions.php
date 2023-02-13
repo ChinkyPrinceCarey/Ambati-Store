@@ -377,6 +377,7 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 			$columns[]  = "level";
 			$columns[]  = "tracking_id";
 			$columns[]  = "in_stock";
+			$columns[]  = "add_quantity";
 			$columns[]  = "priority";
 			$columns[]  = "image";
 			return $columns;
