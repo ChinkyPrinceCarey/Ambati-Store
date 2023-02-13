@@ -138,16 +138,16 @@
                         <div class="price">
                             <span id="cost">{{cost}}</span>
                         </div>
-                        <div class="add-container">
+                        <div class="add-container" date-add-quantity="{{this.add_quantity}}">
                         {{#js_if "this.in_stock == '1' && this.available_stock > 0 && this.cost > '0'"}}
-                            <div class="initial">+ Add</div>
+                            <div class="initial">+{{#js_if "this.add_quantity > 1"}}{{this.add_quantity}}{{/js_if}} Add</div>
                         {{else}}
                             <div class="no-stock">No Stock</div>
                         {{/js_if}}
                             <div class="post-initial d-none">
-                                <span id="add">+</span>
-                                <input type="number" name="itemCount" id="" value="1" min="1" max="999" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onpaste="return false" onwheel="return false;">
-                                <span id="remove">-</span>
+                                <span id="add">+{{this.add_quantity}}</span>
+                                <input type="number" name="itemCount" id="" value="1" min="1" max="999" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onpaste="return false" onwheel="return false;" {{#js_if "this.add_quantity > 1"}}readonly=""{{/js_if}}>
+                                <span id="remove">-{{this.add_quantity}}</span>
                             </div>
                         </div>
                         {{#if actual_cost}}

@@ -312,10 +312,11 @@ function onPageReady(){
   });
 
   $('.footer .post-initial #add').click(function(){
+    let addQuantity = parseInt(this.parentElement.parentElement.attributes["date-add-quantity"].value);
     let inputTag = $(this).parent().children('input');
     let inputVal = parseInt(inputTag.val());
     if(inputVal < inputTag.attr('max')){
-      inputTag.val(inputVal + 1);
+      inputTag.val(inputVal + addQuantity);
       initUpdateCart(this, false);
     }else{
       inputTag.val(inputTag.attr('max'));
@@ -330,10 +331,12 @@ function onPageReady(){
   });
 
   $('.footer .post-initial #remove').click(function(){
+    let addQuantity = parseInt(this.parentElement.parentElement.attributes["date-add-quantity"].value);
     let inputTag = $(this).parent().children('input');
     let inputVal = parseInt(inputTag.val());
-    if(inputVal > inputTag.attr('min')){
-      inputTag.val(inputVal - 1);
+    let postInputVal = inputVal - addQuantity;
+    if(postInputVal >= inputTag.attr('min')){
+      inputTag.val(postInputVal);
       initUpdateCart(this, false);
     }else{
       //reset to initial
@@ -350,6 +353,7 @@ function onPageReady(){
   });
 
   $(document).on('click', '.add-container .initial', function(){
+    let addQuantity = parseInt(this.parentElement.attributes["date-add-quantity"].value);
     let add_container = $(this).parent();
     let initial_container = add_container.children('.initial');
     let post_initial_container = add_container.children('.post-initial');
@@ -357,7 +361,7 @@ function onPageReady(){
     initial_container.addClass('d-none');
     post_initial_container.removeClass('d-none');
     
-    post_initial_container.children('input[name=itemCount]').val(1);
+    post_initial_container.children('input[name=itemCount]').val(addQuantity);
     initUpdateCart(this, true);
   });
 
