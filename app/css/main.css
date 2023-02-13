@@ -1304,17 +1304,17 @@ background-color: rgba(0,0,0,0.4);
 }
 
 .catalogue .catalogue-item .footer .add-container .post-initial{
-  grid-gap: 6px;
+  grid-gap: 2px;
 }
 
 .catalogue .catalogue-item .footer .add-container .post-initial #add,
 .catalogue .catalogue-item .footer .add-container .post-initial #remove{
-  padding: 0px 2px;
-  font-size: 16px;
+  padding: 0px 1px;
+  font-size: 14px;
 }
 
 .catalogue .catalogue-item .footer .add-container .post-initial input{
-  font-size: 14px;
+  font-size: 12px;
 }
 
   /*.cart-summary{
