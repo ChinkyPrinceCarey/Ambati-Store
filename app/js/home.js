@@ -410,7 +410,7 @@ function onPageReady(){
 }
 
 function get_gross_total(){
-  return parseFloat(cart_obj.reduce((n, {total_price}) => n + total_price, 0));
+  return get_decimal(cart_obj.reduce((n, {total_price}) => n + total_price, 0));
 }
 
 function get_total_items(){
@@ -537,9 +537,9 @@ function addToCart(item, shortcode, unit_price){
     {
       "item": item,
       "shortcode": shortcode,
-      "unit_price": parseFloat(unit_price),
+      "unit_price": get_decimal(unit_price),
       "quantity": 1,
-      "total_price": parseFloat(unit_price)
+      "total_price": get_decimal(unit_price)
     }
   );
 }
@@ -554,13 +554,13 @@ function removeFromCart(shortcode){
 
 function updateCart(shortcode, unit_price, quantity){
   quantity = parseInt(quantity);
-  unit_price = parseFloat(unit_price);
+  unit_price = get_decimal(unit_price);
   
   let found_obj = cart_obj.find((obj, iter) => {
-    if (obj.shortcode == shortcode) {      
-      obj.unit_price = unit_price;
+    if (obj.shortcode == shortcode) { 
+      obj.unit_price = get_decimal(unit_price);
       obj.quantity = quantity;
-      obj.total_price = (unit_price * quantity);
+      obj.total_price = get_decimal(unit_price * quantity);
       
       //cart_obj[iter] = {};
       return true;
@@ -585,6 +585,11 @@ function refreshUICart(){
     $('.cart-summary').addClass('d-none');
   }
 
+}
+
+function get_decimal(_val){
+  if(typeof _val != "number") _val = parseFloat(_val);
+  return parseFloat(_val.toFixed(2));
 }
 
 /*Begin: Login Form Methods*/
