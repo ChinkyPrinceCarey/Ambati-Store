@@ -362,7 +362,7 @@ function onPageReady(){
     post_initial_container.removeClass('d-none');
     
     post_initial_container.children('input[name=itemCount]').val(addQuantity);
-    initUpdateCart(this, true);
+    initUpdateCart(this, addQuantity);
   });
 
 
@@ -480,10 +480,16 @@ function updateCatalogueVisibility(onlyShowCart){
   }
 }
 
-function initUpdateCart(this_, isIntital, cart_cookie = true){
+/*
+@param: addQuantity
+  value = undefined = remove that item
+  value = number = intial add quantity value
+  value = boolean(false) = add/minus item quantity
+*/
+function initUpdateCart(this_, addQuantity_, cart_cookie = true){
   let catalogue_item = $(this_).parent().parent().parent();
 
-  if(!isIntital){
+  if(!addQuantity_){
     catalogue_item = $(this_).parent().parent().parent().parent();
   }
 
@@ -492,8 +498,8 @@ function initUpdateCart(this_, isIntital, cart_cookie = true){
   let unit_price = $(catalogue_item).find(".footer .price #cost").text();
   let item_count = $(catalogue_item).find(".footer .add-container .post-initial input").val();
   
-  if(isIntital === undefined){
-    //have to remove item from cart
+  if(addQuantity_ === undefined){
+    //remove item
     if(removeFromCart(shortcode)){
       $(catalogue_item).removeClass("in-cart");
       if($('.categories #cart').is(".active")){
@@ -506,8 +512,9 @@ function initUpdateCart(this_, isIntital, cart_cookie = true){
       
       basicModal(modal_title, modal_body);
     }
-  }else if(isIntital){
-    if(addToCart(item, shortcode, unit_price)){
+  }else if(typeof addQuantity_ != "boolean"){
+    //new item
+    if(addToCart(item, shortcode, unit_price, addQuantity_)){
       $(catalogue_item).addClass("in-cart");
       refreshUICart();
     }else{
@@ -517,6 +524,7 @@ function initUpdateCart(this_, isIntital, cart_cookie = true){
       basicModal(modal_title, modal_body);
     }
   }else{
+    //update item
     if(updateCart(shortcode, unit_price, item_count)){
       refreshUICart();
     }else{
@@ -532,13 +540,13 @@ function initUpdateCart(this_, isIntital, cart_cookie = true){
   }
 }
 
-function addToCart(item, shortcode, unit_price){
+function addToCart(item, shortcode, unit_price, addQuantity){
   return cart_obj.push(
     {
       "item": item,
       "shortcode": shortcode,
       "unit_price": get_decimal(unit_price),
-      "quantity": 1,
+      "quantity": parseInt(addQuantity),
       "total_price": get_decimal(unit_price)
     }
   );
