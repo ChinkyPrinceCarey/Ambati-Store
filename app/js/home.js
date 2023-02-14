@@ -7,6 +7,8 @@ let request_params = {
   data: "random_data"
 };
 
+let quantityInputTimeout = null;
+
 function setDefaultInputValues(){
   if(Cookies.get('name') !== undefined){
     $('input#name').val(Cookies.get('name'));
@@ -284,31 +286,37 @@ function onPageReady(){
     $(".lbl-toggle").click();
   });
 
-  $(document).on('input', 'input[name=itemCount]', function() {
-    let inputTag = $(this);
-    let inputVal = parseInt(inputTag.val());
-
-    if(inputVal > inputTag.attr('min')){
-      if(inputVal < inputTag.attr('max')){
-        initUpdateCart(this, false);
-      }else{
-        inputTag.val(inputTag.attr('max'));
-        initUpdateCart(this, false);
-        
-        let modal_title = "Maximum Quantity";
-        let modal_body = "Maximum Quantity has reached, cannot add more quantity for this item";
-        basicModal(modal_title, modal_body);
-      }
-    }else{
-      let add_container = $(this).parent().parent();
-      let initial_container = add_container.children('.initial');
-      let post_initial_container = add_container.children('.post-initial');
-
-      initial_container.removeClass('d-none');
-      post_initial_container.addClass('d-none');
-
-      initUpdateCart(this, undefined);
+  $(document).on('input', 'input[name=itemCount]', function(){
+    if(quantityInputTimeout){
+      clearTimeout(quantityInputTimeout);
     }
+    evn = this;
+    quantityInputTimeout = setTimeout(function(){
+      let inputTag = $(evn);
+      let inputVal = parseInt(inputTag.val());
+
+      if(inputVal >= inputTag.attr('min')){
+        if(inputVal < inputTag.attr('max')){
+          initUpdateCart(evn, false);
+        }else{
+          inputTag.val(inputTag.attr('max'));
+          initUpdateCart(evn, false);
+          
+          let modal_title = "Maximum Quantity";
+          let modal_body = "Maximum Quantity has reached, cannot add more quantity for this item";
+          basicModal(modal_title, modal_body);
+        }
+      }else{
+        let add_container = $(evn).parent().parent();
+        let initial_container = add_container.children('.initial');
+        let post_initial_container = add_container.children('.post-initial');
+
+        initial_container.removeClass('d-none');
+        post_initial_container.addClass('d-none');
+
+        initUpdateCart(evn, undefined);
+      }
+    }, 1000);
   });
 
   $('.footer .post-initial #add').click(function(){
