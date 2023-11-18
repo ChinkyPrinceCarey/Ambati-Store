@@ -216,100 +216,153 @@ if(isset($_POST['data']) && !empty($_POST['data'])){
                 //$return['additional_info'] .= $select_result['additional_info'];
             }
         }elseif($action == "fetch_for_app"){
-            $query_type = "custom";
-            //$query_table defined earlier
-            $categories_query_text = 
-            "
-            SELECT DISTINCT `type` FROM `items`
-            ";
-			
-            $categories_query = get_query($query_type, $query_table, $categories_query_text);
-            $categories_result = select_query($categories_query);
+            
+            $allow_app = true;
 
-            $except_one_column = "`id`, `datetime`, `material`, `item`, `shortcode`, `unit`, `type`, `counting`, `sub_name`, `company_name`, `flavour`, `denomination`, `actual_cost`, `cost`, `level`, `add_quantity`, `tracking_id`, `priority`, `image`, `t2_shortcode`, `available_stock`";
-            $all_columns = $except_one_column . ", `in_stock`";
-			
-			$query_text = 
-            "
-            SELECT * FROM (
+            /*
+            $allow_app = false;
+
+            $data = $_POST['data'];
+
+            $allowed_mobile_numbers = array(
+                '9347712039',
+                '9652165997',
+                '7675915700',
+                '7702380868',
+                '8500995065',
+                '8686068182'
+            );
+
+            if(in_array($data, $allowed_mobile_numbers)){
+                $allow_app = true;
+            }
+            */
+
+            $categories_list = fetchCategories();
+            if($categories_list['result']){
+                $except_one_column = "`id`, `datetime`, `material`, `item`, `shortcode`, `unit`, `type`, `counting`, `sub_name`, `company_name`, `flavour`, `denomination`, `actual_cost`, `cost`, `level`, `add_quantity`, `tracking_id`, `priority`, `image`, `t2_shortcode`, `available_stock`";
+                $all_columns = $except_one_column . ", `in_stock`";
+
+                $category_wise_items = array();
+
+                $priority_category_items = fetchItems("
                 SELECT * FROM (
-                    SELECT $all_columns FROM `items_live_stock` 
-                        WHERE `priority` != 'default'
-                            AND `cost` > 0  
-                            AND `having_adequate_stock` = 1  
-                            AND `in_stock` = 1
-                        ORDER BY `datetime` DESC
-                ) AS `t1_1`
-                ORDER BY FIELD(`priority`, 'top', 'new', 'offer')
-            ) AS `t1`
-            
-            UNION 
-            
-            SELECT * FROM 
-            (
-                SELECT $all_columns FROM `items_live_stock` WHERE `priority` = 'default' AND `cost` > 0 AND `having_adequate_stock` = 1  AND `in_stock` = 1 ORDER BY rand()
-            ) AS `t3`
-            
-            UNION 
-            
-            SELECT * FROM 
-            (
-                SELECT $except_one_column, '2' AS `in_stock` FROM `items_live_stock` WHERE `priority` = 'default' AND `cost` > 0 AND `having_adequate_stock` = 0  OR `in_stock` = 2 ORDER BY rand()
-            ) AS `t4`
-            ";
-			
-            $select_query = get_query($query_type, $query_table, $query_text);
-            $select_result = select_query($select_query);
-			
-			//$return['query'] = $select_query;
+                    SELECT * FROM (
+                        SELECT $all_columns FROM `items_live_stock` 
+                            WHERE `priority` != 'default'
+                                AND `cost` > 0  
+                                AND `having_adequate_stock` = 1  
+                                AND `in_stock` = 1
+                            ORDER BY `datetime` DESC
+                    ) AS `t1_1`
+                    ORDER BY FIELD(`priority`, 'top', 'new', 'offer')
+                ) AS `t1`
+                ");
+                if($priority_category_items['result']){
+                    $category_wise_items[] = array(
+                        'category_name' => 'TRENDING',
+                        'backgroundColor' => '184, 228, 240',
+                        'textColor' => '#fafafa',
+                        'data' => $priority_category_items['data']
+                    );
+                }
 
-            if($categories_result['result'] && $select_result['result']){
-                $return['result'] = true;
-                $return['info'] .= "fetched all records ";
+                foreach($categories_list['data'] as $types){
+                    $category = $types['type'];
+                    $category_bg_color = $types['background_color'];
+                    $category_text_color = $types['text_color'];
 
-                $is_app_request =   (   array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER)
-                                    &&  $_SERVER['HTTP_X_REQUESTED_WITH'] == "com.cpc.ambatistore"
-                                );
+                    $category_items = fetchItems("
+                    SELECT * FROM 
+                    (
+                        SELECT $all_columns FROM `items_live_stock` WHERE 
+                                `type` = '$category'
+                            AND `priority` = 'default'
+                            AND `cost` > 0
+                            AND `having_adequate_stock` = 1
+                            AND `in_stock` = 1 ORDER BY `item` ASC
+                    ) AS `t3` ORDER BY `t3`.`item` ASC
+                    ");
 
-                $app_button_text = "Download App";
-                $app_button_value = "https://play.google.com/store/apps/details?id=com.cpc.ambatistore";
-                $app_update = false;
-
-                if($is_app_request){
-                    $app_button_text = "www.ambatitastyfoods.com";
-                    $app_button_value = "https://bit.ly/3ABTjf5";
-
-                    $app_version =  array_key_exists('HTTP_APP_VERSION', $_SERVER) ?
-                                    $_SERVER['HTTP_APP_VERSION'] :
-                                    '1.0';
-                    $app_version = (float)$app_version;
-                    
-                    if($app_version < 2.0){
-                        $app_button_text = "Update App: $app_version";
-                        $app_button_value = "https://play.google.com/?id=com.cpc.ambatistore";
-
-                        $app_update = array();
-                        $app_update['title'] = "Latest Update Available";
-                        $app_update['body'] = "Update to latest version 2.0 from your app store";
-                        $app_update['link'] = "https://play.google.com/?id=com.cpc.ambatistore";
+                    if($category_items['result']){
+                        $category_wise_items[] = array(
+                            'category_name' => $category,
+                            'backgroundColor' => $category_bg_color,
+                            'textColor' => $category_text_color,
+                            'data' => $category_items['data']
+                        );
                     }
                 }
 
-				$return['header'] = array(
-										"header_1" => "Ambati Tasty Foods - Laxmiravulapalle, Telangana",
-										"header_2" => "Online store for Keerana Vendors",
-										"app_button_text" => $app_button_text,
-										"app_button_value" => $app_button_value,
-                                        "app_update" => $app_update,
-										"mobile_number" => "8096031765"
-									);
-                $return['categories'] = $categories_result['additional_data'];
-                $return['items'] = $select_result['additional_data'];
+                $outofstock_category_items = fetchItems("
+                SELECT * FROM 
+                (
+                    SELECT $except_one_column, '2' AS `in_stock` FROM `items_live_stock` WHERE `priority` = 'default' AND `cost` > 0 AND `having_adequate_stock` = 0  OR `in_stock` = 2 ORDER BY `item` ASC
+                ) AS `t4` ORDER BY `t4`.`item` ASC
+                ");
+                
+                if($outofstock_category_items['result']){
+                    $category_wise_items[] = array(
+                        'category_name' => 'OUT OF STOCK',
+                        'backgroundColor' => '235, 173, 173',
+                        'textColor' => '#fafafa',
+                        'data' => $outofstock_category_items['data']
+                    );
+                }
+
+                if(count($category_wise_items)){
+                    $return['result'] = true;
+                    $return['info'] .= "fetched all records ";
+
+                    $is_app_request =   (   array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER)
+                                        &&  $_SERVER['HTTP_X_REQUESTED_WITH'] == "com.cpc.ambatistore"
+                                    );
+
+                    $app_button_text = "Download App";
+                    $app_button_value = "https://play.google.com/store/apps/details?id=com.cpc.ambatistore";
+                    $app_update = false;
+
+                    if($is_app_request){
+                        $app_button_text = "www.ambatitastyfoods.com";
+                        $app_button_value = "https://bit.ly/3ABTjf5";
+
+                        $app_version =  array_key_exists('HTTP_APP_VERSION', $_SERVER) ?
+                                        $_SERVER['HTTP_APP_VERSION'] :
+                                        '1.0';
+                        $app_version = (float)$app_version;
+                        
+                        if($app_version < 2.0){
+                            $app_button_text = "Update App: $app_version";
+                            $app_button_value = "https://play.google.com/?id=com.cpc.ambatistore";
+
+                            $app_update = array();
+                            $app_update['title'] = "Latest Update Available";
+                            $app_update['body'] = "Update to latest version 2.0 from your app store";
+                            $app_update['link'] = "https://play.google.com/?id=com.cpc.ambatistore";
+                        }
+                    }
+
+                    $return['header'] = array(
+                                            "header_1" => "Ambati Tasty Foods - Laxmiravulapalle, Telangana",
+                                            "header_2" => "Online store for Keerana Vendors",
+                                            "app_button_text" => $app_button_text,
+                                            "app_button_value" => $app_button_value,
+                                            "app_update" => $app_update,
+                                            "mobile_number" => "6300491143"
+                                        );
+
+                    if($allow_app){
+                        //$return['categories'] = $categories_list;
+                        $return['items'] = $category_wise_items;
+                    }else{
+                        //$return['categories'] = array();
+                        $return['items'] = array();
+                    }
+                }else{
+                    $return['result'] = false;
+                }
             }else{
-                $return['result'] = true;
-                $return['items'] = array();
-                $return['info'] .= $select_result['info'];
-                //$return['additional_info'] .= $select_result['additional_info'];
+                $return['info'] .= $categories_list['info'];
             }
         }elseif($action == "fetch_specified"){
             $query_type = "select";

@@ -4,7 +4,7 @@ let default_cookie_option = {expires: 100, secure: true};
 let request_url = "./lib/items.php";
 let request_params = {
   action: "fetch_for_app",
-  data: "random_data"
+  data: Cookies.get('mobile_number')
 };
 
 let quantityInputTimeout = null;
