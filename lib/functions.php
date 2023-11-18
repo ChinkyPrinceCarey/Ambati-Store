@@ -164,6 +164,14 @@ function is_field_valid($_data, $_type, $_validation_rules){
     return $return;
 }
 
+function getRequestArrayData($arr, $param){
+	if(isset($arr[$param]) && !empty($arr[$param])){
+		return $arr[$param];
+	}
+
+	return null;
+}
+
 function get_decimal($_value){
 	return round($_value, 2);
 }
@@ -358,6 +366,8 @@ function getTableDefaultColumns($_table, $_slno = true, $_id = true){
 		
 		case 'types':
 			$columns[]  = "type";
+			$columns[]  = "background_color";
+			$columns[]  = "text_color";
 			return $columns;
 		break;
 		
@@ -877,6 +887,60 @@ function type_item_column($param){
 	}else{
     return $type_arr[$param];
   }
+}
+
+function fetchItems($query_text){
+	$return = array();
+	$return['result'] = false;
+	$return['data'] = array();
+	$return['info'] = "fetchItems(): ";
+
+	$query_type = "custom";
+	$query_table = "items";
+
+	$select_query = get_query($query_type, $query_table, $query_text);
+	$select_result = select_query($select_query);
+
+	if($select_result['result']){
+		if(count($select_result['additional_data'])){
+			$return['result'] = true;
+			$return['data'] = $select_result['additional_data'];
+			$return['info'] .= "fetched data ";
+		}else{
+			$return['info'] .= "empty data ";
+		}
+	}else{
+		$return['info'] .= $select_result['additional_information'];
+	}
+
+	return $return;
+}
+
+function fetchCategories(){
+	$return = array();
+	$return['result'] = false;
+	$return['data'] = array();
+	$return['info'] = "fetchCategories(): ";
+
+	$query_type = "select";
+	$query_table = "types";
+	$query_columns = getTableDefaultColumns("types");
+	$select_query = get_query($query_type, $query_table, $query_columns);
+	$select_result = select_query($select_query);
+
+	if($select_result['result']){
+		if(count($select_result['additional_data'])){
+			$return['result'] = true;
+			$return['data'] = $select_result['additional_data'];
+			$return['info'] .= "fetched data ";
+		}else{
+			$return['info'] .= "empty data ";
+		}
+	}else{
+		$return['info'] .= $select_result['additional_information'];
+	}
+
+	return $return;
 }
 
 function generateOrderByCase($type_arr){

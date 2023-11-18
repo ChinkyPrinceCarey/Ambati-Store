@@ -55,6 +55,47 @@ $(function(){
                 }
             },
             {
+                label: "Address State",
+                name: "state_id",
+                type: "select",
+                options: [{label: "Telangana", value: 1}],
+                attr:{
+                    required: true,
+                    name: 'state_id'
+                }
+            },
+            {
+                label: "Address District",
+                name: "district_id",
+                type: "select",
+                attr:{
+                    required: true,
+                    name: 'district_id'
+                }
+            },
+            {
+                label: "Address Mandals",
+                name: "mandal_id",
+                type: "select",
+                attr:{
+                    required: true,
+                    name: 'mandal_id'
+                }
+            },
+            {
+                label: "Address Villages",
+                name: "village_id",
+                type: "select",
+                attr:{
+                    required: true,
+                    name: 'village_id'
+                }
+            },
+            {
+                label: "Landmark",
+                name: "landmark"
+            },
+            {
                 label: "Address",
                 name: "address"
             },
@@ -112,6 +153,13 @@ $(function(){
           editor.field('username').hide();
         }
         editor.field('name').focus();
+
+        $('.DTE_Field_Name_state_id .fluid.dropdown')
+        .add('.DTE_Field_Name_district_id .fluid.dropdown')
+        .add('.DTE_Field_Name_mandal_id .fluid.dropdown')
+        .add('.DTE_Field_Name_village_id .fluid.dropdown')
+        .addClass('search')
+        .dropdown();
     });
 
     editor.on('preSubmit', function(e, data, action){
@@ -246,6 +294,16 @@ $(function(){
             { data: "username" },
             { data: "name" },
             { data: "mobile_number" },
+            { data: "state_name",
+              render: function(data, type, row){
+                if(row.village_name && row.mandal_name && row.state_name){
+                    return `${row.village_name} (V), ${row.mandal_name} (M), ${row.district_name} (D), ${row.state_name}`;
+                }else{
+                    return "";
+                }
+              }
+            },
+            { data: "landmark" },
             { data: "address" },
             { data: "is_allowed",
               render: function(data, type, row){
@@ -299,6 +357,121 @@ $(function(){
         } );
     });
 
+    editor.dependent('state_id', function(value, data, callback){
+        let domm = editor.field("district_id").dom.container.find(".fluid.dropdown");
+        domm.addClass("loading");
+        domm.addClass("disabled");
+        
+        paramData = {
+            action: "fetch_address_fields",
+            type: "district_id",
+            data: {
+                state_id: data.values.state_id
+            }
+        }
+        $.ajax({
+            type: "POST",
+            url: `${LIB_API_ENDPOINT}/customers.php`,
+            data: paramData,
+            dataType: "json",
+            success: function(response){
+                if(response.result){
+                    editor.field("district_id").update(response.data);
+                    
+                    domm.removeClass("loading");
+                    domm.removeClass("disabled");
+                }else{
+                    smallModal(
+                        "Error Fetching Records", 
+                        response.info,
+                        [
+                            {
+                                "class": "ui negative deny button",
+                                "id": "",
+                                "text": "Okay",
+                            }
+                        ], 
+                        {
+                            closable: false,
+                            onDeny: function(){
+                                return true;
+                            }
+                        }
+                    );
+                }
+            }
+        });
+
+        callback({});
+    });
+
+    editor.dependent('district_id', function(value, data, callback){
+        let domm = editor.field("mandal_id").dom.container.find(".fluid.dropdown");
+        domm.addClass("loading");
+        domm.addClass("disabled");
+        
+        paramData = {
+            action: "fetch_address_fields",
+            type: "mandal_id",
+            data: {
+                state_id: data.values.state_id,
+                district_id: data.values.district_id
+            }
+        }
+        $.ajax({
+            type: "POST",
+            url: `${LIB_API_ENDPOINT}/customers.php`,
+            data: paramData,
+            dataType: "json",
+            success: function(response){
+                if(response.result){
+                    editor.field("mandal_id").update(response.data);
+                    
+                    domm.removeClass("loading");
+                    domm.removeClass("disabled");
+                }else{
+                    
+                }
+            }
+        });
+
+        callback({});
+    });
+
+    editor.dependent('mandal_id', function(value, data, callback){
+        let domm = editor.field("village_id").dom.container.find(".fluid.dropdown");
+        domm.addClass("loading");
+        domm.addClass("disabled");
+        
+        paramData = {
+            action: "fetch_address_fields",
+            type: "village_id",
+            data: {
+                state_id: data.values.state_id,
+                district_id: data.values.district_id,
+                mandal_id: data.values.mandal_id
+            }
+        }
+        $.ajax({
+            type: "POST",
+            url: `${LIB_API_ENDPOINT}/customers.php`,
+            data: paramData,
+            dataType: "json",
+            success: function(response){
+                if(response.result){
+                    editor.field("village_id").update(response.data);
+                    
+                    domm.removeClass("loading");
+                    domm.removeClass("disabled");
+                }else{
+                    
+                }
+            }
+        });
+
+        callback({});
+    });
+
     //table.buttons().container().appendTo( $('div.eight.column:eq(0)', table.table().container()) );
     table.buttons(0, null).container().removeClass('ui');
-})
+});
