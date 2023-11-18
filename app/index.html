@@ -38,127 +38,141 @@
 
     <!-- Content Loader -->
     <noscript id="content-template" type="text/template7">
-        <div class="header">
+
+        <div class="header" style="width: 100%;">
             <div class="wrapper">
-                <div id="name" class="bold clr-primary">{{header.header_1}}</div>
-                <div id="addr" class="dark-gray">{{header.header_2}}</div>
-                <div id="btn" class="button-container">
-                    <a href="{{header.app_button_value}}" target="_blank">
-                        <button class="bold" data-value="{{header.app_button_value}}">{{header.app_button_text}}</button>
-                    </a>
+                <div class="content">
+                    <div class="primary-header">Laxmiravulapalle, Telangana</div>
+                    <div class="secondary-header">E-Commerce Store for Rural Kirana Vendors</div>
+                    <div class="primary-buttons">
+                        <!-- <div class="btn active">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                            <span>www.ditsa.in</span>
+                        </div>
+                        <div class="btn">
+                            <i class="fa fa-whatsapp" aria-hidden="true"></i>
+                            <span>6300491143</span>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="logo">
+                    <img src="./imgs/logo.min.svg" alt="Ditsa Logo">
+                </div>
+            </div>
+        </div>
+
+        <div class="user-info" style="width: 100%;">
+            <div class="wrapper">
+                <div class="user-name">
+                    <div class="avatar">
+                        <span></span>
+                    </div>
+                    <div class="name">
+                        
+                    </div>
+                </div>
+
+                <div class="delivery-info">
+                    <div class="delivery-info-header">Delivery to</div>
+                    <div class="delivery-info-location"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-container" style="width: 100%;">
+            <div class="wrapper">
+                <div class="search-bar">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                    <input type="text" name="search" placeholder="Search over 800 products...">
                 </div>
             </div>
         </div>
 
         <div class="main-content">
-            <div class="brand-info">
-                <div class="wrapper">
-                    <div class="contact">
-                        <div class="name bold">AMBATI TASTY FOODS</div>
-                        <div class="tel">
-                            <div class="icon"><img src="./imgs/phone-3.svg"></div>
-                            <div class="text" id="mobile_number">{{header.mobile_number}}</div>
-                        </div>
-                        <div class="social">
-                            <div class="app call">
-                                <a href="tel:{{header.mobile_number}}"><img src="./imgs/phone.svg"><span>Ask Queries</span></a>
-                            </div>
-                            <div class="app whatsapp">
-                                <a href="https://wa.me/91{{header.mobile_number}}?text=Hello,%20I've%20few%20queries">
-                                    <img src="./imgs/whatsapp-new.svg"><span>Send Queries</span>
-                                </a>
-                            </div>
-                        </div>
+            <div class="all-catalogue" id="AllCatalogue">
+                {{#each items}}
+                <div class="category-header" style="background-color: rgb({{backgroundColor}});">{{category_name}}</div>
+                <div class="catalogue" id="catalogueItems" style="background-color: rgba({{backgroundColor}}, 0.5); border-top-color: rgb({{backgroundColor}});">
+                    {{#if data.length}}
+                    <div class="category-cover" style="background-color: rgb({{backgroundColor}}); border-right: 1px dashed rgb({{backgroundColor}});">
+                        <div class="category-name">{{category_name}}</div>
+                        <img class="category-navigation" src="./imgs/icons8_right.svg" alt="Right Symbol">
+                        <div class="category-bg-overlay"></div>
+                        <img class="category-bg" src="./imgs/logo.min.svg" alt="Background Image">
                     </div>
-                    <div class="logo">
-                        <img src="./imgs/logo.min.svg">
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="sticky-items">
-                <div class="wrapper">
-                    <div class="search">
-                        <div class="wrapper">
-                            <div class="icon"><img src="./imgs/search.svg"></div>
-                            <input type="text" name="search" class="" placeholder="Search for an item">
-                        </div>
-                    </div>
-                    <div class="wrap-collapsible">
-                        <input type="checkbox" id="collapsible" class="toggle">
-                        <label for="collapsible" class="lbl-toggle">Categories</label>
-                        <div class="collapsible-content">
-                            <div class="content-inner">
-                                <div class="categories">
-                                    <div class="tag c-primary" id="cart">In Cart</div>
-                                    {{#each categories}}
-                                        <div class="tag c-secondary">{{type}}</div>
-                                    {{/each}}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="catalogue" id="catalogueItems">
-            {{#if items}}
-            {{#each items}}
-                <div class="catalogue-item {{ js 'isItemHighlight(this.priority, "forClass")'}}" data-category="{{type}}" data-shortcode="{{shortcode}}">
-                    {{#js_if "isItemHighlight(this.priority, 'forRibbon') "}}
+                    {{#each data}}
+                    <div class="catalogue-item {{ js 'isItemHighlight(this.priority, "forClass")'}}" data-category="{{type}}" data-shortcode="{{shortcode}}" style="border-color: rgb({{../backgroundColor}})">
+                        {{#js_if "isItemHighlight(this.priority, 'forRibbon') "}}
                         <div class="ribbon"><span>{{priority}}</span></div>
-                    {{/js_if}}
-                    <div class="section-1">
-                        <div class="img">
-                            {{#js_if "this.in_stock == '2' || !(this.cost > '0')"}}
+                        {{/js_if}}
+                        <div class="section-1">
+                            <div class="img">
+                                {{#js_if "this.in_stock == '2' || !(this.cost > '0')"}}
                                 <div class="out-of-stock">Out of Stock</div>
-                            {{/js_if}}
-                            
-                            <img class="lazy" 
+                                {{/js_if}}
+                                    
+                                <img class="lazy" 
                                 {{#if image[0].thumb}}
                                     data-src="{{image[0].thumb}}"
                                 {{else}}
                                     data-src="imgs/no-image.jpg"
                                 {{/if}}
-                            >
-                            {{#if image[0].thumb}}
+                                >
+                                    
+                                {{#if image[0].thumb}}
                                 <div class="d-none previews">
                                     {{#each image}}
-                                        <img src="{{thumb}}">
+                                    <img class="lazy" data-src="{{thumb}}">
                                     {{/each}}
                                 </div>
-                            {{/if}}
+                                {{/if}}
+                            </div>
+                            
+                            <div class="code"><span id="item_code">{{shortcode}}</span></div>   
                         </div>
-                        <div class="code">Item Code: <span id="item_code">{{shortcode}}</span></div>
-                    </div>
-                    <div class="name">{{item}}</div>
-                    <div class="desc">Desc: <span>{{counting}}</span></div>
-                    <div class="desc2">{{sub_name}}</div>
-                    <div class="company_name"><span>Company: </span><span>{{company_name}}</span></div>
-                    <div class="footer">
+                        <div class="name">{{item}}</div>
+                        {{#if this.counting}}<div class="desc">Counting: <span>{{counting}}</span></div>{{/if}}
+                        <div class="desc2">{{sub_name}}</div>
+                        <div class="company_name"><span>Company: </span><span>{{company_name}}</span></div>
                         <div class="price">
                             <span id="cost">{{cost}}</span>
-                        </div>
-                        <div class="add-container" date-add-quantity="{{this.add_quantity}}">
-                        {{#js_if "this.in_stock == '1' && this.available_stock > 0 && this.cost > '0'"}}
-                            <div class="initial">+{{#js_if "this.add_quantity > 1"}}{{this.add_quantity}}{{/js_if}} Add</div>
-                        {{else}}
-                            <div class="no-stock">No Stock</div>
-                        {{/js_if}}
-                            <div class="post-initial d-none">
-                                <span id="add">+{{this.add_quantity}}</span>
-                                <input type="number" name="itemCount" id="" value="1" min="1" max="999" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onpaste="return false" onwheel="return false;" {{#js_if "this.add_quantity > 1"}}readonly=""{{/js_if}}>
-                                <span id="remove">-{{this.add_quantity}}</span>
+                            {{#js_if "this.actual_cost > '0'"}}
+                            <div class="actual_price">
+                                <span id="actual_cost">{{actual_cost}}</span>
                             </div>
+                            {{/js_if}}
                         </div>
-                        {{#if actual_cost}}
-                        <div class="actual_price">
-                            <span id="actual_cost">{{actual_cost}}</span>
+                        {{#if this.counting}}
+                        <div class="margin">
+                            Margin: ₹{{js "getMargin(this.cost, this.counting, 'amount')"}} | {{js "getMargin(this.cost, this.counting, 'percentage')"}}%
                         </div>
                         {{/if}}
+                        <div class="footer">
+                            <div class="add-container" date-add-quantity="{{this.add_quantity}}">
+                                {{#js_if "this.in_stock == '1' && this.available_stock > 0 && this.cost > '0'"}}
+                                <div class="initial">+{{#js_if "this.add_quantity > 1"}}{{this.add_quantity}}{{/js_if}} Add</div>
+                                {{else}}
+                                <div class="no-stock">No Stock</div>
+                                {{/js_if}}
+                                <div class="post-initial d-none">
+                                    <span id="add">+{{this.add_quantity}}</span>
+                                    <input type="number" name="itemCount" id="" value="1" min="1" max="999" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onpaste="return false" onwheel="return false;" {{#js_if "this.add_quantity > 1"}}readonly=""{{/js_if}}>
+                                    <span id="remove">-{{this.add_quantity}}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    {{/each}}
+                    {{#js_if "this.data.length >= '2'"}}
+                    <div class="category-cover" style="background-color: rgb({{backgroundColor}}); border-right: 1px dashed rgb({{backgroundColor}});">
+                        <div class="category-name">End of the List</div>
+                        <img class="category-navigation" src="./imgs/icons8_left.svg" alt="Left Symbol">
+                        <div class="category-bg-overlay"></div>
+                    </div>
+                    {{/js_if}}
+                    {{/if}}
                 </div>
-            {{/each}}
-            {{/if}}
+                {{/each}}
             </div>
 
             <div class="cart-summary d-none">
@@ -319,8 +333,8 @@
     <script type="text/javascript" src='//cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
     <script type="text/javascript" src="./js/custom_event.js"></script>
-    <script type="text/javascript" src="./js/home.js?v=33"></script>
-    <script type="text/javascript" src="./js/main.js?v=33"></script>
-    <script type="text/javascript" src="./js/parse_data.js?v=33"></script>
+    <script type="text/javascript" src="./js/home.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
+    <script type="text/javascript" src="./js/parse_data.js"></script>
 </body>
 </html>

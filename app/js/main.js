@@ -3,11 +3,9 @@ target.addListener("onApiReady", onPageReady);
 target.addListener("onApiReady", onScriptReady);
 
 function onScriptReady(){
-  $('.lazy').Lazy({
-    onError: function(element){
-      element.attr('src', 'imgs/image-not-found.jpg')
-    }
-  });
+  
+  initItemLazyLoading();
+  initItemLazyLoading(true);
 
   $('.menu-item').click(function(e){
     let item = $(this);
@@ -38,6 +36,28 @@ function onScriptReady(){
   if(API_CONTENT.header.app_update){
     console.log(`App update available`);
   }
+}
+
+function initItemLazyLoading(doAppend){
+  $(".catalogue").each((index, element)=>{
+    let config = {
+      effect: "fadeIn",
+      effectTime: 2000,
+      //threshold: 0,
+      visibleOnly: true,
+      afterLoad: function(element) {
+        console.log(element.attr('src'));
+      },
+      onFinishedAll: function(){
+        console.log('All images are loaded');
+      },
+      onError: function(element){
+        element.attr('src', 'imgs/image-not-found.jpg')
+      }
+    };
+    if(doAppend) config['appendScroll'] = $(element);
+    $(element).find(".lazy").Lazy(config);
+  });
 }
 
 function isUserLogged(){
@@ -378,6 +398,7 @@ function getOrderStatus(is_cancelled, is_confirmed, is_paid, return_type){
 }
 
 /*Begin: Preloader Init */
+/*
 var tl = new TimelineMax({
   repeat: -1
 });
@@ -397,6 +418,7 @@ tl.add(
     ease: Elastic.easeInOut
   })
 );
+*/
 /*End: Preloader Init */
 
 function ajaxPostCall(param1, param2, callback){

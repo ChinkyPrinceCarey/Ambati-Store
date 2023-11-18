@@ -34,9 +34,10 @@ body{
 	background: #fafafa;
     box-shadow:0 6px 20px 0 rgba(144, 57, 171, 0.5)!important;
 	border-radius: 100px;
-	width: 120px;
+	width: 180px;
 	height: 120px;
     padding: 10px;
+	background: #e51837;
 }
 
 .card .brand img{

@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.js"></script>
+  </head>
+  <body>
+    <input class="fuzzy-search" />
+    
+    <div id="list-id">
+        <ul class="list">
+            <li><p class="name">Guybrush Threepwood</p></li>
+            <li><p class="name">Elaine Marley</p></li>
+            <li><p class="name">LeChuck</p></li>
+            <li><p class="name">Stan</p></li>
+            <li><p class="name">Voodoo Lady</p></li>
+            <li><p class="name">Herman Toothrot</p></li>
+            <li><p class="name">Meathook</p></li>
+            <li><p class="name">Carla</p></li>
+            <li><p class="name">Otis</p></li>
+            <li><p class="name">Rapp Scallion</p></li>
+            <li><p class="name">Rum Rogers Sr.</p></li>
+            <li><p class="name">Men of Low Moral Fiber</p></li>
+            <li><p class="name">Murray</p></li>
+            <li><p class="name">Cannibals</p></li>
+        </ul>
+    </div>
+
+    <div class="all-catelogue-items" id="allCatelogueItems">
+      <div class="specific-catelogue-items">
+          <div class="item-container">
+              <div class="name">mickey</div>
+          </div>
+          <div class="item-container">
+              <div class="name">william</div>
+          </div>
+          <div class="item-container">
+              <div class="name">iM</div>
+          </div>
+      </div>
+      <div class="specific-catelogue-items">
+          <div class="item-container">
+              <div class="name">mly</div>
+          </div>
+          <div class="item-container">
+              <div class="name">advaitha</div>
+          </div>
+          <div class="item-container">
+              <div class="name">chai</div>
+          </div>
+      </div>
+    </div>
+      
+    <script>
+      let isSearchingNow = false;
+      let allCatelogueItems = new List('allCatelogueItems', {
+          valueNames: ['name'],
+          listClass: "specific-catelogue-items"
+        }).on('searchStart', function(){
+          isSearchingNow = true;
+        }).on('searchComplete', function(){
+          isSearchingNow = false;
+        }).on('updated', function(){
+          //console.log('updated');
+        });
+
+        // search integration
+        $('.fuzzy-search').on('keyup', function() {
+            setTimeout(() => {
+              if(!isSearchingNow){
+                let searchString = $(this).val();
+                allCatelogueItems.fuzzySearch(searchString);
+              }
+            }, 650);
+        });
+    </script>
+  </body>
+</html>

@@ -12,6 +12,8 @@ let quantityInputTimeout = null;
 function setDefaultInputValues(){
   if(Cookies.get('name') !== undefined){
     $('input#name').val(Cookies.get('name'));
+    $(".user-info").find(".avatar span").text(Cookies.get('name')[0].toUpperCase());
+    $(".user-info").find(".name").text(Cookies.get('name').length < 10 ? Cookies.get('name') : Cookies.get('name').substr(0, 7) + "...");
   }
 
   if(Cookies.get('mobile_number') !== undefined){
@@ -20,6 +22,7 @@ function setDefaultInputValues(){
   
   if(Cookies.get('address') !== undefined){
     $('textarea#address').val(Cookies.get('address'));
+    $(".user-info").find(".delivery-info-location").text(Cookies.get('address').length < 10 ? Cookies.get('address') : Cookies.get('address').substr(0, 7) + "...");
   }
 }
 
@@ -70,30 +73,31 @@ function onPageReady(){
 
   setDefaultInputValues();
 
-  //----------------------BEGIN: searching methods----------------------//
-    $("input[name=search]").on("keyup", function(){
-      $('.catalogue').addClass('loading-background');
-      $('.catalogue-item').addClass('d-none');
-      $('.catalogue-item.d-grid').removeClass('d-grid');
-      $(".catalogue-item.last-item").removeClass('last-item');
-    
-      var search_text = $(this).val().toLowerCase();
-      $(".catalogue-item").filter(function(){
-        let isShow = $(this).find('.name').text().toLowerCase().indexOf(search_text) > -1;
-        $(this).toggle(isShow);
-        if(isShow){
-          $(this).addClass("d-grid");
-        }
-      });
-      
-      $('.catalogue-item.d-grid:last').addClass('last-item');
-    
-      $('.catalogue').removeClass('loading-background');
-      $('.catalogue-item').removeClass('d-none');
-    
-      window.scrollTo(offset.left, offset.top + 34);
+//----------------------BEGIN: searching methods----------------------//
+  $("input[name=search]").on("keyup", function(){
+    $('.catalogue').addClass('loading-background');
+    $('.catalogue-item').addClass('d-none');
+    $('.catalogue-item.d-grid').removeClass('d-grid');
+    $(".catalogue-item.last-item").removeClass('last-item');
+
+    var search_text = $(this).val().toLowerCase();
+    $(".catalogue-item").filter(function(){
+      let isShow = $(this).find('.name').text().toLowerCase().indexOf(search_text) > -1;
+      $(this).toggle(isShow);
+      if(isShow){
+        $(this).addClass("d-grid");
+      }
     });
-  //----------------------END: searching methods----------------------//
+    
+    $('.catalogue-item.d-grid:last').addClass('last-item');
+
+    $('.catalogue').removeClass('loading-background');
+    $('.catalogue-item').removeClass('d-none');
+
+    //window.scrollTo(offset.left, offset.top + 34);
+  });
+//----------------------END: searching methods----------------------//
+  //window.scrollTo(offset.left, offset.top + 34);
 
   //----------------------BEGIN: order methods----------------------//
   $('#order-form').submit(function(event){
@@ -437,29 +441,6 @@ function get_total_items(){
   }
 ]
 */
-function generateOrderSummaryText(item, mobile_number, address){
-  let text = "";
-
-  text += "Name:\n" + item + "\n";
-  text += "\nMobile Number:\n" + mobile_number + "\n";
-  text += "\nAddress:\n" + address + "\n\n";
-  text += "Orders: \n";
-  let slno = 1;
-
-  cart_obj.forEach(obj => {
-    //1. Khara(KHARA)(1x200) = 200
-    text += "\n";
-    text += slno + ". " + obj.item + "(" + obj.shortcode + ")" + "(" + obj.quantity + "x" + obj.unit_price + ")\t = " + obj.total_price;
-    text += "\n";
-    slno++;
-  });
-
-  text += "----------------------------";
-  text += "\nSub Total\t = " + $('.footer-element #sub_total').text(); 
-  text += "\nGST(0% GST)\t = " + $('.footer-element #gst').text();
-  text += "\nTotal\t = " + $('.footer-element #total').text();
-  return text;
-}
 
 $(document).on('click', '.delete-item', function(){
   let total_item_price = $(this).parent().parent().find('.total-price').text();
@@ -503,7 +484,7 @@ function initUpdateCart(this_, addQuantity_, cart_cookie = true){
 
   let item = $(catalogue_item).find(".name").text();
   let shortcode = $(catalogue_item).find(".code #item_code").text();
-  let unit_price = $(catalogue_item).find(".footer .price #cost").text();
+  let unit_price = $(catalogue_item).find(".price #cost").text();
   let item_count = $(catalogue_item).find(".footer .add-container .post-initial input").val();
   
   if(addQuantity_ === undefined){
@@ -601,6 +582,16 @@ function refreshUICart(){
     $('.cart-summary').addClass('d-none');
   }
 
+}
+
+function getMargin(_actual_cost, _counting, _type){
+  _counting = get_decimal(_counting);
+  _actual_cost = get_decimal(_actual_cost);
+  _margin_amt = get_decimal(_counting - _actual_cost);
+
+  if(_type == "amount") return _margin_amt;
+  
+  return get_decimal((_margin_amt/_counting) * 100 );
 }
 
 function get_decimal(_val){
