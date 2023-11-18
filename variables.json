@@ -1,13 +1,13 @@
 {
   "SERVER_MODE": "BETA",
   "PRODUCTION" : {
-    "API_ENDPOINT": "https://ambatitastyfoods.com",
+    "API_ENDPOINT": "https://ditsa.in",
     "LIB_API_ENDPOINT": "{API_ENDPOINT}/lib",
     "DESKTOP" : {
-      "BASE_DIR": "C:/wamp64/www/domains/ambatitastyfoods.com/public_html/prod"
+      "BASE_DIR": "C:/wamp64/www/domains/ditsa.in/public_html/prod"
     },
     "APP" : {
-      "BASE_DIR": "/home/u916003822/domains/ambatitastyfoods.com/public_html/prod"
+      "BASE_DIR": "/home/u916003822/domains/ditsa.in/public_html/prod"
     },
     "DESKTOP_BASE_DIR" : "{BASE_DIR}/desktop",
     "APP_BASE_DIR" : "{BASE_DIR}/app",
@@ -17,13 +17,13 @@
     "UPLOADS_DIR": "/{UPLOADS_DIRNAME}"
   },
   "BETA": {
-    "API_ENDPOINT": "https://beta.ambatitastyfoods.com",
+    "API_ENDPOINT": "https://beta.ditsa.in",
     "LIB_API_ENDPOINT": "{API_ENDPOINT}/lib",
     "DESKTOP" : {
-      "BASE_DIR": "C:/wamp64/www/domains/ambatitastyfoods.com/public_html/beta"
+      "BASE_DIR": "C:/wamp64/www/domains/ditsa.in/public_html/beta"
     },
     "APP" : {
-      "BASE_DIR": "/home/u916003822/domains/ambatitastyfoods.com/public_html/beta"
+      "BASE_DIR": "/home/u916003822/domains/ditsa.in/public_html/beta"
     },
     "DESKTOP_BASE_DIR" : "{BASE_DIR}/desktop",
     "APP_BASE_DIR" : "{BASE_DIR}/app",
