@@ -1,4 +1,7 @@
 RewriteEngine On
 
-RewriteCond %{REQUEST_URI} !^/beta/(app|desktop|lib|staff|.env|variables.json)
-RewriteRule ^(.*)$ app/$1 [L]
+#RewriteCond %{REQUEST_URI} !^/beta/(app|desktop|lib|staff|.env|variables.json)
+#RewriteRule ^(.*)$ app/$1 [L]
+
+RewriteCond %{REQUEST_URI} !^/beta/(website|app|desktop|lib|staff|.env|variables.json)
+RewriteRule ^(.*)$ website/$1 [L]
